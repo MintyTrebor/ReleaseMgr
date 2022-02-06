@@ -579,7 +579,7 @@ export default {
 			this.gloomyRelLabel = "Latest Gloomy Release = "
 		},
 
-		async fetchReleaseNotes(tmpTag) {f
+		async fetchReleaseNotes(tmpTag) {
 			this.bGotReleaseNotes = false;
 			//get the raw release notes file from the wiki directly (This avoids CORS errors)
 			//need to make sure it handles betas, RC's, and stable releases + Gloomy's stuff too
