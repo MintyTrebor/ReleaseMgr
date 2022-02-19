@@ -15,5 +15,5 @@
         {"shortName": "DirectDisplay", "rnNames": ["12864", "Duet with a 12864 display"]}
     ],
     "duetRNSection": "Upgrade notes:",
-    "duetRNFilters": ["table of contents generated with markdown-toc", "- [reprapfirmware ", "=============="],
+    "duetRNFilters": ["table of contents generated with markdown-toc", "- [reprapfirmware ", "=============="]
 }
