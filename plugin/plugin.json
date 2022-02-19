@@ -1,0 +1,14 @@
+{
+    "dwcWebpackChunk": "ReleaseMgr",
+    "id": "ReleaseMgr",
+    "name": "ReleaseMgr",
+    "author": "Minty Trebor",
+    "version": "0.01.05",
+    "license": "GPL-2.0-or-later",
+    "homepage": "https://github.com/MintyTrebor",
+    "dwcVersion": "auto",
+    "dependencies": {
+      "axios": "^0.21.1",
+      "marked": "^4.0.12"
+    }
+  }
