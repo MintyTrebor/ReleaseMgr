@@ -1,0 +1,19 @@
+{
+    "boards": [
+        {"shortName": "2Maestro", "rnNames": ["Duet Maestro", "Duet 2 + DueX"]},
+        {"shortName": "2WiFi", "rnNames": ["Duet 2 Wifi", "Duet 2 + DueX", "Duet 2 WiFi and Duet 3 Mini 5+ WiFi", "Duet 2 WiFi/Ethernet"]},
+        {"shortName": "2Ethernet", "rnNames": ["Duet 2 Ethernet", "Duet 2 + DueX", "Duet 2 WiFi/Ethernet"]},
+        {"shortName": "2SBC", "rnNames": ["Duet 2 SBC", "Duet 2 + DueX", "Duet in SBC mode"]},
+        {"shortName": "Mini5plus", "rnNames": ["Duet 3 Mini", "Duet 3", "Duet 3 in standalone mode", "Duet 3 Mini, TOOL1LC"]},
+        {"shortName": "MB6HC", "rnNames": [ "Duet 3 MB6HC", "Duet 3 MB6HC with expansion/tool boards", "Duet 3", "Duet 3 in standalone mode"]},
+        {"shortName": "MB6XD", "rnNames": ["Duet 3 MB6XD", "Duet 3 MB6HC with expansion/tool boards", "Duet 3", "Duet 3 in standalone mode", "Duet 3 MB6HC in standalone mode", "Duet 3 MB6HC, Duet 3 Mini Ethernet"]},
+        {"shortName": "EXP1HCL", "rnNames": ["EXP1HCL", "Duet 3 expansion/tool boards"]},
+        {"shortName": "EXP1XD", "rnNames": ["EXP1XD", "Duet 3 expansion/tool boards"]},
+        {"shortName": "EXP3HC", "rnNames": ["EXP3HC", "Duet 3 expansion/tool boards"]},
+        {"shortName": "TOOL1LC", "rnNames": ["TOOL1LC", "Duet 3 expansion/tool boards", "Duet 3 Mini, TOOL1LC"]},
+        {"shortName": "SAMMYC21", "rnNames": ["SAMMYC21"]},
+        {"shortName": "DirectDisplay", "rnNames": ["12864", "Duet with a 12864 display"]}
+    ],
+    "duetRNSection": "Upgrade notes:",
+    "duetRNFilters": ["table of contents generated with markdown-toc", "- [reprapfirmware ", "=============="],
+}
