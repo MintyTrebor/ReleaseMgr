@@ -2,7 +2,7 @@
 	.rMgrv-cardRNFiles {
 		display: flex !important;
 		flex-direction: column;
-		height: 400px;
+		height: calc((100vh - 340px)/2);
 	}
 
 	.rMgrv-mainCardRLM {
@@ -29,7 +29,7 @@
 		</v-card-title>
 		<v-card-text class="rMgrv-cardRNFiles__text">
 			<span v-for="(fileLink, i) in riJSON.assets" :key="i">
-				<span><a :title="fileLink.url" @onclick="window.open(this.title, '_blank')"  style="color: green">{{fileLink.name}}</a></span><br>
+				<span><a :title="fileLink.browser_download_url" @click="assetClick(fileLink.browser_download_url)"  style="color: green">{{fileLink.name}}</a></span><br>
 			</span>
 		</v-card-text>
 	</v-card>
@@ -98,6 +98,10 @@ export default {
 		startUp(){
 			//jjhkjh
 		}, 
+
+		assetClick(tmpURL){
+			window.open(tmpURL, '_blank');
+		},
 		
 	},
 	watch: {

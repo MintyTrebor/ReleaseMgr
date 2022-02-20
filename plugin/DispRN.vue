@@ -6,7 +6,7 @@
 	}
 
 	.rMgrv-mainCardRLM {
-		height: calc(100vh - 240px);
+		height: calc(100vh - 340px) !important;
 	}
 
 	.rMgrv-cardRLM__text {
@@ -23,7 +23,7 @@
 	}
 </style>
 <template>
-	<v-card flat class="pa-0 ma-0 rMgrv-mainCardRLM">
+	<v-card flat outlined class="pa-0 ma-0 rMgrv-mainCardRLM">
 		<v-card elevation="3" class="pa-0 ma-0 rMgrv-cardRLM">
 			<v-card-title>
 				Release Notes
@@ -31,11 +31,11 @@
 			<v-card-text outlined class="rMgrv-cardRLM__text">
 				<v-expansion-panels v-for="(rel, i) in panelJSON.releases" :key="i" accordion multiple focusable v-model="bExpRel[i]">
 					<v-expansion-panel expand  :key="i">
-						<v-expansion-panel-header :color="rel.color" :title="rel.hover">{{ rel.release }}</v-expansion-panel-header>
+						<v-expansion-panel-header expand-icon="mdi-sort-ascending" :color="rel.color" :title="rel.hover">{{ rel.release }}</v-expansion-panel-header>
 						<v-expansion-panel-content>
 							<v-expansion-panels v-for="(sec, j) in rel.sections" :key="j" multiple focusable v-model="bExpSec[j]">
 								<v-expansion-panel :key="j" inset>
-									<v-expansion-panel-header :color="sec.color" :title="sec.hover" >{{ sec.section }}</v-expansion-panel-header>
+									<v-expansion-panel-header expand-icon="mdi-sort-ascending" :color="sec.color" :title="sec.hover" >{{ sec.section }}</v-expansion-panel-header>
 									<v-expansion-panel-content>
 										<span v-for="(content, k) in sec.lines" :key="k">
 											<span :title="content.line.hover" :key="k"><div v-html="content.line.text" :class="`${content.line.colour} pa-1`"></div></span>
@@ -67,6 +67,9 @@ export default {
 		rnJSON: {
 			type: Object
 		},
+		rMgrData:{
+			type: Object
+		},
 		selectedTag: String
     },
 	mixins: [
@@ -89,7 +92,7 @@ export default {
 			return this.tmpLangObj().plugin.ReleaseMgr;
 		},
 		rnHWLookup(){
-			return this.tmpLangObj().boards;
+			return this.rMgrData.boards;
 		},
 		systemBoardSNames(){
 			return this.model.boards;

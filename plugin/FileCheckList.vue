@@ -2,6 +2,7 @@
 	.v-cardRLM {
 		display: flex !important;
 		flex-direction: column;
+		height: calc((100vh - 340px)/2);
 	}
 
 	.v-cardRLM__text {
