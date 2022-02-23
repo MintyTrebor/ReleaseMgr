@@ -97,6 +97,13 @@ export default {
 		systemBoardSNames(){
 			return this.model.boards;
 		},
+		bIsSBC(){
+			if(this.systemDSFVerStr !== null && this.systemDSFVerStr !== ''){
+				return true;
+			}else{
+				return false;
+			}
+		},
 		confGLineMatchCol(){
 			if(!this.darkTheme){
 				return "red lighten-4";
@@ -287,63 +294,100 @@ export default {
 				let tmpRE = null;
 				let ubn = 0;
 				let usn = 0;
+				let rnhw = 0;
+				let rnhws = 0;
 				let matchStr = "";
 				let hwStr = "";
-				let newHwStr = "";
-				//let tmpRE2 = null;
+				let bHWMatch = false;
+				let bHWLine = false;
 				let hwSNMatchArr = null;
+				//add sbc to the shortName array if SBC is detected
+				if(this.bIsSBC){
+					statSNArr.push({shortName: "SBC"});
+				}
 				//loop through the json (nested to allow reverse traversal)
 				for(rel in this.panelJSON.releases){
 					currRel = this.panelJSON.releases[rel];
 					for(sec in currRel.sections){
+						//sections
 						currSec = currRel.sections[sec]
 						for(lin in currSec.lines){
+							//lines
 							currLine = currSec.lines[lin].line;
-							//check line for matching gcodes
-							mgc = 0;
-							for(mgc in arrAllConfGcodes){
-								if(currLine.text.includes(arrAllConfGcodes[mgc])){
-									//match gcodes
-									tmpRE = new RegExp(arrAllConfGcodes[mgc],"g")
-									currLine.text = currLine.text.replace(tmpRE, `<span title="${this.tmpLang.gcodeMatchConfG}" class="${this.confGCodeMatchCol}--text">${arrAllConfGcodes[mgc]}</span>`);
-									currLine.colour = `${this.confGLineMatchCol}`;
-									currLine.confGMatch = true;
-									currLine.fileHover = this.tmpLang.gcodeMatchConfG;
-									currLine.hover = "";
-									currSec.confGMatch = true;
-								}
-							}
 							//HW matching
 							usn = 0;
-							for(usn in statSNArr){
-								hwSNMatchArr = this.rnHWLookup.filter(item => item.shortName == statSNArr[usn].shortName);
-								if(hwSNMatchArr !== [] && typeof hwSNMatchArr !== 'undefined' && hwSNMatchArr.length !== 0){
-									ubn = 0;
-									hwStr = "";
-									newHwStr = "";
-									//match within [] as it could contain more than 1 hardware name - rest of line is ignored
-									hwStr = currLine.text.match(/\[.*\]/g)
-									if(hwStr){
-										for(ubn in hwSNMatchArr[0].rnNames){
-											matchStr = hwSNMatchArr[0].rnNames[ubn];
-											if(hwStr[0].includes(matchStr)){
-												hwStr[0] = hwStr[0].replace(matchStr, `<span title="${this.tmpLang.shortNMatchedHW}" class="${this.shortNMatchHWCol}--text">${matchStr}</span>`)
-												currLine.hwMatch = true;
-												if(currLine.confGMatch) {
-													currLine.colour = `${this.dualHWGCMatchLineColor}`;
-													currSec.hwMatch = true;
-												}else{
-													currLine.colour = `${this.shortNLineMatchCol}`;
-													currSec.hwMatch = true;
+							//check if this is a hw line in the RN defined by '[xxx]'
+							hwStr = "";
+							bHWLine = false;
+							//Look for instances of '[xxx]' in the RN (returns null if no matches)
+							hwStr = currLine.text.match(/\[.*\]/g)
+							if(hwStr){
+								//this is HW line process each instance of [x][y][z]
+								bHWLine = true;
+								rnhw = 0;
+								for(rnhw in hwStr){
+									//add checks for combination hw [x + y + z] (allways returns an array)
+									//strip "[]"
+									let tmpHWStr = hwStr[rnhw].replace('[', '');
+									tmpHWStr = tmpHWStr.replace(']', '');
+									let rnHWArr = tmpHWStr.split(" + ")
+									rnhws = 0
+									//loop though each combination element
+									for(rnhws in rnHWArr){
+										//when this look exits if bHWMatch is true then the whole '[xxx]' is a match, partial matches will return false
+										bHWMatch = false;
+										usn=0;
+										//loop through each board shortName in the OM
+										for(usn in statSNArr){
+											//get the array of shortNames groups from the data maintained on github
+											hwSNMatchArr = this.rnHWLookup.filter(item => item.shortName == statSNArr[usn].shortName);
+											if(hwSNMatchArr.length !== 0){
+												//we have found a match of short name now check each group name against the combination elelement
+												ubn = 0;								
+												for(ubn in hwSNMatchArr[0].rnNames){
+													matchStr = hwSNMatchArr[0].rnNames[ubn];
+													if(rnHWArr[rnhws].localeCompare(matchStr) == 0){
+														bHWMatch = true;
+														continue;
+													}
 												}
-												currLine.hwHover = this.tmpLang.shortNMatchedHW;
-												currLine.hover = "";
 											}
-											if(currLine.hwMatch){
-												newHwStr = currLine.text.match(/\[.*\]/g),
-												currLine.text = currLine.text.replace(newHwStr, hwStr[0]);
-											}
+											//if we have already found a match we can move on
+											if(bHWMatch){continue;}
 										}
+									}
+									
+								}
+								//after the iteration of each [] if we have already found a match then we should finish processing the line & not do any further hw checks as it is irrelevant.
+								if(bHWMatch){
+									currLine.text = currLine.text.replace(hwStr[rnhw], `<span title="${this.tmpLang.shortNMatchedHW}" class="${this.shortNMatchHWCol}--text">${hwStr[rnhw]}</span>`)
+									currLine.hwMatch = true;
+									if(currLine.confGMatch) {
+										currLine.colour = `${this.dualHWGCMatchLineColor}`;
+										currSec.hwMatch = true;
+									}else{
+										currLine.colour = `${this.shortNLineMatchCol}`;
+										currSec.hwMatch = true;
+									}
+									currLine.hwHover = this.tmpLang.shortNMatchedHW;
+									currLine.hover = "";										
+									continue;
+								}
+
+							}
+							//check line for matching gcodes -  only if not a HW line
+							if(!currLine.hwMatch && !bHWLine){
+								mgc = 0;
+								for(mgc in arrAllConfGcodes){
+									if(currLine.text.includes(arrAllConfGcodes[mgc])){
+										//match gcodes
+										tmpRE = new RegExp(arrAllConfGcodes[mgc],"g")
+										currLine.text = currLine.text.replace(tmpRE, `<span title="${this.tmpLang.gcodeMatchConfG}" class="${this.confGCodeMatchCol}--text">${arrAllConfGcodes[mgc]}</span>`);
+										currLine.colour = `${this.confGLineMatchCol}`;
+										currLine.confGMatch = true;
+										currLine.fileHover = this.tmpLang.gcodeMatchConfG;
+										currLine.hover = "";
+										currSec.confGMatch = true;
 									}
 								}
 							}

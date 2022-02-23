@@ -3,10 +3,10 @@
 		<v-card flat width="100%" class=" pa-0 ma-0" :key="1+bPageReload">
 			<div width="100%" class="mb-3">
 				<v-row dense width="100%" :class="`${labelClass} ma-0 pa-0`">
-					<v-col cols="6" justify="start">
+					<v-col cols="4" justify="start">
 						<span><strong>{{tmpLang.plugin.ReleaseMgr.title}}</strong></span>
 					</v-col>
-					<v-col cols="6">
+					<v-col cols="8" justify="start">
 						<span v-if="bShowRN || bShowRI"><strong>{{tmpLang.plugin.ReleaseMgr.headerDuet}}</strong></span>
 						<span v-if="bShowGloomyRN || bShowGloomyRI"><strong>{{tmpLang.plugin.ReleaseMgr.headerGloomy}}</strong></span>
 						<span v-if="bShowDuetSBCRN || bShowDuetSBCRI"><strong>{{tmpLang.plugin.ReleaseMgr.headerSBC}}</strong></span>
@@ -14,65 +14,65 @@
 					</v-col>
 				</v-row>
 				<v-row dense width="100%" class="ma-0 pa-0">
-					<v-col cols="12">
-						<v-card width="100%" class="pa-0 ma-0">
-							<v-card-text class="pa-0 ma-1" style="overflow: hidden !important;">
-								<v-row dense class="pa-0 ma-0" justify="center" align="center">
-									<v-col cols="8" lg="8" md="8" sm="4">
-										<v-row dense class="pa-0 ma-0" justify="center" align="center">
-											<v-col cols="auto">
-												<span><strong :class="labelClass">{{tmpLang.plugin.ReleaseMgr.currFWVer}}</strong> {{ fwVer }}</span>
-											</v-col>
-											<v-spacer></v-spacer>
-											<v-col cols="auto">
-												<span><strong :class="labelClass">{{tmpLang.plugin.ReleaseMgr.currFWSrc}}</strong> {{ fwSrcFriendlyName }}</span>
-											</v-col>
-											<v-spacer></v-spacer>
-											<v-col cols="auto">
-												<span><strong :class="labelClass">{{tmpLang.plugin.ReleaseMgr.currCBoard}}</strong> {{ conBoard }}</span><span v-if="bIsSBC"> (+ SBC)</span>
-											</v-col>
-											<v-spacer></v-spacer>
-										</v-row>
-									</v-col>
-									<v-col cols="4" lg="4" md="4" sm="8">
-										<v-row dense class="pa-0 mr-12" justify="left" align="left">
-											<v-col cols="auto">
-												<span><v-switch :label="tmpLang.plugin.ReleaseMgr.lblSWBetaRel" align="left" v-model="bShowPreRelease" @change="checkShowAllRel()"></v-switch></span>
-											</v-col>
-											<v-spacer></v-spacer>
-											<v-col cols="auto">
-												<span><v-switch v-if="bShowPreRelease" :label="tmpLang.plugin.ReleaseMgr.lblSWAllRel" align="left" v-model="bShowAllReleases"></v-switch></span>
-											</v-col>
-										</v-row>
-									</v-col>
-								</v-row>
-								<v-row dense class="pl-2 pt-0 ma-0" justify="start" align="center">
-									<v-col>
-										<v-row justify="start" align="center" v-if="fwSrc != 'gloomy'" >
-											<v-col v-if="bShowGloomyReleases" cols="3">
-												<v-row align="center">
-													<v-select :label="tmpLang.plugin.ReleaseMgr.lblSelGloomyRel" :items="gloomyFilteredTags" item-text="text" item-value="value" v-model="selectedGloomyRelTag" @change="selectedGloomyTag(selectedGloomyRelTag)"></v-select>
-												</v-row>
-											</v-col>
-											<v-spacer v-if="bShowGloomyReleases"></v-spacer>
-											<v-col cols="3">
-												<v-row align="center">
-													<v-select :key="duetFilteredTags+bShowPreRelease" :label="tmpLang.plugin.ReleaseMgr.lblSelDuetRel" :items="duetFilteredTags" item-text="text" item-value="value" v-model="selectedDuetRelTag" @change="selectedDuetTag(selectedDuetRelTag)"></v-select>
-												</v-row>
-											</v-col>
-											<v-spacer></v-spacer>
-											<v-tooltip top>
-												<template v-slot:activator="{ on, attrs }">
-												<v-btn small v-bind="attrs" color="info" class="pa-2 ma-6" v-on="on" @click="bPageReload = !bPageReload"><v-icon>mdi-autorenew</v-icon></v-btn>
-												</template>
-												<span>{{tmpLang.plugin.ReleaseMgr.btnRefreshHover}}</span>
-											</v-tooltip>
-										</v-row>
-									</v-col>
-								</v-row>
-							</v-card-text>
-						</v-card>
-					</v-col>	
+					<v-card width="100%" class="pa-0 ma-0">
+						<v-card-text class="pa-0 ma-1" style="overflow: hidden !important;">
+							<v-row dense class="pa-0 ma-0 mt-2" justify="center" align="start">
+								<v-col dense class="pa-0 ma-0" justify="center" align="start" ccols="12"  xl="8" lg="8" md="12" sm="12" xs="12">
+									<v-row dense class="pa-0 ma-0" justify="center" align="start">
+										<v-col cols="4">
+											<span><strong :class="labelClass">{{tmpLang.plugin.ReleaseMgr.currFWVer}}</strong> {{ fwVer }}</span>
+										</v-col>
+										<v-spacer></v-spacer>
+										<v-col cols="4">
+											<span><strong :class="labelClass">{{tmpLang.plugin.ReleaseMgr.currFWSrc}}</strong> {{ fwSrcFriendlyName }}</span>
+										</v-col>
+										<v-spacer></v-spacer>
+										<v-col cols="2">
+											<span><strong :class="labelClass">{{tmpLang.plugin.ReleaseMgr.currCBoard}}</strong></span>
+										</v-col>
+										<v-col cols="2">
+											<span v-for="(boards, k) in conBoards" :key="k">{{ boards.name }}<span v-if="bIsSBC && k==0"> (+ SBC)</span><br></span>
+										</v-col>
+										<v-spacer></v-spacer>
+									</v-row>
+								</v-col>
+								<v-col dense class="pa-0 ma-0" justify="center" align="start" cols="12"  xl="4" lg="4" md="12" sm="12" xs="12">
+									<v-row dense class="pa-0 ma-0" justify="start" align="start">
+										<v-col cols="6" md="6" sm="6" xs="12">
+											<span><v-switch class="pl-5 mt-n1" :label="tmpLang.plugin.ReleaseMgr.lblSWBetaRel" align="left" v-model="bShowPreRelease" @change="checkShowAllRel()"></v-switch></span>
+										</v-col>
+										<v-col cols="6" md="6" sm="6" xs="12">
+											<span><v-switch class="mt-n1" v-if="bShowPreRelease" :label="tmpLang.plugin.ReleaseMgr.lblSWAllRel" align="left" v-model="bShowAllReleases"></v-switch></span>
+										</v-col>
+									</v-row>
+								</v-col>
+							</v-row>
+							<v-row dense class="pl-2 pt-0 ma-0" justify="start" align="center">
+								<v-col>
+									<v-row justify="start" align="center" v-if="fwSrc != 'gloomy'" >
+										<v-col v-if="bShowGloomyReleases" cols="3">
+											<v-row align="center">
+												<v-select :label="tmpLang.plugin.ReleaseMgr.lblSelGloomyRel" :items="gloomyFilteredTags" item-text="text" item-value="value" v-model="selectedGloomyRelTag" @change="selectedGloomyTag(selectedGloomyRelTag)"></v-select>
+											</v-row>
+										</v-col>
+										<v-spacer v-if="bShowGloomyReleases"></v-spacer>
+										<v-col cols="3">
+											<v-row align="center">
+												<v-select :key="duetFilteredTags+bShowPreRelease" :label="tmpLang.plugin.ReleaseMgr.lblSelDuetRel" :items="duetFilteredTags" item-text="text" item-value="value" v-model="selectedDuetRelTag" @change="selectedDuetTag(selectedDuetRelTag)"></v-select>
+											</v-row>
+										</v-col>
+										<v-spacer></v-spacer>
+										<v-tooltip top>
+											<template v-slot:activator="{ on, attrs }">
+											<v-btn small v-bind="attrs" color="info" class="pa-2 ma-6" v-on="on" @click="bPageReload = !bPageReload"><v-icon>mdi-autorenew</v-icon></v-btn>
+											</template>
+											<span>{{tmpLang.plugin.ReleaseMgr.btnRefreshHover}}</span>
+										</v-tooltip>
+									</v-row>
+								</v-col>
+							</v-row>
+						</v-card-text>
+					</v-card>
 				</v-row>
 			</div>
 			<!-- <v-row>
@@ -99,59 +99,102 @@
 					<v-row class="pa-2 ma-2 ">
 						<v-spacer></v-spacer>
 					</v-row>
-					<v-row class="pa-1 ma-1 " v-if="bGotDuetRI">
-						<v-spacer></v-spacer>
-						<v-tooltip top>
-							<template v-slot:activator="{ on, attrs }">
-								<v-btn :style="`width: 75% !important; ${duetOutlined}`" v-bind="attrs" v-on="on" color="info"  @click="bSwitchDuetDisp()">
-									<v-icon class="mr-3">mdi-eye-arrow-right</v-icon>
-									<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetRN }}</span>
-									<v-icon v-if="bShowRN" class="ml-3">mdi-information</v-icon>
-									<v-icon v-if="!bShowRN" class="ml-3">mdi-notebook</v-icon>
-								</v-btn>
-							</template>
-							<span>{{ !bShowRN ? tmpLang.plugin.ReleaseMgr.switchDuetRNHover : tmpLang.plugin.ReleaseMgr.switchDuetRIHover }}</span>
-						</v-tooltip>
-						<v-spacer></v-spacer>
+					<v-row class="pa-1 ma-1 " v-if="bGotDuetRI" align="center">
+						<v-col cols="4">
+							<span class="mr-2"><strong :class="labelClass">{{ tmpLang.plugin.ReleaseMgr.switchDuetRN }}</strong></span>
+						</v-col>
+						<v-col cols="6" offset="2" offset-sm="0" offset-md="1" offset-xs="0">
+							<v-spacer></v-spacer>
+							<v-btn-toggle v-model="duetBtnGrp" shaped v-on:change="bSwitchDuetDisp()">
+								<v-tooltip top>
+									<template v-slot:activator="{ on, attrs }">
+										<v-btn block v-bind="attrs" v-on="on" :value="0" color="info">
+											<v-icon>mdi-notebook</v-icon>
+										</v-btn>
+									</template>
+									<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetRNHover }}</span>
+								</v-tooltip>
+								<v-tooltip top>
+									<template v-slot:activator="{ on, attrs }">
+										<v-btn block v-bind="attrs" v-on="on" :value="1" color="info">
+											<v-icon>mdi-information</v-icon>
+										</v-btn>
+									</template>
+									<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetRIHover }}</span>
+								</v-tooltip>
+							</v-btn-toggle>
+							<v-spacer></v-spacer>
+						</v-col>
 					</v-row>
-					<v-row class="pa-1 ma-1 " v-if="bGotGloomyRI">
-						<v-spacer></v-spacer>
-						<v-tooltip top>
-							<template v-slot:activator="{ on, attrs }">
-								<v-btn :style="`width: 75% !important; ${gloomyOutlined}`" v-bind="attrs" v-on="on" color="info"  @click="bSwitchGloomyDisp()">
-									<v-icon class="mr-3">mdi-eye-arrow-right</v-icon>
-									<span>{{ tmpLang.plugin.ReleaseMgr.switchGloomyRN }}</span>
-									<v-icon v-if="bShowGloomyRN" class="ml-3">mdi-information</v-icon>
-									<v-icon v-if="!bShowGloomyRN" class="ml-3">mdi-notebook</v-icon>
-								</v-btn>
-							</template>
-							<span>{{ !bShowGloomyRN ? tmpLang.plugin.ReleaseMgr.switchGloomyRNHover : tmpLang.plugin.ReleaseMgr.switchGloomyRIHover }}</span>
-						</v-tooltip>
-						<v-spacer></v-spacer>
+					<v-row class="pa-1 ma-1 " v-if="bGotGloomyRI" align="center">
+						<v-col cols="4">
+							<span class="mr-2"><strong :class="labelClass">{{ tmpLang.plugin.ReleaseMgr.switchGloomyRN }}</strong></span>
+						</v-col>
+						<v-col cols="6" offset="2" offset-sm="0" offset-md="1" offset-xs="0">
+							<v-spacer></v-spacer>
+							<v-btn-toggle v-model="gloomyBtnGrp" shaped v-on:change="bSwitchGloomyDisp()">
+								<v-tooltip top>
+									<template v-slot:activator="{ on, attrs }">
+										<v-btn block v-bind="attrs" v-on="on" :value="0" color="info">
+											<v-icon>mdi-notebook</v-icon>
+										</v-btn>
+									</template>
+									<span>{{ tmpLang.plugin.ReleaseMgr.switchGloomyRNHover }}</span>
+								</v-tooltip>
+								<v-tooltip top>
+									<template v-slot:activator="{ on, attrs }">
+										<v-btn block v-bind="attrs" v-on="on" :value="1" color="info">
+											<v-icon>mdi-information</v-icon>
+										</v-btn>
+									</template>
+									<span>{{ tmpLang.plugin.ReleaseMgr.switchGloomyRIHover }}</span>
+								</v-tooltip>
+							</v-btn-toggle>
+							<v-spacer></v-spacer>
+						</v-col>
 					</v-row>
-					<v-row class="pa-1 ma-1 " v-if="bGotDuetSBCRI">
-						<v-spacer></v-spacer>
-						<v-tooltip top>
-							<template v-slot:activator="{ on, attrs }">
-								<v-btn :style="`width: 75% !important; ${SBCOutlined}`" v-bind="attrs" v-on="on" color="info"  @click="bSwitchDuetSBCDisp()">
-									<v-icon class="mr-3">mdi-eye-arrow-right</v-icon>
-									<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetSBCRN }}</span>
-									<v-icon v-if="bShowDuetSBCRN" class="ml-3">mdi-information</v-icon>
-									<v-icon v-if="!bShowDuetSBCRN" class="ml-3">mdi-notebook</v-icon>
-								</v-btn>
-							</template>
-							<span>{{ !bShowDuetSBCRN ? tmpLang.plugin.ReleaseMgr.switchDuetSBCRNHover : tmpLang.plugin.ReleaseMgr.switchDuetSBCRIHover }}</span>
-						</v-tooltip>
-						<v-spacer></v-spacer>
+					<v-row class="pa-1 ma-1 " v-if="bGotDuetSBCRI" align="center">
+						<v-col cols="4">
+							<span class="mr-2"><strong :class="labelClass">{{ tmpLang.plugin.ReleaseMgr.switchDuetSBCRN }}</strong></span>
+						</v-col>
+						<v-col cols="6" offset="2" offset-sm="0" offset-md="1" offset-xs="0">
+							<v-spacer></v-spacer>
+							<v-btn-toggle v-model="SBCBtnGrp" shaped v-on:change="bSwitchDuetSBCDisp()">
+								<v-tooltip top>
+									<template v-slot:activator="{ on, attrs }">
+										<v-btn block v-bind="attrs" v-on="on" :value="0" color="info">
+											<v-icon>mdi-notebook</v-icon>
+										</v-btn>
+									</template>
+									<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetSBCRNHover }}</span>
+								</v-tooltip>
+								<v-tooltip top>
+									<template v-slot:activator="{ on, attrs }">
+										<v-btn block v-bind="attrs" v-on="on" :value="1" color="info">
+											<v-icon>mdi-information</v-icon>
+										</v-btn>
+									</template>
+									<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetSBCRIHover }}</span>
+								</v-tooltip>
+							</v-btn-toggle>
+							<v-spacer></v-spacer>
+						</v-col>
 					</v-row>
 				</v-col>
 			</v-row>
-			<v-card-text class="pa-0 ma-1" align="center" v-if="(!bShowRN && !bShowRI && !bShowGloomyRN && !bShowGloomyRI && !bShowDuetSBCRN && !bShowDuetSBCRI)">
-				<div v-html="tmpLang.plugin.ReleaseMgr.notice" class="text-h6" ></div>
-				<div v-html="tmpLang.plugin.ReleaseMgr.guide" class="text-h6" ></div>
-				<div class="pa-2 ma-2"><v-spacer></v-spacer></div>
-				<div style="color: red"  class="text-h4" v-if="!bGotRelMgrData" v-html="tmpLang.plugin.ReleaseMgr.connErr"></div>
-			</v-card-text>
+			<v-row class="pa-0 ma-0 " justify="center" align="center">
+				<v-card class="pa-2 ma-2" align="center" width="75%" v-if="(!bShowRN && !bShowRI && !bShowGloomyRN && !bShowGloomyRI && !bShowDuetSBCRN && !bShowDuetSBCRI)">
+					<div v-if="!darkTheme" v-html="tmpLang.plugin.ReleaseMgr.notice" class="text-h6" ></div>
+					<div v-else v-html="tmpLang.plugin.ReleaseMgr.noticeDark" class="text-h6" ></div>
+				</v-card>
+				<v-card class="pa-2 ma-2 mt-8" align="center" width="75%" v-if="(!bShowRN && !bShowRI && !bShowGloomyRN && !bShowGloomyRI && !bShowDuetSBCRN && !bShowDuetSBCRI)">
+					<div v-if="!darkTheme" v-html="tmpLang.plugin.ReleaseMgr.guide" class="text-h6" ></div>
+					<div v-else v-html="tmpLang.plugin.ReleaseMgr.guideDark" class="text-h6" ></div>
+				</v-card>
+				<v-card class="pa-2 ma-2 mt-4" align="center" width="75%" v-if="!bGotRelMgrData" >
+					<div style="color: red" class="text-h4" v-html="tmpLang.plugin.ReleaseMgr.connErr"></div>
+				</v-card>
+			</v-row>
 		</v-card>
 	</v-container>
 </template>
@@ -249,6 +292,13 @@ export default {
 			catch{tmpCB = "Not Connected"}
 			return tmpCB;
 		},
+		conBoards(){
+			let tmpCB = "";
+			//tmpCB = [{name: "board1"}, {name: "board2"},{name: "Board etc"}]
+			try{tmpCB = this.model.boards;}
+			catch{tmpCB = "Not Connected"}
+			return tmpCB;
+		},
 		backCol(){
 			if(this.darkTheme){
 					return "background-color: #515151 !important;";
@@ -328,6 +378,9 @@ export default {
 			gloomyRNJSON: {},
 			sbcRIJSON: {},
 			sbcRNJSON: {},
+			duetBtnGrp: 0,
+			SBCBtnGrp: 0,
+			gloomyBtnGrp: 0,
 			bShowPreRelease: false,
 			bShowAllReleases: false,
 			gloomyRNFilters: [],
@@ -465,10 +518,12 @@ export default {
 			this.bShowGloomyRI = false;
 			this.bShowDuetSBCRN = false;
 			this.bShowDuetSBCRI =false;
-			if(this.bShowRN){
-				this.bShowRN = false;
+			this.gloomyBtnGrp = null;
+			this.SBCBtnGrp = null;
+			if(this.duetBtnGrp == 1){
 				this.bShowRI = true;
-			}else{
+				this.bShowRN = false;
+			}else if(this.duetBtnGrp == 0){
 				this.bShowRN = true;
 				this.bShowRI = false;
 			}
@@ -479,10 +534,12 @@ export default {
 			this.bShowRI = false;
 			this.bShowDuetSBCRN = false;
 			this.bShowDuetSBCRI = false;
-			if(this.bShowGloomyRN){
+			this.duetBtnGrp = null;
+			this.SBCBtnGrp = null;
+			if(this.gloomyBtnGrp == 1){
 				this.bShowGloomyRN = false;
 				this.bShowGloomyRI = true;
-			}else{
+			}else if(this.gloomyBtnGrp == 0){
 				this.bShowGloomyRN = true;
 				this.bShowGloomyRI = false;
 			}
@@ -494,10 +551,12 @@ export default {
 			this.bShowGloomyRN = false;
 			this.bShowGloomyRI = false;
 			this.bShowDuetSBCRI =false;
-			if(this.bShowDuetSBCRN){
+			this.gloomyBtnGrp = null;
+			this.duetBtnGrp = null;
+			if(this.SBCBtnGrp == 1){
 				this.bShowDuetSBCRN = false;
 				this.bShowDuetSBCRI = true;
-			}else{
+			}else if(this.SBCBtnGrp == 0){
 				this.bShowDuetSBCRN = true;
 				this.bShowDuetSBCRI = false;
 			}
@@ -519,9 +578,10 @@ export default {
 			const relJSONGet = await this.getByGitFileRaw(tmpStr, this.gitOwnerNameGloomy, this.gitRepoNameGloomy).then(res => res);
 			const tmpTxt = await relJSONGet;
 			this.gloomyRNJSON = {body: tmpTxt};
-			this.bShowGloomyRI = true;
 			this.bGotGloomyRN = true;
 			this.bGotGloomyRI = true;
+			this.gloomyBtnGrp = 1;
+			this.bSwitchGloomyDisp();
 		},
 
 		async loadSDFile(fileName, sdDir) {
@@ -618,6 +678,7 @@ export default {
 							//always show the duet rn when fetched
 							this.bGotDuetRN = true;
 							this.bShowRN = false;
+							this.duetBtnGrp = 0;
 							this.bSwitchDuetDisp();
 							return conv;
 						}
