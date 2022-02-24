@@ -106,30 +106,30 @@ export default {
 		},
 		confGLineMatchCol(){
 			if(!this.darkTheme){
-				return "red lighten-4";
+				return "red lighten-3";
 			}else{
-				return "red accent-1"
+				return "red lighten-3 black--text"
 			}
 		},
 		confGCodeMatchCol(){
 			if(!this.darkTheme){
-				return "red lighten-1";
+				return "pink accent-3";
 			}else{
-				return "red accent-4";
+				return "pink accent-3";
 			}
 		},
 		shortNLineMatchCol(){
 			if(!this.darkTheme){
 				return "blue lighten-4";
 			}else{
-				return "blue darken-4";
+				return "blue lighten-4 black--text";
 			}
 		},
 		shortNMatchHWCol(){
 			if(!this.darkTheme){
 				return "blue darken-4";
 			}else{
-				return "blue lighten-4";
+				return "blue darken-4";
 			}
 		},
 		dualHWGCMatchLineColor(){
@@ -352,9 +352,11 @@ export default {
 													}
 												}
 											}
-											//if we have already found a match we can move on
-											if(bHWMatch){continue;}
+											//if we have already found a match we can move on else end as its an AND check condition
+											if(bHWMatch){continue;}else{break}
 										}
+										//if we have already found a match we can move on else end as its an AND check condition
+										if(!bHWMatch){break}
 									}
 									
 								}

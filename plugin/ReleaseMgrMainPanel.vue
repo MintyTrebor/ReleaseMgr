@@ -96,8 +96,8 @@
 							<DispRNFiles v-if="bGotGloomyRI && (bShowGloomyRN || bShowGloomyRI)" :riJSON="gloomyRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag"></DispRNFiles>
 						</v-container>	
 					</v-row>
-					<v-row class="pa-2 ma-2 ">
-						<v-spacer></v-spacer>
+					<v-row class="pa-2 ma-2 " justify="center" align="center">
+						<span style="text-align: center !important">{{ tmpLang.plugin.ReleaseMgr.fileDLNotice }}</span>
 					</v-row>
 					<v-row class="pa-1 ma-1 " v-if="bGotDuetRI" align="center">
 						<v-col cols="4">
@@ -836,8 +836,6 @@ export default {
 						//this is a release
 						newRNJSON.releases.push({release: rnJSON.lines[i].line, sections:[], color: "", hover: "", hwMatch: false, confGMatch: false, fileMatch: false})
 						currRelStr = rnJSON.lines[i].line;
-						// console.log("currRelStr")
-						// console.log(currRelStr)
 					}else if(rnJSON.lines[i].line.slice(-1) === ":" && rnJSON.lines[i].line.charAt(0) !== "-"){
 						//this is a section
 						var c=0;
@@ -846,9 +844,7 @@ export default {
 								newRNJSON.releases[c].sections.push({section: rnJSON.lines[i].line, lines: [], color: "", hover: "", hwMatch: false, confGMatch: false, fileMatch: false});
 								currSecStr = rnJSON.lines[i].line;
 							}
-						}
-						// console.log("currSecStr")
-						// console.log(currSecStr)						
+						}					
 					}else{
 						//this is section content
 						var d=0;
