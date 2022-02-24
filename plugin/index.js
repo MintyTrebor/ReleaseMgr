@@ -8,7 +8,7 @@ import ReleaseMgrMainPanel from './ReleaseMgrMainPanel.vue';
 registerRoute(ReleaseMgrMainPanel, {
 	Settings: {
 		ReleaseMgr: {
-			icon: 'mdi-application-cog-outline',
+			icon: 'mdi-application-cog',
 			caption: 'ReleaseMgr',
 			path: '/ReleaseMgr'
 		}
