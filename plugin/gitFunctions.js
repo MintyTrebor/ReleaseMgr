@@ -75,5 +75,25 @@ export default {
                 return null;
             }
 		},
+
+		async getHTML(sURL){
+			if(sURL){
+				const retJson = await axios.get(sURL)
+				.then(res => res.data)
+				.catch(function(error){
+					console.warn("Get HTML error : " + error);
+					return {error: " getHTML xhr error"};
+				})
+				const fileData = await retJson;
+				if(fileData.message) {
+					console.warn("Get HTML error : " + fileData.message);
+                    return null;
+				}
+                return fileData;
+			}else{
+				console.warn("Get HTML error Required Values not Provided");
+                return null;
+            }
+		},
     }
 }

@@ -2,15 +2,17 @@
 	<v-container fluid class=" pa-0 ma-0" >
 		<v-card flat width="100%" class=" pa-0 ma-0" :key="1+bPageReload">
 			<div width="100%" class="mb-3">
-				<v-row dense width="100%" :class="`${labelClass} ma-0 pa-0`">
-					<v-col cols="4" justify="start">
-						<span><strong>{{tmpLang.plugin.ReleaseMgr.title}}</strong></span>
-					</v-col>
-					<v-col cols="8" justify="start">
-						<span v-if="bShowRN || bShowRI"><strong>{{tmpLang.plugin.ReleaseMgr.headerDuet}}</strong></span>
-						<span v-if="bShowGloomyRN || bShowGloomyRI"><strong>{{tmpLang.plugin.ReleaseMgr.headerGloomy}}</strong></span>
-						<span v-if="bShowDuetSBCRN || bShowDuetSBCRI"><strong>{{tmpLang.plugin.ReleaseMgr.headerSBC}}</strong></span>
-						<v-spacer></v-spacer>
+				<v-row dense width="100%" :class="`${labelClass} ma-0 pa-0 pb-1`">
+					<v-col cols="12" justify="start">
+						<v-row dense width="100%" class=" pa-0 ma-0" justify="start">
+							<v-chip color="info">{{tmpLang.plugin.ReleaseMgr.title}}</v-chip>						
+							<v-spacer></v-spacer>
+							<v-chip color="info" v-if="bShowRN || bShowRI">{{tmpLang.plugin.ReleaseMgr.headerDuet}}</v-chip>
+							<v-chip color="info" v-if="bShowGloomyRN || bShowGloomyRI">{{tmpLang.plugin.ReleaseMgr.headerGloomy}}</v-chip>
+							<v-chip color="info" v-if="bShowDuetSBCRN || bShowDuetSBCRI">{{tmpLang.plugin.ReleaseMgr.headerSBC}}</v-chip>
+							<v-chip color="info" v-if="bShowDuetDWCRN || bShowDuetDWCRI">{{tmpLang.plugin.ReleaseMgr.headerDWC}}</v-chip>
+							<v-spacer></v-spacer>
+						</v-row>
 					</v-col>
 				</v-row>
 				<v-row dense width="100%" class="ma-0 pa-0">
@@ -78,30 +80,47 @@
 			<!-- <v-row>
 				sbcRNJSON:{{this.allGloomyReleasesJSON}}
 			</v-row> -->
-			<v-row class="pa-0 ma-0 " v-if="(bShowRN || bShowRI || bShowGloomyRN || bShowGloomyRI || bShowDuetSBCRN || bShowDuetSBCRI)">
+			<v-row class="pa-0 ma-0 " v-if="(bShowRN || bShowRI || bShowGloomyRN || bShowGloomyRI || bShowDuetSBCRN || bShowDuetSBCRI || bShowDuetDWCRN || bShowDuetDWCRI)">
 				<v-col cols="12" lg="8" md="8" class="mb-6">
 					<v-container fluid class="pa-0 ma-0">
 						<DispRN v-if="bGotDuetRN && bShowRN" :rnJSON="duetRNJSON" :rMgrData="relMgrData" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRN>
-						<DispRI v-if="bGotDuetRI && bShowRI" :riJSON="duetRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRI>
-						<DispRI v-if="bGotGloomyRN && bShowGloomyRN" :riJSON="gloomyRNJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag"></DispRI>
-						<DispRI v-if="bGotGloomyRI && bShowGloomyRI" :riJSON="gloomyRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag"></DispRI>
+						<DispRI v-if="bGotDuetRI && bShowRI" :riJSON="duetRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" srcType="RRFRI"></DispRI>
+						<DispRN v-if="bGotDuetDWCRN && bShowDuetDWCRN" :rnJSON="dwcRNJSON" :rMgrData="relMgrData" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRN>
+						<DispRI v-if="bGotDuetDWCRI && bShowDuetDWCRI" :riJSON="dwcRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" srcType="DWCRI"></DispRI>
+						<DispRI v-if="bGotGloomyRN && bShowGloomyRN" :riJSON="gloomyRNJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" srcType="gloomyRN"></DispRI>
+						<DispRI v-if="bGotGloomyRI && bShowGloomyRI" :riJSON="gloomyRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" srcType="gloomyRI"></DispRI>
 						<DispRN v-if="bGotDuetSBCRN && bShowDuetSBCRN" :rMgrData="relMgrData" :rnJSON="sbcRNJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRN>
-						<DispRI v-if="bGotDuetSBCRI && bShowDuetSBCRI" :riJSON="sbcRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRI>
+						<DispRI v-if="bGotDuetSBCRI && bShowDuetSBCRI" :riJSON="sbcRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" srcType="DSFRI"></DispRI>
 					</v-container>
 				</v-col>
 				<v-col cols="12" lg="4" md="4">
 					<v-row class="pa-0 ma-0 ">
-						<v-container fluid class="pa-0 ma-0">
-							<DispRNFiles v-if="bGotDuetRI && (bShowRN || bShowRI || bShowDuetSBCRN || bShowDuetSBCRI)" :riJSON="duetRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRNFiles>
+						<v-container fluid class="pa-0 ma-0" v-if="!bIsSBC">
+							<DispRNFiles v-if="bGotDuetRI && (bShowRN || bShowRI || bShowDuetSBCRN || bShowDuetSBCRI || bShowDuetDWCRN || bShowDuetDWCRI)" :riJSON="duetRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRNFiles>
 							<DispRNFiles v-if="bGotGloomyRI && (bShowGloomyRN || bShowGloomyRI)" :riJSON="gloomyRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag"></DispRNFiles>
+						</v-container>
+						<v-container fluid class="pa-0 ma-0" v-if="bIsSBC">
+							<v-card outlined elevation="3" class="pa-0 ma-0">
+								<v-card-text>
+									<v-row class="pa-2 ma-2 " justify="center" align="center" v-if="fwSrc == gitOwnerNameDuet">
+										<span><a :title="dsfUpdateInsURL" @click="hlpLinkClick(dsfUpdateInsURL)"  style="color: green">{{tmpLang.plugin.ReleaseMgr.dsfUpdateInstructions}}</a></span>
+									</v-row>
+									<v-row class="pa-2 ma-2 " justify="center" align="center" v-if="fwSrc == gitOwnerNameGloomy">
+										<span><a :title="gloomyUpdateInsURL1" @click="hlpLinkClick(gloomyUpdateInsURL1)"  style="color: green">{{tmpLang.plugin.ReleaseMgr.gloomyUpdateIns1}}</a></span>
+									</v-row>
+									<v-row class="pa-2 ma-2 " justify="center" align="center" v-if="fwSrc == gitOwnerNameGloomy">
+										<span><a :title="gloomyUpdateInsURL2" @click="hlpLinkClick(gloomyUpdateInsURL2)"  style="color: green">{{tmpLang.plugin.ReleaseMgr.gloomyUpdateIns2}}</a></span>
+									</v-row>
+								</v-card-text>
+							</v-card>
 						</v-container>	
 					</v-row>
-					<v-row class="pa-2 ma-2 " justify="center" align="center">
-						<span style="text-align: center !important">{{ tmpLang.plugin.ReleaseMgr.fileDLNotice }}</span>
+					<v-row class="pa-2 ma-2 " justify="center" align="center" v-if="!bIsSBC">
+						<v-chip large style="white-space: normal !important; height: auto; text-align: center !important" color="info">{{ tmpLang.plugin.ReleaseMgr.fileDLNotice }}</v-chip>
 					</v-row>
 					<v-row class="pa-1 ma-1 " v-if="bGotDuetRI" align="center">
 						<v-col cols="4">
-							<span class="mr-2"><strong :class="labelClass">{{ tmpLang.plugin.ReleaseMgr.switchDuetRN }}</strong></span>
+							<v-chip large color="info" class="mr-2">{{ tmpLang.plugin.ReleaseMgr.switchDuetRN }}</v-chip>
 						</v-col>
 						<v-col cols="6" offset="2" offset-sm="0" offset-md="1" offset-xs="0">
 							<v-spacer></v-spacer>
@@ -126,9 +145,36 @@
 							<v-spacer></v-spacer>
 						</v-col>
 					</v-row>
+					<v-row class="pa-1 ma-1 " v-if="bGotDuetDWCRI" align="center">
+						<v-col cols="4">
+							<v-chip large color="info" class="mr-2">{{ tmpLang.plugin.ReleaseMgr.switchDuetDWCRN }}</v-chip>
+						</v-col>
+						<v-col cols="6" offset="2" offset-sm="0" offset-md="1" offset-xs="0">
+							<v-spacer></v-spacer>
+							<v-btn-toggle v-model="DWCBtnGrp" shaped v-on:change="bSwitchDWCDisp()">
+								<v-tooltip top>
+									<template v-slot:activator="{ on, attrs }">
+										<v-btn block v-bind="attrs" v-on="on" :value="0" color="info">
+											<v-icon>mdi-notebook</v-icon>
+										</v-btn>
+									</template>
+									<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetDWCRNHover }}</span>
+								</v-tooltip>
+								<v-tooltip top>
+									<template v-slot:activator="{ on, attrs }">
+										<v-btn block v-bind="attrs" v-on="on" :value="1" color="info">
+											<v-icon>mdi-information</v-icon>
+										</v-btn>
+									</template>
+									<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetDWCRIHover }}</span>
+								</v-tooltip>
+							</v-btn-toggle>
+							<v-spacer></v-spacer>
+						</v-col>
+					</v-row>
 					<v-row class="pa-1 ma-1 " v-if="bGotGloomyRI" align="center">
 						<v-col cols="4">
-							<span class="mr-2"><strong :class="labelClass">{{ tmpLang.plugin.ReleaseMgr.switchGloomyRN }}</strong></span>
+							<v-chip large color="info" class="mr-2">{{ tmpLang.plugin.ReleaseMgr.switchGloomyRN }}</v-chip>
 						</v-col>
 						<v-col cols="6" offset="2" offset-sm="0" offset-md="1" offset-xs="0">
 							<v-spacer></v-spacer>
@@ -155,7 +201,7 @@
 					</v-row>
 					<v-row class="pa-1 ma-1 " v-if="bGotDuetSBCRI" align="center">
 						<v-col cols="4">
-							<span class="mr-2"><strong :class="labelClass">{{ tmpLang.plugin.ReleaseMgr.switchDuetSBCRN }}</strong></span>
+							<v-chip large color="info" class="mr-2">{{ tmpLang.plugin.ReleaseMgr.switchDuetSBCRN }}</v-chip>
 						</v-col>
 						<v-col cols="6" offset="2" offset-sm="0" offset-md="1" offset-xs="0">
 							<v-spacer></v-spacer>
@@ -183,13 +229,21 @@
 				</v-col>
 			</v-row>
 			<v-row class="pa-0 ma-0 " justify="center" align="center">
-				<v-card class="pa-2 ma-2" align="center" width="75%" v-if="(!bShowRN && !bShowRI && !bShowGloomyRN && !bShowGloomyRI && !bShowDuetSBCRN && !bShowDuetSBCRI)">
-					<div v-if="!darkTheme" v-html="tmpLang.plugin.ReleaseMgr.notice" class="text-h6" ></div>
-					<div v-else v-html="tmpLang.plugin.ReleaseMgr.noticeDark" class="text-h6" ></div>
+				<v-card class="pa-2 ma-2" align="center" width="75%" v-if="(!bShowRN && !bShowRI && !bShowGloomyRN && !bShowGloomyRI && !bShowDuetSBCRN && !bShowDuetSBCRI && !bShowDuetDWCRN && !bShowDuetDWCRI)">
+					<div v-html="tmpLang.plugin.ReleaseMgr.notice" class="text-h6" ></div>
+					<v-row class="pa-2 ma-2 " justify="center" align="center">
+						<v-chip class="red lighten-3 black--text">{{tmpLang.plugin.ReleaseMgr.redTxt}}</v-chip>
+					</v-row>
+					<v-row class="pa-2 ma-2 " justify="center" align="center">
+						<v-chip class="blue lighten-4 black--text">{{tmpLang.plugin.ReleaseMgr.blueTxt}}</v-chip>
+					</v-row>
+					<v-row class="pa-2 ma-2 " justify="center" align="center">
+						<v-chip class="purple lighten-4 black--text">{{tmpLang.plugin.ReleaseMgr.purpleTxt}}</v-chip>
+					</v-row>
+					<div v-html="tmpLang.plugin.ReleaseMgr.noticeFooter" class="text-h6" ></div>
 				</v-card>
-				<v-card class="pa-2 ma-2 mt-8" align="center" width="75%" v-if="(!bShowRN && !bShowRI && !bShowGloomyRN && !bShowGloomyRI && !bShowDuetSBCRN && !bShowDuetSBCRI)">
-					<div v-if="!darkTheme" v-html="tmpLang.plugin.ReleaseMgr.guide" class="text-h6" ></div>
-					<div v-else v-html="tmpLang.plugin.ReleaseMgr.guideDark" class="text-h6" ></div>
+				<v-card class="pa-2 ma-2 mt-8" align="center" width="75%" v-if="(!bShowRN && !bShowRI && !bShowGloomyRN && !bShowGloomyRI && !bShowDuetSBCRN && !bShowDuetSBCRI && !bShowDuetDWCRN && !bShowDuetDWCRI)">
+					<div v-html="tmpLang.plugin.ReleaseMgr.guide" class="text-h6" ></div>
 				</v-card>
 				<v-card class="pa-2 ma-2 mt-4" align="center" width="75%" v-if="!bGotRelMgrData" >
 					<div style="color: red" class="text-h4" v-html="tmpLang.plugin.ReleaseMgr.connErr"></div>
@@ -362,15 +416,23 @@ export default {
 			allDuetReleasesJSON: null,
 			allSBCReleasesJSON: null,
 			allGloomyReleasesJSON: null,
+			allDWCReleasesJSON: null,
 			bGotAllSBCReleases: false,
+			bGotAllDWCReleases: false,
 			gitOwnerNameDuet: 'Duet3D',
 			gitOwnerNameGloomy: 'gloomyandy',
 			gitRepoNameDuet: "RepRapFirmware",
-			gitSBCRepoNameDuet: "DuetSoftwareFramework", 
+			gitSBCRepoNameDuet: "DuetSoftwareFramework",
+			gitDWCRepoNameDuet: "DuetWebControl", 
 			gitRepoNameGloomy: "RepRapFirmware",
 			gitRelMgrRepoName: "ReleaseMgr",
 			gitRelMgrOwnName: "MintyTrebor",
 			gitRelMgrDataURL: "main/RelMgrData/RelMgrData.json",
+			dsfUpdateInsURL: "https://docs.duet3d.com/User_manual/Machine_configuration/DSF_RPi#installing-updates)",
+			gloomyUpdateInsURL1: "https://teamgloomy.github.io/stm32_sbc.html",
+			gloomyUpdateInsURL2: "https://teamgloomy.github.io/lpc_sbc.html",
+			dsfUpdateInsHTML: null,
+			gloomyUpdateInsHTML: null,
 			relMgrData: {},
 			duetRNJSON: {},
 			duetRIJSON:{},
@@ -378,8 +440,11 @@ export default {
 			gloomyRNJSON: {},
 			sbcRIJSON: {},
 			sbcRNJSON: {},
+			dwcRIJSON: {},
+			dwcRNJSON: {},
 			duetBtnGrp: 0,
 			SBCBtnGrp: 0,
+			DWCBtnGrp: 0,
 			gloomyBtnGrp: 0,
 			bShowPreRelease: false,
 			bShowAllReleases: false,
@@ -391,6 +456,8 @@ export default {
 			bGotDuetRI: false,
 			bGotDuetSBCRI: false,
 			bGotDuetSBCRN: false,
+			bGotDuetDWCRI: false,
+			bGotDuetDWCRN: false,
 			bGotRelMgrData: false,
 			bShowRN: false,
 			bShowRI: false,
@@ -398,10 +465,13 @@ export default {
 			bShowGloomyRI: false,
 			bShowDuetSBCRN: false,
 			bShowDuetSBCRI: false,
+			bShowDuetDWCRN: false,
+			bShowDuetDWCRI: false,
 			bShowGloomyReleases: false,
 			bGotGloomyRN: false,
 			bGotGloomyRI: false,			
 			currDSFTag: null,
+			currDWCTag: null
 		}
 	},
 	
@@ -468,17 +538,27 @@ export default {
 			this.duetRIJSON = this.allDuetReleasesJSON.filter(item => item.tag_name == tmpTag)
 			this.duetRIJSON = this.duetRIJSON[0];//don't need the array 
 			this.bGotDuetRI = true;
+			//get DWC Release Details
+			this.bGotDuetDWCRN = false;
+			this.bGotDuetDWCRI = false;
+			this.dwcRNJSON = false;
+			this.dwcRIJSON = {body: ""};
+			//MUST GET RI FIRST!!
+			this.dwcRIJSON = await this.getDuetSBCDWCRI(tmpTag, this.gitDWCRepoNameDuet).then(res => res).then(res => res);
+			this.dwcRIJSON = this.dwcRIJSON[0];//don't need the array 
+			const getDWCRelJSON  = await this.getReleaseNotes(this.gitOwnerNameDuet, this.gitDWCRepoNameDuet, tmpTag).then(response => response);
+			this.dwcRNJSON = await getDWCRelJSON;
 			if(this.bIsSBC){
 				//SBC is in use so get the SBC RI & RN info also ---- MUST GET RI FIRST!!
 				this.bGotDuetSBCRN = false;
 				this.bGotDuetSBCRI = false;
 				this.sbcRNJSON = {};
 				this.sbcRIJSON = {body: ""};
-				this.sbcRIJSON = await this.getDuetSBCRI(tmpTag).then(res => res).then(res => res);
+				this.sbcRIJSON = await this.getDuetSBCDWCRI(tmpTag, this.gitSBCRepoNameDuet).then(res => res).then(res => res);
 				this.sbcRIJSON = this.sbcRIJSON[0];//don't need the array 
 				const getSBCRelJSON = await this.getReleaseNotes(this.gitOwnerNameDuet, this.gitSBCRepoNameDuet, tmpTag).then(response => response);
 				this.sbcRNJSON = await getSBCRelJSON;
-				
+				this.dsfUpdateInsHTML = `<span><a :title="${this.dsfUpdateInsURL}" @click="hlpLinkClick(this.dsfUpdateInsURL)"  style="color: green">Click here to view DSF update instructions</a></span>`;
 			}
 		},
 
@@ -511,13 +591,20 @@ export default {
 			this.bShowGloomyRI = false;
 			this.bShowDuetSBCRN = false;
 			this.bShowDuetSBCRI= false;
+			this.bShowDuetDWCRI = false;
+			this.bShowDuetDWCRN = false;
+			this.bGotDuetDWCRI = false;
+			this.bGotDuetDWCRN = false;
 		},
 
 		bSwitchDuetDisp(){
 			this.bShowGloomyRN =  false;
 			this.bShowGloomyRI = false;
 			this.bShowDuetSBCRN = false;
-			this.bShowDuetSBCRI =false;
+			this.bShowDuetSBCRI = false;
+			this.bShowDuetDWCRI = false;
+			this.bShowDuetDWCRN = false;
+			this.DWCBtnGrp = null;
 			this.gloomyBtnGrp = null;
 			this.SBCBtnGrp = null;
 			if(this.duetBtnGrp == 1){
@@ -529,11 +616,33 @@ export default {
 			}
 		},
 
+		bSwitchDWCDisp(){
+			this.bShowRN = false;
+			this.bShowRI = false;
+			this.bShowGloomyRN =  false;
+			this.bShowGloomyRI = false;
+			this.bShowDuetSBCRN = false;
+			this.bShowDuetSBCRI =false;
+			this.gloomyBtnGrp = null;
+			this.duetBtnGrp = null;
+			this.SBCBtnGrp = null;
+			if(this.DWCBtnGrp == 1){
+				this.bShowDuetDWCRI = true;
+				this.bShowDuetDWCRN = false;
+			}else if(this.DWCBtnGrp == 0){
+				this.bShowDuetDWCRN = true;
+				this.bShowDuetDWCRI = false;
+			}
+		},
+
 		bSwitchGloomyDisp(){
 			this.bShowRN = false;
 			this.bShowRI = false;
 			this.bShowDuetSBCRN = false;
 			this.bShowDuetSBCRI = false;
+			this.bShowDuetDWCRI = false;
+			this.bShowDuetDWCRN = false;
+			this.DWCBtnGrp = null;
 			this.duetBtnGrp = null;
 			this.SBCBtnGrp = null;
 			if(this.gloomyBtnGrp == 1){
@@ -551,6 +660,9 @@ export default {
 			this.bShowGloomyRN = false;
 			this.bShowGloomyRI = false;
 			this.bShowDuetSBCRI =false;
+			this.bShowDuetDWCRI = false;
+			this.bShowDuetDWCRN = false;
+			this.DWCBtnGrp = null;
 			this.gloomyBtnGrp = null;
 			this.duetBtnGrp = null;
 			if(this.SBCBtnGrp == 1){
@@ -613,13 +725,18 @@ export default {
 				if(relJSON){
 					//re-order by date release published
 					var relJSONFiltered = relJSON.sort((a, b) => (a.published_at < b.published_at) ? 1 : -1)
-					if(gitUName == this.gitOwnerNameDuet){
+					if(gitUName == this.gitOwnerNameDuet && gitRepoName == this.gitRepoNameDuet){
 						//remove some allways unwanted items for Duet Releases (nothing pre 3.2 and anything beginning with 'v')
 						relJSONFiltered = relJSON.filter(item => (item.tag_name >= "3.2" && !(item.tag_name.charAt(0)=='v')));
 						//pruning based on release date and type of release eg if full release remove all ref's to betas & RC's before it was released etc
 						var allFullReleasesJSON = relJSONFiltered.filter(item => (item.prerelease == false));
 						relJSONFiltered = relJSONFiltered.filter(item => (item.published_at <= allFullReleasesJSON[0].published_at && item.prerelease == false) || (item.published_at >= allFullReleasesJSON[0].published_at));
-					}else{
+					}
+					if(gitUName == this.gitOwnerNameDuet && gitRepoName == this.gitDWCRepoNameDuet){
+						//no need to do any filtering just return full JSON for DWC
+						return relJSON;
+					}
+					if(gitUName == this.gitOwnerNameGloomy && gitRepoName == this.gitRepoNameGloomy){
 						//process gloomy releses if required
 						this.bShowGloomyReleases = true;
 					}
@@ -656,6 +773,20 @@ export default {
 							rnType = "Full"
 						}
 						
+					}if(gitRepoName == this.gitDWCRepoNameDuet){
+						//Standard Config
+						if(gitTagName.toLowerCase().includes('beta')){
+							tmpFName = `Changelog-DWC-${majorVNumStr}.x-Beta.md`;
+							rnType = "Beta"
+						}
+						else if(gitTagName.toLowerCase().includes('rc')){
+							tmpFName = `Changelog-DWC-${majorVNumStr}.x-RC.md`;
+							rnType = "RC"
+						}else{
+							tmpFName = `Changelog-DWC-${majorVNumStr}.x.md`;
+							rnType = "Full"
+						}
+						
 					}else if(gitRepoName == this.gitSBCRepoNameDuet){
 						//Duet SBC Mode
 						if(gitTagName.toLowerCase().includes('beta')){
@@ -682,6 +813,12 @@ export default {
 							this.bSwitchDuetDisp();
 							return conv;
 						}
+						if(gitRepoName == this.gitDWCRepoNameDuet){
+							let conv = this.convertRNtoJSON(relText, rnType, gitUName, this.currDWCTag, gitRepoName);
+							//always show the duet rn when fetched
+							this.bGotDuetDWCRN = true;
+							return conv;
+						}
 						if(gitRepoName == this.gitSBCRepoNameDuet){
 							let conv = this.convertRNtoJSON(relText, rnType, gitUName, this.currDSFTag, gitRepoName);
 							this.bGotDuetSBCRN = true;
@@ -698,7 +835,11 @@ export default {
 			}
 		},
 
-		async getDuetSBCRI(tmpTag){
+		hlpLinkClick(tmpURL){
+			window.open(tmpURL, '_blank');
+		},
+
+		async getDuetSBCDWCRI(tmpTag, gitRepoName){
 			//first we have to re-configure the tag to match DSF tagging structure
 			let majorVNumStr = tmpTag.substr(0,1);
 			let minorVNumStr = tmpTag.substr(2,1);
@@ -734,26 +875,52 @@ export default {
 				suffix = "";
 			}
 			let dsfTag = `v${prefix}${suffix}`;
-			if(!this.bGotAllSBCReleases){
-				//only get the sbc release info if we have not already done so
-				const riJSONGet = await this.getByGitAPI('releases', this.gitOwnerNameDuet, this.gitSBCRepoNameDuet);
-				this.allSBCReleasesJSON = await riJSONGet;
-				this.bGotAllSBCReleases = true;
-			}			
-			//check if the tag is there
-			let currRISBC = this.allSBCReleasesJSON.filter(item => item.tag_name == dsfTag)
-			if(currRISBC.length == 0){
-				//this tag was not found try a different format because the formatting is variable
-				let dsfTag = `v${prefix2}${suffix}`;
-				currRISBC = this.allSBCReleasesJSON.filter(item => item.tag_name == dsfTag)
-			}
-			if(currRISBC.length > 0){
-				this.bGotDuetSBCRI = true;
-				//need this as apparently its not possible to be conistent across the release tags
-				this.currDSFTag = dsfTag;
-				return currRISBC;
+			if(gitRepoName == this.gitDWCRepoNameDuet){
+				//DWC
+				if(!this.bGotAllDWCReleases){
+					//only get the sbc release info if we have not already done so
+					const riJSONGet = await this.getByGitAPI('releases', this.gitOwnerNameDuet, this.gitDWCRepoNameDuet);
+					this.allDWCReleasesJSON = await riJSONGet;
+					this.bGotAllDWCReleases = true;
+				}			
+				//check if the tag is there
+				let currRIDWC = this.allDWCReleasesJSON.filter(item => item.tag_name == dsfTag)
+				if(currRIDWC.length == 0){
+					//this tag was not found try a different format because the formatting is variable
+					let dsfTag = `v${prefix2}${suffix}`;
+					currRIDWC = this.allDWCReleasesJSON.filter(item => item.tag_name == dsfTag)
+				}
+				if(currRIDWC.length > 0){
+					this.bGotDuetDWCRI = true;
+					//need this as apparently its not possible to be conistent across the release tags
+					this.currDWCTag = dsfTag;
+					return currRIDWC;
+				}else{
+					return [];
+				}
 			}else{
-				return [];
+				//SBC
+				if(!this.bGotAllSBCReleases){
+					//only get the sbc release info if we have not already done so
+					const riJSONGet = await this.getByGitAPI('releases', this.gitOwnerNameDuet, this.gitSBCRepoNameDuet);
+					this.allSBCReleasesJSON = await riJSONGet;
+					this.bGotAllSBCReleases = true;
+				}			
+				//check if the tag is there
+				let currRISBC = this.allSBCReleasesJSON.filter(item => item.tag_name == dsfTag)
+				if(currRISBC.length == 0){
+					//this tag was not found try a different format because the formatting is variable
+					let dsfTag = `v${prefix2}${suffix}`;
+					currRISBC = this.allSBCReleasesJSON.filter(item => item.tag_name == dsfTag)
+				}
+				if(currRISBC.length > 0){
+					this.bGotDuetSBCRI = true;
+					//need this as apparently its not possible to be conistent across the release tags
+					this.currDSFTag = dsfTag;
+					return currRISBC;
+				}else{
+					return [];
+				}
 			}
 
 		},
@@ -799,6 +966,7 @@ export default {
 		convertRNtoJSON(rnRawMD, strType, gitUName, gitTagName, gitRepoName){
 			//convert the release notes md file to structured json
 			//strType = Beta, RC, Full
+			//console.log(rnRawMD)
 			if(rnRawMD && strType && gitUName && gitTagName){
 				//first do some non conditional formatting as its easier to do here
 				rnRawMD = this.doFormatBold(rnRawMD);

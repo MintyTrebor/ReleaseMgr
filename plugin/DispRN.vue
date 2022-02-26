@@ -39,6 +39,7 @@
 									<v-expansion-panel-content>
 										<span v-for="(content, k) in sec.lines" :key="k">
 											<span :title="content.line.hover" :key="k"><div v-html="content.line.text" :class="`${content.line.colour} pa-1`"></div></span>
+											<!-- <span v-if="sec.section == 'Object model changes:'">{{content.line.text}}</span> -->
 										</span>
 									</v-expansion-panel-content>
 								</v-expansion-panel>
@@ -155,6 +156,7 @@ export default {
 			gitRepoNameDuet: "RepRapFirmware",
 			gitSBCRepoNameDuet: "DuetSoftwareFramework", 
 			gitRepoNameGloomy: "RepRapFirmware",
+			gitDWCRepoNameDuet: "DuetWebControl",
 			confGText: null
 			
 		}
@@ -176,11 +178,39 @@ export default {
 					this.panelJSON = this.filterDuetRNJSON();
 					this.confGText = await this.loadConfGFile().then(res => res);
 					this.highlightRN();
-				}else if(this.rnJSON.gUName == this.gitOwnerNameDuet && this.rnJSON.gRName == this.gitSBCRepoNameDuet){
+				}
+				if(this.rnJSON.gUName == this.gitOwnerNameDuet && this.rnJSON.gRName == this.gitSBCRepoNameDuet){
 					this.panelJSON = this.filterDuetSBCRNJSON();
+					this.reFormatCodeBlockLine();
+				}
+				if(this.rnJSON.gUName == this.gitOwnerNameDuet && this.rnJSON.gRName == this.gitDWCRepoNameDuet){
+					this.panelJSON = this.filterDuetSBCRNJSON();
+					this.reFormatCodeBlockLine();
 				}
 			}
 		}, 
+
+		reFormatCodeBlockLine(){
+			let rel =0;
+			for(rel in this.panelJSON.releases){
+				let currRel = this.panelJSON.releases[rel];
+				let sec = 0;
+				for(sec in currRel.sections){
+					//sections
+					let currSec = currRel.sections[sec]
+					let lin = 0;
+					for(lin in currSec.lines){
+						//lines
+						let currLine = currSec.lines[lin].line;
+						if(currLine.text.includes("<pre><code>")){
+							//fix word wrapping
+							currLine.text = currLine.text.replace('<pre><code>', '<ul><li><code>');
+							currLine.text = currLine.text.replace('</code></pre>', '</code></li></ul>')
+						}
+					}
+				}
+			}
+		},
 
 		getTagSubNumber(type, releaseTag){
 			let tmpType = type.toLowerCase();
@@ -314,6 +344,11 @@ export default {
 						for(lin in currSec.lines){
 							//lines
 							currLine = currSec.lines[lin].line;
+							if(currLine.text.includes("<pre><code>")){
+								//fix word wrapping
+								currLine.text = currLine.text.replace('<pre><code>', '<ul><li><code>');
+								currLine.text = currLine.text.replace('</code></pre>', '</code></li></ul>')
+							}
 							//HW matching
 							usn = 0;
 							//check if this is a hw line in the RN defined by '[xxx]'
@@ -327,9 +362,15 @@ export default {
 								rnhw = 0;
 								for(rnhw in hwStr){
 									//add checks for combination hw [x + y + z] (allways returns an array)
+									//never match a rnName that contains 'standalone' and SBC is true
+									if(hwStr[rnhw].toLowerCase().includes("in standalone mode") && this.bIsSBC){continue;}
 									//strip "[]"
 									let tmpHWStr = hwStr[rnhw].replace('[', '');
 									tmpHWStr = tmpHWStr.replace(']', '');
+									if(hwStr[rnhw].toLowerCase().includes("in standalone mode") && !this.bIsSBC){
+										//strip 'in standalone mode' so matching still works
+										tmpHWStr = hwStr[rnhw].toLowerCase().replace(' in standalone mode', '');
+									}
 									let rnHWArr = tmpHWStr.split(" + ")
 									rnhws = 0
 									//loop though each combination element
@@ -346,7 +387,7 @@ export default {
 												ubn = 0;								
 												for(ubn in hwSNMatchArr[0].rnNames){
 													matchStr = hwSNMatchArr[0].rnNames[ubn];
-													if(rnHWArr[rnhws].localeCompare(matchStr) == 0){
+													if(rnHWArr[rnhws].toLowerCase() === matchStr.toLowerCase()){
 														bHWMatch = true;
 														continue;
 													}

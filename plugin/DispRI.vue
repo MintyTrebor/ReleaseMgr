@@ -24,6 +24,7 @@
 </style>
 <template>
 	<v-card outlined elevation="3" class="rMgrv-cardRLM pa-0 ma-0">
+		<!-- {{riJSON}} -->
 		<v-card-title>
 			{{riJSON.name}}
 		</v-card-title>
@@ -45,7 +46,8 @@ export default {
 		riJSON: {
 			type: Object
 		},
-		selectedTag: String
+		selectedTag: String,
+		srcType: String
     },
 	mixins: [
 		tempENLang
@@ -101,14 +103,27 @@ export default {
 		}, 
 
 		processRIJSON(){
-			const tmpRelIMup = marked.parse(this.riJSON.body, {gfm : true, breaks: true});
-			let hrefArr = tmpRelIMup.match(/<\s*a[^>]*/g);
-			this.panelHTML = tmpRelIMup;
-			let cn=0;
-			for(cn in hrefArr){
-				let tmpTxt = hrefArr[cn].replace("href", "title");
-				this.panelHTML = this.panelHTML.replace(hrefArr[cn], tmpTxt + ` onclick="window.open(this.title, '_blank')"  style="color: green"`);
+			if(this.srcType == "gloomyRN"){
+				let markdown = this.riJSON.body.replace(/\n(?=\n)/g, "\n\n<br/>\n")
+				const tmpRelIMup = marked.parse(markdown, {gfm : true, breaks: true});
+				let hrefArr = tmpRelIMup.match(/<\s*a[^>]*/g);
+				this.panelHTML = tmpRelIMup;
+				let cn=0;
+				for(cn in hrefArr){
+					let tmpTxt = hrefArr[cn].replace("href", "title");
+					this.panelHTML = this.panelHTML.replace(hrefArr[cn], tmpTxt + ` onclick="window.open(this.title, '_blank')"  style="color: green"`);
+				}
+			}else{
+				const tmpRelIMup = marked.parse(this.riJSON.body, {gfm : true, breaks: true});
+				let hrefArr = tmpRelIMup.match(/<\s*a[^>]*/g);
+				this.panelHTML = tmpRelIMup;
+				let cn=0;
+				for(cn in hrefArr){
+					let tmpTxt = hrefArr[cn].replace("href", "title");
+					this.panelHTML = this.panelHTML.replace(hrefArr[cn], tmpTxt + ` onclick="window.open(this.title, '_blank')"  style="color: green"`);
+				}
 			}
+			
 		}
 		
 	},
