@@ -96,7 +96,8 @@
 				<v-col cols="12" lg="4" md="4">
 					<v-row class="pa-0 ma-0 ">
 						<v-container fluid class="pa-0 ma-0" v-if="!bIsSBC">
-							<DispRNFiles v-if="bGotDuetRI && (bShowRN || bShowRI || bShowDuetSBCRN || bShowDuetSBCRI || bShowDuetDWCRN || bShowDuetDWCRI)" :riJSON="duetRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRNFiles>
+							<DispRNFiles v-if="bGotDuetRI && (bShowRN || bShowRI || bShowDuetSBCRN || bShowDuetSBCRI)" :riJSON="duetRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRNFiles>
+							<DispRNFiles v-if="bGotDuetRI && (bShowDuetDWCRN || bShowDuetDWCRI)" :riJSON="dwcRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRNFiles>
 							<DispRNFiles v-if="bGotGloomyRI && (bShowGloomyRN || bShowGloomyRI)" :riJSON="gloomyRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag"></DispRNFiles>
 						</v-container>
 						<v-container fluid class="pa-0 ma-0" v-if="bIsSBC">
@@ -727,7 +728,7 @@ export default {
 					var relJSONFiltered = relJSON.sort((a, b) => (a.published_at < b.published_at) ? 1 : -1)
 					if(gitUName == this.gitOwnerNameDuet && gitRepoName == this.gitRepoNameDuet){
 						//remove some allways unwanted items for Duet Releases (nothing pre 3.2 and anything beginning with 'v')
-						relJSONFiltered = relJSON.filter(item => (item.tag_name >= "3.2" && !(item.tag_name.charAt(0)=='v')));
+						relJSONFiltered = relJSON.filter(item => (item.tag_name >= "3.3" && !(item.tag_name.charAt(0)=='v')));
 						//pruning based on release date and type of release eg if full release remove all ref's to betas & RC's before it was released etc
 						var allFullReleasesJSON = relJSONFiltered.filter(item => (item.prerelease == false));
 						relJSONFiltered = relJSONFiltered.filter(item => (item.published_at <= allFullReleasesJSON[0].published_at && item.prerelease == false) || (item.published_at >= allFullReleasesJSON[0].published_at));
