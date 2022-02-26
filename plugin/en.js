@@ -44,6 +44,7 @@ export default {
                             headerSBC: 'Currently Viewing Duet DSF Release Details',
                             headerDWC: 'Currently Viewing Duet DWC Release Details',
                             headerGloomy: 'Currently Viewing Team Gloomy Release Details',
+                            filesNotAvail: 'Not Available for Team Gloomy based boards',
                             title: 'ReleaseMgr',
                             currFWVer: 'Current Firmware Version :',
                             currFWSrc: 'Firmware Source :',

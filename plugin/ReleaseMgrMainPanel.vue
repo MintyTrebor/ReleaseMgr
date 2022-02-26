@@ -96,9 +96,9 @@
 				<v-col cols="12" lg="4" md="4">
 					<v-row class="pa-0 ma-0 ">
 						<v-container fluid class="pa-0 ma-0" v-if="!bIsSBC">
-							<DispRNFiles v-if="bGotDuetRI && (bShowRN || bShowRI || bShowDuetSBCRN || bShowDuetSBCRI)" :riJSON="duetRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRNFiles>
-							<DispRNFiles v-if="bGotDuetRI && (bShowDuetDWCRN || bShowDuetDWCRI)" :riJSON="dwcRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRNFiles>
-							<DispRNFiles v-if="bGotGloomyRI && (bShowGloomyRN || bShowGloomyRI)" :riJSON="gloomyRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag"></DispRNFiles>
+							<DispRNFiles v-if="bGotDuetRI && (bShowRN || bShowRI)" :riJSON="duetRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" :bShowOverlay="bShowOverlay"></DispRNFiles>
+							<DispRNFiles v-if="bGotDuetRI && (bShowDuetDWCRN || bShowDuetDWCRI)" :riJSON="dwcRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" :bShowOverlay="bShowOverlay"></DispRNFiles>
+							<DispRNFiles v-if="bGotGloomyRI && (bShowGloomyRN || bShowGloomyRI)" :riJSON="gloomyRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" :bShowOverlay="bShowOverlay"></DispRNFiles>
 						</v-container>
 						<v-container fluid class="pa-0 ma-0" v-if="bIsSBC">
 							<v-card outlined elevation="3" class="pa-0 ma-0">
@@ -312,6 +312,13 @@ export default {
 		},
 		bIsSBC(){
 			if(this.systemDSFVerStr !== null && this.systemDSFVerStr !== ''){
+				return true;
+			}else{
+				return false;
+			}
+		},
+		bShowOverlay(){
+			if(this.fwSrc == this.gitOwnerNameGloomy && (this.bShowRN || this.bShowRI)){
 				return true;
 			}else{
 				return false;

@@ -28,9 +28,12 @@
 			{{riJSON.name}} Files
 		</v-card-title>
 		<v-card-text class="rMgrv-cardRNFiles__text">
+			<v-overlay :absolute="true" :opacity="0.5" :value="bShowOverlay" align="center" justify="center">
+				<v-chip>{{tmpLang.filesNotAvail}}</v-chip>
+			</v-overlay>
 			<span v-for="(fileLink, i) in riJSON.assets" :key="i">
 				<span><a :title="fileLink.browser_download_url" @click="assetClick(fileLink.browser_download_url)"  style="color: green">{{fileLink.name}}</a></span><br>
-			</span>
+			</span>			
 		</v-card-text>
 	</v-card>
 </template>
@@ -46,7 +49,8 @@ export default {
 		riJSON: {
 			type: Object
 		},
-		selectedTag: String
+		selectedTag: String,
+		bShowOverlay: Boolean
     },
 	mixins: [
 		tempENLang
@@ -69,8 +73,7 @@ export default {
 		},
 		rnHWLookup(){
 			return this.tmpLangObj().boards;
-		},
-			
+		},			
 	},
 
 	data () {
