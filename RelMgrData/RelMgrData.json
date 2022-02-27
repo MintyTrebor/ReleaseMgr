@@ -16,5 +16,6 @@
         {"shortName": "SBC", "rnNames": ["SBC"]}
     ],
     "duetRNSection": "Upgrade notes:",
-    "duetRNFilters": ["table of contents generated with markdown-toc", "- [reprapfirmware ", "=============="]
+    "duetRNFilters": ["table of contents generated with markdown-toc", "- [reprapfirmware ", "=============="],
+    "testData": [{shortName: "MB6HC"}, {shortName: "EXP3HC"}, {shortName: "TOOL1LC"}, {shortName: "TOOL1LC"}, {shortName: "EXP1XD"}, {shortName: "EXP1HCL"}, {shortName: "DirectDisplay"}]
 }
