@@ -26,7 +26,12 @@
 	<v-card flat outlined class="pa-0 ma-0 rMgrv-mainCardRLM">
 		<v-card elevation="3" class="pa-0 ma-0 rMgrv-cardRLM">
 			<v-card-title>
-				Release Notes
+				<v-row class="pa-0 ma-0 ">
+					<v-chip style="white-space: normal !important; height: auto; text-align: center !important; min-height: 35px !important;" color="info">Release Notes</v-chip><v-spacer></v-spacer>
+					<v-chip v-if="rnJSON.gRName == gitRepoNameDuet" style="white-space: normal !important; height: auto; text-align: center !important; min-height: 35px !important;" color="red lighten-3 black--text">G Code</v-chip>
+					<v-chip v-if="rnJSON.gRName == gitRepoNameDuet" style="white-space: normal !important; height: auto; text-align: center !important; min-height: 35px !important;" color="blue lighten-4 black--text">HW</v-chip>
+					<v-chip v-if="rnJSON.gRName == gitRepoNameDuet" style="white-space: normal !important; height: auto; text-align: center !important; min-height: 35px !important;" color="purple lighten-4 black--text">Both</v-chip>
+				</v-row>
 			</v-card-title>
 			<v-card-text outlined class="rMgrv-cardRLM__text">
 				<v-expansion-panels v-for="(rel, i) in panelJSON.releases" :key="i" accordion multiple focusable v-model="bExpRel[i]">

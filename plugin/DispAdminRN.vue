@@ -26,7 +26,11 @@
 	<v-card flat outlined class="pa-0 ma-0 rMgrv-mainCardRLM">
 		<v-card elevation="3" class="pa-0 ma-0 rMgrv-cardRLM">
 			<v-card-title>
-				RN Assessment
+				<v-row class="pa-0 ma-0 ">
+					<v-chip style="white-space: normal !important; height: auto; text-align: center !important; min-height: 35px !important;" color="info">RN Assessment</v-chip><v-spacer></v-spacer>
+					<v-chip style="white-space: normal !important; height: auto; text-align: center !important; min-height: 35px !important;" color="red black--text">Will Never Match</v-chip>
+					<v-chip style="white-space: normal !important; height: auto; text-align: center !important; min-height: 35px !important;" color="green black--text">Will Match</v-chip>
+				</v-row>
 			</v-card-title>
 			<v-card-text outlined class="rMgrv-cardRLM__text">
 				<v-expansion-panels v-for="(rel, i) in panelJSON2.releases" :key="i" accordion multiple focusable v-model="bExpRel[i]">
