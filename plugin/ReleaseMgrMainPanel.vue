@@ -1,3 +1,11 @@
+<style>
+	.rlMgrVchip {
+		white-space: normal !important;
+		height: auto !important;
+		text-align: center !important; 
+		min-height: 35px !important;
+	}
+</style>
 <template>
 	<v-container fluid class=" pa-0 ma-0" >
 		<v-card flat width="100%" class=" pa-0 ma-0" :key="1+bPageReload">
@@ -5,12 +13,14 @@
 				<v-row dense width="100%" :class="`${labelClass} ma-0 pa-0 pb-1`">
 					<v-col cols="12" justify="start">
 						<v-row dense width="100%" class=" pa-0 ma-0" justify="start">
-							<v-chip color="info">{{tmpLang.plugin.ReleaseMgr.title}}</v-chip><v-chip v-if="bHiddenTestData" color="red">Test Data Enabled</v-chip><v-chip v-if="bHiddenDuetMenu" color="red">Duet Admin Enabled</v-chip>						
+							<v-chip color="info">{{tmpLang.plugin.ReleaseMgr.title}}</v-chip>
+							<v-chip v-if="bHiddenTestData" color="red">Test Data Enabled</v-chip>
+							<v-chip v-if="bHiddenDuetMenu" color="red">Duet Admin Enabled</v-chip>						
 							<v-spacer></v-spacer>
-							<v-chip color="info" v-if="bShowRN || bShowRI">{{tmpLang.plugin.ReleaseMgr.headerDuet}}</v-chip>
-							<v-chip color="info" v-if="bShowGloomyRN || bShowGloomyRI">{{tmpLang.plugin.ReleaseMgr.headerGloomy}}</v-chip>
-							<v-chip color="info" v-if="bShowDuetSBCRN || bShowDuetSBCRI">{{tmpLang.plugin.ReleaseMgr.headerSBC}}</v-chip>
-							<v-chip color="info" v-if="bShowDuetDWCRN || bShowDuetDWCRI">{{tmpLang.plugin.ReleaseMgr.headerDWC}}</v-chip>
+							<v-chip class="rlMgrVchip" color="info" v-if="bShowRN || bShowRI">{{tmpLang.plugin.ReleaseMgr.headerDuet}}</v-chip>
+							<v-chip class="rlMgrVchip" color="info" v-if="bShowGloomyRN || bShowGloomyRI">{{tmpLang.plugin.ReleaseMgr.headerGloomy}}</v-chip>
+							<v-chip class="rlMgrVchip" color="info" v-if="bShowDuetSBCRN || bShowDuetSBCRI">{{tmpLang.plugin.ReleaseMgr.headerSBC}}</v-chip>
+							<v-chip class="rlMgrVchip" color="info" v-if="bShowDuetDWCRN || bShowDuetDWCRI">{{tmpLang.plugin.ReleaseMgr.headerDWC}}</v-chip>
 							<v-spacer></v-spacer>
 						</v-row>
 					</v-col>
@@ -123,11 +133,11 @@
 						</v-container>	
 					</v-row>
 					<v-row class="pa-2 ma-2 " justify="center" align="center" v-if="!bIsSBC">
-						<v-chip large style="white-space: normal !important; height: auto; text-align: center !important; min-height: 35px !important;" color="info">{{ tmpLang.plugin.ReleaseMgr.fileDLNotice }}</v-chip>
+						<v-chip large class="rlMgrVchip" color="info">{{ tmpLang.plugin.ReleaseMgr.fileDLNotice }}</v-chip>
 					</v-row>
 					<v-row class="pa-1 ma-1 " v-if="bGotDuetRI" align="center">
 						<v-col cols="4">
-							<v-chip large style="white-space: normal !important; height: auto; text-align: center !important; min-height: 35px !important;" color="info" class="mr-2">{{ tmpLang.plugin.ReleaseMgr.switchDuetRN }}</v-chip>
+							<v-chip large class="rlMgrVchip mr-2" color="info">{{ tmpLang.plugin.ReleaseMgr.switchDuetRN }}</v-chip>
 						</v-col>
 						<v-col cols="6" offset="2" offset-sm="0" offset-md="1" offset-xs="0">
 							<v-spacer></v-spacer>
@@ -154,7 +164,7 @@
 					</v-row>
 					<v-row class="pa-1 ma-1 " v-if="bGotDuetDWCRI" align="center">
 						<v-col cols="4">
-							<v-chip large style="white-space: normal !important; height: auto; text-align: center !important; min-height: 35px !important;" color="info" class="mr-2">{{ tmpLang.plugin.ReleaseMgr.switchDuetDWCRN }}</v-chip>
+							<v-chip large class="rlMgrVchip mr-2" color="info">{{ tmpLang.plugin.ReleaseMgr.switchDuetDWCRN }}</v-chip>
 						</v-col>
 						<v-col cols="6" offset="2" offset-sm="0" offset-md="1" offset-xs="0">
 							<v-spacer></v-spacer>
@@ -181,7 +191,7 @@
 					</v-row>
 					<v-row class="pa-1 ma-1 " v-if="bGotGloomyRI" align="center">
 						<v-col cols="4">
-							<v-chip large style="white-space: normal !important; height: auto; text-align: center !important; min-height: 35px !important;" color="info" class="mr-2">{{ tmpLang.plugin.ReleaseMgr.switchGloomyRN }}</v-chip>
+							<v-chip large class="rlMgrVchip mr-2" color="info">{{ tmpLang.plugin.ReleaseMgr.switchGloomyRN }}</v-chip>
 						</v-col>
 						<v-col cols="6" offset="2" offset-sm="0" offset-md="1" offset-xs="0">
 							<v-spacer></v-spacer>
@@ -208,7 +218,7 @@
 					</v-row>
 					<v-row class="pa-1 ma-1 " v-if="bGotDuetSBCRI" align="center">
 						<v-col cols="4">
-							<v-chip large style="white-space: normal !important; height: auto; text-align: center !important; min-height: 35px !important;" color="info" class="mr-2">{{ tmpLang.plugin.ReleaseMgr.switchDuetSBCRN }}</v-chip>
+							<v-chip large class="rlMgrVchip mr-2" color="info">{{ tmpLang.plugin.ReleaseMgr.switchDuetSBCRN }}</v-chip>
 						</v-col>
 						<v-col cols="6" offset="2" offset-sm="0" offset-md="1" offset-xs="0">
 							<v-spacer></v-spacer>
@@ -235,7 +245,7 @@
 					</v-row>
 					<v-row class="pa-1 ma-1 " v-if="bHiddenDuetMenu && bGotDuetRI" align="center">
 						<v-col cols="4">
-							<v-chip large style="white-space: normal !important; height: auto; text-align: center !important; min-height: 35px !important;" color="red" class="mr-2">RN Assessment</v-chip>
+							<v-chip large class="rlMgrVchip mr-2" color="red">RN Assessment</v-chip>
 						</v-col>
 						<v-col cols="6" offset="2" offset-sm="0" offset-md="1" offset-xs="0">
 							<v-spacer></v-spacer>
@@ -256,13 +266,13 @@
 				<v-card class="pa-2 ma-2" align="center" width="75%" v-if="(!bShowRN && !bShowRI && !bShowGloomyRN && !bShowGloomyRI && !bShowDuetSBCRN && !bShowDuetSBCRI && !bShowDuetDWCRN && !bShowDuetDWCRI && !bShowRRFAdmin)">
 					<div v-html="tmpLang.plugin.ReleaseMgr.notice" class="text-h6" ></div>
 					<v-row class="pa-2 ma-2 " justify="center" align="center">
-						<v-chip class="red lighten-3 black--text">{{tmpLang.plugin.ReleaseMgr.redTxt}}</v-chip>
+						<v-chip class="rlMgrVchip red lighten-3 black--text">{{tmpLang.plugin.ReleaseMgr.redTxt}}</v-chip>
 					</v-row>
 					<v-row class="pa-2 ma-2 " justify="center" align="center">
-						<v-chip class="blue lighten-4 black--text">{{tmpLang.plugin.ReleaseMgr.blueTxt}}</v-chip>
+						<v-chip class="rlMgrVchip blue lighten-4 black--text">{{tmpLang.plugin.ReleaseMgr.blueTxt}}</v-chip>
 					</v-row>
 					<v-row class="pa-2 ma-2 " justify="center" align="center">
-						<v-chip class="purple lighten-4 black--text">{{tmpLang.plugin.ReleaseMgr.purpleTxt}}</v-chip>
+						<v-chip class="rlMgrVchip purple lighten-4 black--text">{{tmpLang.plugin.ReleaseMgr.purpleTxt}}</v-chip>
 					</v-row>
 					<div v-html="tmpLang.plugin.ReleaseMgr.noticeFooter" class="text-h6" ></div>
 				</v-card>

@@ -21,15 +21,21 @@
 	.probe-span:not(:last-child) {
 		margin-right: 8px;
 	}
+	.rlMgrVchip {
+		white-space: normal !important;
+		height: auto !important;
+		text-align: center !important; 
+		min-height: 35px !important;
+	}
 </style>
 <template>
 	<v-card flat outlined class="pa-0 ma-0 rMgrv-mainCardRLM">
 		<v-card elevation="3" class="pa-0 ma-0 rMgrv-cardRLM">
 			<v-card-title>
 				<v-row class="pa-0 ma-0 ">
-					<v-chip style="white-space: normal !important; height: auto; text-align: center !important; min-height: 35px !important;" color="info">RN Assessment</v-chip><v-spacer></v-spacer>
-					<v-chip style="white-space: normal !important; height: auto; text-align: center !important; min-height: 35px !important;" color="red black--text">Will Never Match</v-chip>
-					<v-chip style="white-space: normal !important; height: auto; text-align: center !important; min-height: 35px !important;" color="green black--text">Will Match</v-chip>
+					<v-chip class="rlMgrVchip" color="info">RN Assessment</v-chip><v-spacer></v-spacer>
+					<v-chip class="rlMgrVchip" color="red black--text">Will Never Match</v-chip>
+					<v-chip class="rlMgrVchip" color="green black--text">Will Match</v-chip>
 				</v-row>
 			</v-card-title>
 			<v-card-text outlined class="rMgrv-cardRLM__text">
@@ -94,25 +100,6 @@ export default {
 		rnHWLookup(){
 			return this.rMgrData.boards;
 		},
-		systemBoardSNames(){
-			if(this.bHiddenTestData){
-				return this.rMgrData.testData;
-			}else{
-				return this.model.boards;
-			}		
-		},
-		bHiddenTestData(){
-			try{
-				let tmpOMKey = this.model.global.releaseMgrTestData;
-				if(tmpOMKey){
-					return true;
-				}else{
-					return false;
-				}
-			}catch{
-				return false;
-			}
-		},
 		bIsSBC(){
 			if(this.systemDSFVerStr !== null && this.systemDSFVerStr !== ''){
 				return true;
@@ -126,37 +113,7 @@ export default {
 			}else{
 				return "red lighten-3 black--text"
 			}
-		},
-		confGCodeMatchCol(){
-			if(!this.darkTheme){
-				return "pink accent-3";
-			}else{
-				return "pink accent-3";
-			}
-		},
-		shortNLineMatchCol(){
-			if(!this.darkTheme){
-				return "blue lighten-4";
-			}else{
-				return "blue lighten-4 black--text";
-			}
-		},
-		shortNMatchHWCol(){
-			if(!this.darkTheme){
-				return "blue darken-4";
-			}else{
-				return "blue darken-4";
-			}
-		},
-		dualHWGCMatchLineColor(){
-			if(!this.darkTheme){
-				return "purple lighten-4";
-			}else{
-				return "purple darken-4";
-			}
 		}
-
-
 		
 	},
 
@@ -218,19 +175,6 @@ export default {
 			}
 		},
 
-		getTagSubNumber(type, releaseTag){
-			let tmpType = type.toLowerCase();
-			let tmpRTag = releaseTag.toLowerCase();
-			let tmpBetaNumber = 0;
-			if(tmpRTag.includes('-')){
-				//checking for Addendum
-				tmpBetaNumber = parseInt(tmpRTag.slice(tmpRTag.toLowerCase().indexOf(tmpType)+tmpType.length, tmpRTag.toLowerCase().indexOf('-')));
-			}else{
-				tmpBetaNumber = parseInt(tmpRTag.slice(tmpRTag.toLowerCase().indexOf(tmpType)+tmpType.length));
-			}
-			return tmpBetaNumber;
-		},
-
 		filterDuetRNJSON(){
 			if(this.rnAdminJSON.class == "rn" && this.rnAdminJSON.releases.length > 0){
 				//Filtering for Duet ReleaseNotes
@@ -238,16 +182,13 @@ export default {
 				if(this.rnAdminJSON.relType == "Beta" || this.rnAdminJSON.relType == "RC"){
 					//filter the notes to the relevant sections (cumlative so if beta3 then include beta2 & beta1) based on selected release tag
 					let trmTag = this.rnAdminJSON.selTag.slice(0, this.rnAdminJSON.selTag.toLowerCase().indexOf(this.rnAdminJSON.relType.toLowerCase())+this.rnAdminJSON.relType.length);
-					let tmpBetaNumber = this.getTagSubNumber(this.rnAdminJSON.relType, this.rnAdminJSON.selTag);
+					trmTag = trmTag.toLowerCase().replace('rc', '')
+					trmTag = trmTag.toLowerCase().replace('beta', '')
 					let tP1 = {releases: []};
 					let rnc = 0;
-					let tmpChkVer = 0;
 					for(rnc in this.rnAdminJSON.releases){
-						if(this.rnAdminJSON.releases[rnc].release.toLowerCase().includes(`reprapfirmware ${trmTag}`)){
-							tmpChkVer = this.getTagSubNumber(this.rnAdminJSON.relType, this.rnAdminJSON.releases[rnc].release);
-							if(tmpChkVer <= tmpBetaNumber){		
+						if(this.rnAdminJSON.releases[rnc].release.toLowerCase().includes(`reprapfirmware ${trmTag}`)){				
 								tP1.releases.push(this.rnAdminJSON.releases[rnc]);
-							}
 						}							 
 					}
 					tmpJSON.releases = tP1.releases;
@@ -267,18 +208,13 @@ export default {
 				let rel = 0;
 				let sec = 0;
 				let lin = 0;
-				//let mgc = 0;
-				//this.currBSN = JSON.stringify(this.systemBoardSNames);
 				let statSNArr = this.rnHWLookup;
 				let currRel = null;
 				let currSec = null;
 				let currLine = null;
-				//let tmpRE = null;
-				//let ubn = 0;
 				let usn = 0;
 				let rnhw = 0;
 				let rnhws = 0;
-				//let matchStr = "";
 				let hwStr = "";
 				let bHWMatch = false;
 				let hwSNMatchArr = null;
@@ -368,16 +304,7 @@ export default {
 						}
 					}
 				}	
-		},
-
-		makeArrayUniq(a) {
-			//Remove Duplicates from the array
-			return a.sort().filter(function(item, pos, ary) {
-				return !pos || item != ary[pos - 1];
-			});
-		},
-
-		
+		}		
 	},
 	watch: {
 		selectedTag() {
