@@ -6,7 +6,7 @@
         {"shortName": "2SBC", "rnNames": ["Duet 2 SBC", "Duet 2 and DueX"]},
         {"shortName": "Mini5plus", "rnNames": ["Duet 3 Mini", "Duet 3", "Duet", "Duet 3 Mini Ethernet", "Duet 3 Mini WiFi"]},
         {"shortName": "MB6HC", "rnNames": [ "Duet 3 MB6HC", "Duet 3", "Duet"]},
-        {"shortName": "MB6XD", "rnNames": ["Duet 3 MB6XD", "Duet 3", "Duet 3 MB6HC, Duet 3 Mini Ethernet", "Duet"]},
+        {"shortName": "MB6XD", "rnNames": ["Duet 3 MB6XD", "Duet 3", "Duet"]},
         {"shortName": "EXP1HCL", "rnNames": ["EXP1HCL", "Duet 3 expansion/tool boards", "Duet 3 with expansion/tool boards", "expansion/tool boards"]},
         {"shortName": "EXP1XD", "rnNames": ["EXP1XD", "Duet 3 expansion/tool boards", "Duet 3 with expansion/tool boards", "expansion/tool boards"]},
         {"shortName": "EXP3HC", "rnNames": ["EXP3HC", "Duet 3 expansion/tool boards", "Duet 3 with expansion/tool boards", "expansion/tool boards"]},
