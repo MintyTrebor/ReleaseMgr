@@ -134,16 +134,16 @@ export default {
 		},
 		confGLineMatchCol(){
 			if(!this.darkTheme){
-				return "red lighten-3";
+				return "red lighten-3 black--text";
 			}else{
 				return "red lighten-3 black--text"
 			}
 		},
 		confGCodeMatchCol(){
 			if(!this.darkTheme){
-				return "pink accent-3";
+				return "pink accent-3 black--text";
 			}else{
-				return "pink accent-3";
+				return "pink accent-3 black--text";
 			}
 		},
 		shortNLineMatchCol(){
@@ -184,7 +184,8 @@ export default {
 			gitSBCRepoNameDuet: "DuetSoftwareFramework", 
 			gitRepoNameGloomy: "RepRapFirmware",
 			gitDWCRepoNameDuet: "DuetWebControl",
-			confGText: null
+			confGText: null,
+			duetDocsURL: 'https://docs.duet3d.com/en/User_manual/Reference/Gcodes/'
 			
 		}
 	},
@@ -333,12 +334,20 @@ export default {
 			}
 		},
 
+		opnDocs(gcode){
+			window.open(this.duetDocsURL+gcode, '_blank');
+		},
+
 		highlightRN(){
 			//parses the release notes and applies colors/highlights according to the mactching criteria 
 			if(this.confGText){
-				//get the unique gcode in config.g
-				let arrAllConfGcodes = this.confGText.match( /\b[a-zA-Z]{1}\d{3}\b/g );
+				//remove all comments
+				this.confGText = this.confGText.replace(/;.*/g, '')
+				//get the unique gcode in config.g excludes subgcodes
+				let arrAllConfGcodes = this.confGText.match( /\b[(g|G|m|M]{1}\d{1,3}\b(?!\.)/g );
 				arrAllConfGcodes = this.makeArrayUniq(arrAllConfGcodes);
+				let arrAllConfSubGcodes = this.confGText.match( /\b[(g|G|m|M]{1}\d{1,3}\.\d{1,3}\b/g );
+				if(arrAllConfSubGcodes){arrAllConfSubGcodes = this.makeArrayUniq(arrAllConfSubGcodes);}
 				let rel = 0;
 				let sec = 0;
 				let lin = 0;
@@ -348,12 +357,9 @@ export default {
 				let currRel = null;
 				let currSec = null;
 				let currLine = null;
-				let tmpRE = null;
-				//let ubn = 0;
 				let usn = 0;
 				let rnhw = 0;
 				let rnhws = 0;
-				//let matchStr = "";
 				let hwStr = "";
 				let bHWMatch = false;
 				let bHWLine = false;
@@ -457,17 +463,50 @@ export default {
 							}
 							//check line for matching gcodes -  only if not a HW line
 							if(!currLine.hwMatch && !bHWLine){
-								mgc = 0;
-								for(mgc in arrAllConfGcodes){
-									if(currLine.text.includes(arrAllConfGcodes[mgc])){
-										//match gcodes
-										tmpRE = new RegExp(arrAllConfGcodes[mgc],"g")
-										currLine.text = currLine.text.replace(tmpRE, `<span title="${this.tmpLang.gcodeMatchConfG}" class="${this.confGCodeMatchCol}--text">${arrAllConfGcodes[mgc]}</span>`);
-										currLine.colour = `${this.confGLineMatchCol}`;
-										currLine.confGMatch = true;
-										currLine.fileHover = this.tmpLang.gcodeMatchConfG;
-										currLine.hover = "";
-										currSec.confGMatch = true;
+								//match normal gcodes
+								let ip = 0;
+								let clTxtArr = currLine.text.match( /\b[(g|G|m|M]{1}\d{1,3}\b(?!\.)/g )
+								let clTxtArr2 = currLine.text.match( /\b[(g|G|m|M]{1}\d{1,3}\.\d{1,3}\b/g )
+								if(clTxtArr){
+									clTxtArr = this.makeArrayUniq(clTxtArr);
+									for(ip in clTxtArr){
+										mgc = 0;
+										let repTxt = `<a onclick="window.open('${this.duetDocsURL}${clTxtArr[ip]}', '_blank')"><span title="${this.tmpLang.gcodeLink2Doc}" class="green--text">${clTxtArr[ip]}</span></a>`
+										currLine.text = currLine.text.replaceAll(clTxtArr[ip], repTxt);
+										for(mgc in arrAllConfGcodes){										
+											if(clTxtArr[ip] == arrAllConfGcodes[mgc]){
+												currLine.text = currLine.text.replaceAll(repTxt, `<a onclick="window.open('${this.duetDocsURL}${arrAllConfGcodes[mgc]}', '_blank')"><span title="${this.tmpLang.gcodeMatchConfG}" class="${this.confGCodeMatchCol}">${arrAllConfGcodes[mgc]}</span></a>`);
+												currLine.colour = `${this.confGLineMatchCol}`;
+												currLine.confGMatch = true;
+												currLine.fileHover = this.tmpLang.gcodeMatchConfG;
+												currLine.hover = "";
+												currSec.confGMatch = true;
+											}
+										}
+									}
+								}
+								
+								//match sub gcodes
+								ip = 0;
+								if(clTxtArr2){
+									clTxtArr2 = this.makeArrayUniq(clTxtArr2);
+									for(ip in clTxtArr2){
+										mgc = 0;
+										let tmpURLCode = clTxtArr2[ip].replace(/\b\.\d{1,3}\b/g, '')
+										let repTxt = `<a onclick="window.open('${this.duetDocsURL}${tmpURLCode}', '_blank')"><span title="${this.tmpLang.gcodeLink2Doc}" class="green--text">${clTxtArr2[ip]}</span></a>`
+										currLine.text = currLine.text.replaceAll(clTxtArr2[ip], repTxt);
+										if(arrAllConfSubGcodes){
+											for(mgc in arrAllConfSubGcodes){										
+												if(clTxtArr2[ip] == arrAllConfSubGcodes[mgc]){
+													currLine.text = currLine.text.replaceAll(repTxt, `<a onclick="window.open('${this.duetDocsURL}${tmpURLCode}', '_blank')"><span title="${this.tmpLang.gcodeMatchConfG}" class="${this.confGCodeMatchCol}">${clTxtArr2[ip]}</span></a>`);
+													currLine.colour = `${this.confGLineMatchCol}`;
+													currLine.confGMatch = true;
+													currLine.fileHover = this.tmpLang.gcodeMatchConfG;
+													currLine.hover = "";
+													currSec.confGMatch = true;
+												}
+											}
+										}
 									}
 								}
 							}

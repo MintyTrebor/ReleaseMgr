@@ -91,9 +91,9 @@
 				</v-row>
 			</div>
 			<!-- <v-row>
-				sbcRNJSON:{{this.allGloomyReleasesJSON}}
+				JSON:{{this.gloomyESPRIJSON}}
 			</v-row> -->
-			<v-row class="pa-0 ma-0 " v-if="(bShowRN || bShowRI || bShowGloomyRN || bShowGloomyRI || bShowDuetSBCRN || bShowDuetSBCRI || bShowDuetDWCRN || bShowDuetDWCRI || bShowRRFAdmin)">
+			<v-row class="pa-0 ma-0 " v-if="(bShowRN || bShowRI || bShowGloomyRN || bShowGloomyRI || bShowDuetSBCRN || bShowDuetSBCRI || bShowDuetDWCRN || bShowDuetDWCRI || bShowRRFAdmin || bShowGloomyESPRI)">
 				<v-col cols="12" lg="8" md="8" class="mb-6">
 					<v-container v-if="!bShowRRFAdmin" fluid class="pa-0 ma-0">
 						<DispRN v-if="bGotDuetRN && bShowRN" :rnJSON="duetRNJSON" :rMgrData="relMgrData" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRN>
@@ -102,6 +102,7 @@
 						<DispRI v-if="bGotDuetDWCRI && bShowDuetDWCRI" :riJSON="dwcRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" srcType="DWCRI"></DispRI>
 						<DispRI v-if="bGotGloomyRN && bShowGloomyRN" :riJSON="gloomyRNJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" srcType="gloomyRN"></DispRI>
 						<DispRI v-if="bGotGloomyRI && bShowGloomyRI" :riJSON="gloomyRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" srcType="gloomyRI"></DispRI>
+						<DispRI v-if="bGotGloomyESPRI && bShowGloomyESPRI" :riJSON="gloomyESPRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" srcType="gloomyRI"></DispRI>
 						<DispRN v-if="bGotDuetSBCRN && bShowDuetSBCRN" :rMgrData="relMgrData" :rnJSON="sbcRNJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRN>
 						<DispRI v-if="bGotDuetSBCRI && bShowDuetSBCRI" :riJSON="sbcRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" srcType="DSFRI"></DispRI>
 					</v-container>
@@ -115,6 +116,7 @@
 							<DispRNFiles v-if="bGotDuetRI && (bShowRN || bShowRI || bShowRRFAdmin)" :riJSON="duetRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" :bShowOverlay="bShowOverlay"></DispRNFiles>
 							<DispRNFiles v-if="bGotDuetRI && (bShowDuetDWCRN || bShowDuetDWCRI)" :riJSON="dwcRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" :bShowOverlay="bShowOverlay"></DispRNFiles>
 							<DispRNFiles v-if="bGotGloomyRI && (bShowGloomyRN || bShowGloomyRI)" :riJSON="gloomyRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" :bShowOverlay="bShowOverlay"></DispRNFiles>
+							<DispRNFiles v-if="bGotGloomyESPRI && (bShowGloomyESPRI)" :riJSON="gloomyESPRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" :bShowOverlay="bShowOverlay"></DispRNFiles>
 						</v-container>
 						<v-container fluid class="pa-0 ma-0" v-if="bIsSBC">
 							<v-card outlined elevation="3" class="pa-0 ma-0">
@@ -144,7 +146,7 @@
 							<v-btn-toggle v-model="duetBtnGrp" shaped v-on:change="bSwitchDuetDisp()">
 								<v-tooltip top>
 									<template v-slot:activator="{ on, attrs }">
-										<v-btn block v-bind="attrs" v-on="on" :value="0" color="info">
+										<v-btn v-bind="attrs" v-on="on" :value="0" color="info">
 											<v-icon>mdi-notebook</v-icon>
 										</v-btn>
 									</template>
@@ -152,7 +154,7 @@
 								</v-tooltip>
 								<v-tooltip top>
 									<template v-slot:activator="{ on, attrs }">
-										<v-btn block v-bind="attrs" v-on="on" :value="1" color="info">
+										<v-btn v-bind="attrs" v-on="on" :value="1" color="info">
 											<v-icon>mdi-information</v-icon>
 										</v-btn>
 									</template>
@@ -171,7 +173,7 @@
 							<v-btn-toggle v-model="DWCBtnGrp" shaped v-on:change="bSwitchDWCDisp()">
 								<v-tooltip top>
 									<template v-slot:activator="{ on, attrs }">
-										<v-btn block v-bind="attrs" v-on="on" :value="0" color="info">
+										<v-btn v-bind="attrs" v-on="on" :value="0" color="info">
 											<v-icon>mdi-notebook</v-icon>
 										</v-btn>
 									</template>
@@ -179,7 +181,7 @@
 								</v-tooltip>
 								<v-tooltip top>
 									<template v-slot:activator="{ on, attrs }">
-										<v-btn block v-bind="attrs" v-on="on" :value="1" color="info">
+										<v-btn v-bind="attrs" v-on="on" :value="1" color="info">
 											<v-icon>mdi-information</v-icon>
 										</v-btn>
 									</template>
@@ -198,7 +200,7 @@
 							<v-btn-toggle v-model="gloomyBtnGrp" shaped v-on:change="bSwitchGloomyDisp()">
 								<v-tooltip top>
 									<template v-slot:activator="{ on, attrs }">
-										<v-btn block v-bind="attrs" v-on="on" :value="0" color="info">
+										<v-btn v-bind="attrs" v-on="on" :value="0" color="info">
 											<v-icon>mdi-notebook</v-icon>
 										</v-btn>
 									</template>
@@ -206,11 +208,19 @@
 								</v-tooltip>
 								<v-tooltip top>
 									<template v-slot:activator="{ on, attrs }">
-										<v-btn block v-bind="attrs" v-on="on" :value="1" color="info">
+										<v-btn v-bind="attrs" v-on="on" :value="1" color="info">
 											<v-icon>mdi-information</v-icon>
 										</v-btn>
 									</template>
 									<span>{{ tmpLang.plugin.ReleaseMgr.switchGloomyRIHover }}</span>
+								</v-tooltip>
+								<v-tooltip top>
+									<template v-slot:activator="{ on, attrs }">
+										<v-btn v-bind="attrs" v-on="on" :value="2" color="info">
+											<v-icon>mdi-wifi</v-icon>
+										</v-btn>
+									</template>
+									<span>{{ tmpLang.plugin.ReleaseMgr.switchGloomyESPRIHover }}</span>
 								</v-tooltip>
 							</v-btn-toggle>
 							<v-spacer></v-spacer>
@@ -225,7 +235,7 @@
 							<v-btn-toggle v-model="SBCBtnGrp" shaped v-on:change="bSwitchDuetSBCDisp()">
 								<v-tooltip top>
 									<template v-slot:activator="{ on, attrs }">
-										<v-btn block v-bind="attrs" v-on="on" :value="0" color="info">
+										<v-btn v-bind="attrs" v-on="on" :value="0" color="info">
 											<v-icon>mdi-notebook</v-icon>
 										</v-btn>
 									</template>
@@ -233,7 +243,7 @@
 								</v-tooltip>
 								<v-tooltip top>
 									<template v-slot:activator="{ on, attrs }">
-										<v-btn block v-bind="attrs" v-on="on" :value="1" color="info">
+										<v-btn v-bind="attrs" v-on="on" :value="1" color="info">
 											<v-icon>mdi-information</v-icon>
 										</v-btn>
 									</template>
@@ -263,7 +273,7 @@
 				</v-col>
 			</v-row>
 			<v-row class="pa-0 ma-0 " justify="center" align="center">
-				<v-card class="pa-2 ma-2" align="center" width="75%" v-if="(!bShowRN && !bShowRI && !bShowGloomyRN && !bShowGloomyRI && !bShowDuetSBCRN && !bShowDuetSBCRI && !bShowDuetDWCRN && !bShowDuetDWCRI && !bShowRRFAdmin)">
+				<v-card class="pa-2 ma-2" align="center" width="75%" v-if="(!bShowRN && !bShowRI && !bShowGloomyRN && !bShowGloomyRI && !bShowDuetSBCRN && !bShowDuetSBCRI && !bShowDuetDWCRN && !bShowDuetDWCRI && !bShowRRFAdmin && !bShowGloomyESPRI)">
 					<div v-html="tmpLang.plugin.ReleaseMgr.notice" class="text-h6" ></div>
 					<v-row class="pa-2 ma-2 " justify="center" align="center">
 						<v-chip class="rlMgrVchip red lighten-3 black--text">{{tmpLang.plugin.ReleaseMgr.redTxt}}</v-chip>
@@ -275,8 +285,9 @@
 						<v-chip class="rlMgrVchip purple lighten-4 black--text">{{tmpLang.plugin.ReleaseMgr.purpleTxt}}</v-chip>
 					</v-row>
 					<div v-html="tmpLang.plugin.ReleaseMgr.noticeFooter" class="text-h6" ></div>
+					<v-btn small @click="gotoForum()" class="info">{{tmpLang.plugin.ReleaseMgr.noticeForum}}</v-btn>
 				</v-card>
-				<v-card class="pa-2 ma-2 mt-8" align="center" width="75%" v-if="(!bShowRN && !bShowRI && !bShowGloomyRN && !bShowGloomyRI && !bShowDuetSBCRN && !bShowDuetSBCRI && !bShowDuetDWCRN && !bShowDuetDWCRI && !bShowRRFAdmin)">
+				<v-card class="pa-2 ma-2 mt-8" align="center" width="75%" v-if="(!bShowRN && !bShowRI && !bShowGloomyRN && !bShowGloomyRI && !bShowDuetSBCRN && !bShowDuetSBCRI && !bShowDuetDWCRN && !bShowDuetDWCRI && !bShowRRFAdmin && !bShowGloomyESPRI)">
 					<div v-html="tmpLang.plugin.ReleaseMgr.guide" class="text-h6" ></div>
 				</v-card>
 				<v-card class="pa-2 ma-2 mt-4" align="center" width="75%" v-if="!bGotRelMgrData" >
@@ -324,27 +335,6 @@ export default {
 			darkTheme: state => state.settings.darkTheme
 		}),
 		isPrinting() { return isPrinting(this.status); },
-		duetOutlined(){
-			if((this.bShowRN || this.bShowRI) && (this.bGotGloomyRI || this.bGotDuetSBCRI)){
-				return "border-style: solid !important; border-width: 5px !important; border-color: LawnGreen !important;";
-			}else{
-				return "";
-			}
-		},
-		gloomyOutlined(){
-			if((this.bShowGloomyRN || this.bShowGloomyRI)  && (this.bGotDuetRI || this.bGotDuetSBCRI)){
-				return "border-style: solid !important; border-width: 5px !important; border-color: LawnGreen !important;";
-			}else{
-				return "";
-			}
-		},
-		SBCOutlined(){
-			if((this.bShowDuetSBCRN || this.bShowDuetSBCRI)  && (this.bGotGloomyRI || this.bGotDuetRI)){
-				return "border-style: solid !important; border-width: 5px !important; border-color: LawnGreen !important;";
-			}else{
-				return "";
-			}
-		},
 		bIsSBC(){
 			if(this.systemDSFVerStr !== null && this.systemDSFVerStr !== ''){
 				return true;
@@ -486,6 +476,7 @@ export default {
 			allDuetReleasesJSON: null,
 			allSBCReleasesJSON: null,
 			allGloomyReleasesJSON: null,
+			allGloomyESPReleasesJSON: null,
 			allDWCReleasesJSON: null,
 			bGotAllSBCReleases: false,
 			bGotAllDWCReleases: false,
@@ -495,6 +486,7 @@ export default {
 			gitSBCRepoNameDuet: "DuetSoftwareFramework",
 			gitDWCRepoNameDuet: "DuetWebControl", 
 			gitRepoNameGloomy: "RepRapFirmware",
+			gitRepoNameGloomyESP: "DuetWiFiSocketServer",
 			gitRelMgrRepoName: "ReleaseMgr",
 			gitRelMgrOwnName: "MintyTrebor",
 			gitRelMgrDataURL: "main/RelMgrData/RelMgrData.json",
@@ -507,6 +499,7 @@ export default {
 			duetRNJSON: {},
 			duetRIJSON:{},
 			gloomyRIJSON: {},
+			gloomyESPRIJSON: {},
 			gloomyRNJSON: {},
 			sbcRIJSON: {},
 			sbcRNJSON: {},
@@ -533,6 +526,7 @@ export default {
 			bShowRI: false,
 			bShowGloomyRN: false,
 			bShowGloomyRI: false,
+			bShowGloomyESPRI: false,
 			bShowDuetSBCRN: false,
 			bShowDuetSBCRI: false,
 			bShowDuetDWCRN: false,
@@ -540,7 +534,8 @@ export default {
 			bShowRRFAdmin: false,
 			bShowGloomyReleases: false,
 			bGotGloomyRN: false,
-			bGotGloomyRI: false,			
+			bGotGloomyRI: false,
+			bGotGloomyESPRI: false,			
 			currDSFTag: null,
 			currDWCTag: null
 		}
@@ -569,6 +564,10 @@ export default {
         ...mapActions('machine', ['upload']),
 		...mapMutations('machine/settings', ['addCode', 'removeCode']),
 
+		gotoForum(){
+			window.open('https://forum.duet3d.com/topic/27582', '_blank');
+		},
+
 		async startUp(){
 			this.bGotRelMgrData = false;
 			//get the latest Duet releases from github			
@@ -579,6 +578,8 @@ export default {
 					//get gloomy releases as this is a gloomy based board
 					const getGloomyReleases = await this.getAllReleasesJSON(this.gitOwnerNameGloomy, this.gitRepoNameGloomy).then(response => response);
 					this.allGloomyReleasesJSON = await getGloomyReleases;
+					const getGloomyESPReleases = await this.getAllReleasesJSON(this.gitOwnerNameGloomy, this.gitRepoNameGloomyESP).then(response => response);
+					this.allGloomyESPReleasesJSON = await getGloomyESPReleases;
 				}
 			}else{
 				//probably do alert here
@@ -647,6 +648,7 @@ export default {
 			this.bShowGloomyRI = false;
 			this.bGotGloomyRN = false;
 			this.bGotGloomyRI = false;
+			this.bGotGloomyESPRI = false;
 			this.bShowRN = false;
 			this.bShowRI = false;
 			this.bShowDuetSBCRN = false;
@@ -662,8 +664,10 @@ export default {
 			this.bGotDuetSBCRI = false;
 			this.bShowGloomyRN = false;
 			this.bShowGloomyRI = false;
+			this.bShowGloomyESPRI = false;
 			this.bGotGloomyRN = false;
 			this.bGotGloomyRI = false;
+			this.bGotGloomyESPRI = false;
 			this.selectedDuetRelTag = null;
 			this.selectedGloomyRelTag = null;
 			this.bShowRN = false;
@@ -682,6 +686,7 @@ export default {
 		bSwitchDuetDisp(){
 			this.bShowGloomyRN =  false;
 			this.bShowGloomyRI = false;
+			this.bShowGloomyESPRI = false;
 			this.bShowDuetSBCRN = false;
 			this.bShowDuetSBCRI = false;
 			this.bShowDuetDWCRI = false;
@@ -704,6 +709,7 @@ export default {
 			this.bShowRI = false;
 			this.bShowGloomyRN =  false;
 			this.bShowGloomyRI = false;
+			this.bShowGloomyESPRI = false;
 			this.bShowDuetSBCRN = false;
 			this.bShowDuetSBCRI =false;
 			this.gloomyBtnGrp = null;
@@ -730,12 +736,18 @@ export default {
 			this.DWCBtnGrp = null;
 			this.duetBtnGrp = null;
 			this.SBCBtnGrp = null;
-			if(this.gloomyBtnGrp == 1){
+			if(this.gloomyBtnGrp == 2){
 				this.bShowGloomyRN = false;
+				this.bShowGloomyESPRI = true;
+				this.bShowGloomyRI = false;
+			}else if(this.gloomyBtnGrp == 1){
+				this.bShowGloomyRN = false;
+				this.bShowGloomyESPRI = false;
 				this.bShowGloomyRI = true;
 			}else if(this.gloomyBtnGrp == 0){
 				this.bShowGloomyRN = true;
 				this.bShowGloomyRI = false;
+				this.bShowGloomyESPRI = false;
 			}
 		},
 
@@ -744,6 +756,7 @@ export default {
 			this.bShowRI = false;
 			this.bShowGloomyRN = false;
 			this.bShowGloomyRI = false;
+			this.bShowGloomyESPRI = false;
 			this.bShowDuetSBCRI =false;
 			this.bShowDuetDWCRI = false;
 			this.bShowDuetDWCRN = false;
@@ -765,6 +778,7 @@ export default {
 			this.bShowRI = false;
 			this.bShowGloomyRN = false;
 			this.bShowGloomyRI = false;
+			this.bShowGloomyESPRI = false;
 			this.bShowDuetSBCRI =false;
 			this.bShowDuetSBCRN = false;
 			this.bShowDuetDWCRI = false;
@@ -791,6 +805,17 @@ export default {
 			tmpStr = tmpStr.replace("https://github.com/gloomyandy/RepRapFirmware/blob/", "");
 			const relJSONGet = await this.getByGitFileRaw(tmpStr, this.gitOwnerNameGloomy, this.gitRepoNameGloomy).then(res => res);
 			const tmpTxt = await relJSONGet;
+			//get the esp release tag and then get the RI
+			hrefArr = this.gloomyRIJSON.body.match(/\(https:\/\/github.com\/gloomyandy\/DuetWiFiSocketServer\/releases\/tag\/(v|V).*\d\)/g);
+			if(hrefArr){
+				hrefArr = hrefArr[0].match(/(v|V)\d.*\d/g)
+				tmpStr = hrefArr[0];
+				if(tmpStr){
+					this.gloomyESPRIJSON = this.allGloomyESPReleasesJSON.filter(item => (item.tag_name == tmpStr));
+					this.gloomyESPRIJSON = this.gloomyESPRIJSON[0]
+					this.bGotGloomyESPRI = true;
+				}
+			}
 			this.gloomyRNJSON = {body: tmpTxt};
 			this.bGotGloomyRN = true;
 			this.bGotGloomyRI = true;
@@ -840,6 +865,7 @@ export default {
 					}
 					if(gitUName == this.gitOwnerNameGloomy && gitRepoName == this.gitRepoNameGloomy){
 						//process gloomy releses if required
+						relJSONFiltered = relJSONFiltered.filter(item => (item.tag_name >= "v3.3"));
 						this.bShowGloomyReleases = true;
 					}
 					return relJSONFiltered;
