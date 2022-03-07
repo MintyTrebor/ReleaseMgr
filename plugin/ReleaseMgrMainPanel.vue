@@ -142,7 +142,7 @@
 							<v-spacer></v-spacer>
 						</v-col>
 						<v-col cols="10" md="10" lg="10" xl="10" sm="12" xs="12">
-							<v-row class="pa-0 ma-0" v-if="bGotDuetRI" align="center">
+							<v-row class="pa-0 ma-0" align="center">
 								<v-chip large class="rlMgrVchip" color="info">{{ tmpLang.plugin.ReleaseMgr.switchDuetRN }}</v-chip>
 								<v-spacer></v-spacer>
 								<v-btn-toggle v-model="duetBtnGrp" shaped v-on:change="bSwitchDuetDisp()">
@@ -174,7 +174,7 @@
 							<v-spacer></v-spacer>
 						</v-col>
 						<v-col cols="10" md="10" lg="10" xl="10" sm="12" xs="12">
-							<v-row class="pa-0 ma-0" v-if="bGotDuetRI" align="center">
+							<v-row class="pa-0 ma-0" align="center">
 								<v-chip large class="rlMgrVchip" color="info">{{ tmpLang.plugin.ReleaseMgr.switchDuetDWCRN }}</v-chip>
 								<v-spacer></v-spacer>
 								<v-btn-toggle v-model="DWCBtnGrp" shaped v-on:change="bSwitchDWCDisp()">
@@ -206,7 +206,7 @@
 							<v-spacer></v-spacer>
 						</v-col>
 						<v-col cols="10" md="12" lg="10" xl="10" sm="12" xs="12">
-							<v-row class="pa-0 ma-0" v-if="bGotDuetRI" align="center">
+							<v-row class="pa-0 ma-0" align="center">
 								<v-chip large class="rlMgrVchip" color="info">{{ tmpLang.plugin.ReleaseMgr.switchGloomyRN }}</v-chip>
 								<v-spacer></v-spacer>
 								<v-btn-toggle v-model="gloomyBtnGrp" shaped v-on:change="bSwitchGloomyDisp()">
@@ -246,7 +246,7 @@
 							<v-spacer></v-spacer>
 						</v-col>
 						<v-col cols="10" md="10" lg="10" xl="10" sm="12" xs="12">
-							<v-row class="pa-0 ma-0" v-if="bGotDuetRI" align="center">
+							<v-row class="pa-0 ma-0" align="center">
 								<v-chip large class="rlMgrVchip" color="info">{{ tmpLang.plugin.ReleaseMgr.switchDuetSBCRN }}</v-chip>
 								<v-spacer></v-spacer>
 								<v-btn-toggle v-model="SBCBtnGrp" shaped v-on:change="bSwitchDuetSBCDisp()">
@@ -278,7 +278,7 @@
 							<v-spacer></v-spacer>
 						</v-col>
 						<v-col cols="10" md="10" lg="10" xl="10" sm="12" xs="12">
-							<v-row class="pa-0 ma-0" v-if="bGotDuetRI" align="center">
+							<v-row class="pa-0 ma-0" align="center">
 								<v-chip large class="rlMgrVchip mr-2" color="red">RN Assessment</v-chip>
 								<v-spacer></v-spacer>
 									<v-tooltip top>
