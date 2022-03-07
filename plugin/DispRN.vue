@@ -39,8 +39,8 @@
 					<v-chip v-if="rnJSON.gRName == gitRepoNameDuet" class="rlMgrVchip" :color="dualHWGCMatchLineColor">Both</v-chip>
 				</v-row>
 			</v-card-title>
-			<v-card-text outlined class="rMgrv-cardRLM__text">
-				<v-expansion-panels v-for="(rel, i) in panelJSON.releases" :key="i" accordion multiple focusable v-model="bExpRel[i]">
+			<v-card-text outlined class="rMgrv-cardRLM__text" v-if="currReleaseJSON">
+				<v-expansion-panels v-for="(rel, i) in currReleaseJSON.releases" :key="i" accordion multiple focusable v-model="bExpRel[i]">
 					<v-expansion-panel expand  :key="i">
 						<v-expansion-panel-header expand-icon="mdi-sort-ascending" :color="rel.color" :title="rel.hover">{{ rel.release }}</v-expansion-panel-header>
 						<v-expansion-panel-content>
@@ -185,7 +185,8 @@ export default {
 			gitRepoNameGloomy: "RepRapFirmware",
 			gitDWCRepoNameDuet: "DuetWebControl",
 			confGText: null,
-			duetDocsURL: 'https://docs.duet3d.com/en/User_manual/Reference/Gcodes/'
+			duetDocsURL: 'https://docs.duet3d.com/en/User_manual/Reference/Gcodes/',
+			currReleaseJSON: null
 			
 		}
 	},
@@ -210,10 +211,16 @@ export default {
 				if(this.rnJSON.gUName == this.gitOwnerNameDuet && this.rnJSON.gRName == this.gitSBCRepoNameDuet){
 					this.panelJSON = this.filterDuetSBCRNJSON();
 					this.reFormatCodeBlockLine();
+					this.currReleaseJSON = null;
+					this.currReleaseJSON = JSON.stringify(this.panelJSON);
+					this.currReleaseJSON = JSON.parse(this.currReleaseJSON);
 				}
 				if(this.rnJSON.gUName == this.gitOwnerNameDuet && this.rnJSON.gRName == this.gitDWCRepoNameDuet){
 					this.panelJSON = this.filterDuetSBCRNJSON();
 					this.reFormatCodeBlockLine();
+					this.currReleaseJSON = null;
+					this.currReleaseJSON = JSON.stringify(this.panelJSON);
+					this.currReleaseJSON = JSON.parse(this.currReleaseJSON);
 				}
 			}
 		}, 
@@ -365,13 +372,16 @@ export default {
 				let bHWLine = false;
 				let hwSNMatchArr = null;
 				let bSkipped = false;
+				this.currReleaseJSON = null;
+				this.currReleaseJSON = JSON.stringify(this.panelJSON);
+				this.currReleaseJSON = JSON.parse(this.currReleaseJSON);
 				//add sbc to the shortName array if SBC is detected
-				if(this.bIsSBC){
+				if(this.bIsSBC && this.currReleaseJSON){
 					statSNArr.push({shortName: "SBC"});
 				}
 				//loop through the json (nested to allow reverse traversal)
-				for(rel in this.panelJSON.releases){
-					currRel = this.panelJSON.releases[rel];
+				for(rel in this.currReleaseJSON.releases){
+					currRel = this.currReleaseJSON.releases[rel];
 					for(sec in currRel.sections){
 						//sections
 						currSec = currRel.sections[sec]

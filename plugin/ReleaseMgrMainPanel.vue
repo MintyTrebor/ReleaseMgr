@@ -17,10 +17,10 @@
 							<v-chip v-if="bHiddenTestData" color="red">Test Data Enabled</v-chip>
 							<v-chip v-if="bHiddenDuetMenu" color="red">Duet Admin Enabled</v-chip>						
 							<v-spacer></v-spacer>
-							<v-chip class="rlMgrVchip" color="info" v-if="bShowRN || bShowRI">{{tmpLang.plugin.ReleaseMgr.headerDuet}}</v-chip>
-							<v-chip class="rlMgrVchip" color="info" v-if="bShowGloomyRN || bShowGloomyRI">{{tmpLang.plugin.ReleaseMgr.headerGloomy}}</v-chip>
-							<v-chip class="rlMgrVchip" color="info" v-if="bShowDuetSBCRN || bShowDuetSBCRI">{{tmpLang.plugin.ReleaseMgr.headerSBC}}</v-chip>
-							<v-chip class="rlMgrVchip" color="info" v-if="bShowDuetDWCRN || bShowDuetDWCRI">{{tmpLang.plugin.ReleaseMgr.headerDWC}}</v-chip>
+							<v-chip class="rlMgrVchip" color="info" v-if="currView == 'duetRRFRN' || currView == 'duetRRFRI'">{{tmpLang.plugin.ReleaseMgr.headerDuet}}</v-chip>
+							<v-chip class="rlMgrVchip" color="info" v-if="currView == 'gloomyRN' || currView == 'gloomyRI' || currView == 'gloomyESPRI'">{{tmpLang.plugin.ReleaseMgr.headerGloomy}}</v-chip>
+							<v-chip class="rlMgrVchip" color="info" v-if="currView == 'duetSBCRN' || currView == 'duetSBCRI'">{{tmpLang.plugin.ReleaseMgr.headerSBC}}</v-chip>
+							<v-chip class="rlMgrVchip" color="info" v-if="currView == 'duetDWCRN' || currView == 'duetDWCRI'">{{tmpLang.plugin.ReleaseMgr.headerDWC}}</v-chip>
 							<v-spacer></v-spacer>
 						</v-row>
 					</v-col>
@@ -93,34 +93,34 @@
 			<!-- <v-row>
 				JSON:{{this.gloomyESPRIJSON}}
 			</v-row> -->
-			<v-row class="pa-0 ma-0 " v-if="(bShowRN || bShowRI || bShowGloomyRN || bShowGloomyRI || bShowDuetSBCRN || bShowDuetSBCRI || bShowDuetDWCRN || bShowDuetDWCRI || bShowRRFAdmin || bShowGloomyESPRI)">
+			<v-row class="pa-0 ma-0 " v-if="currView">
 				<v-col cols="12" lg="8" md="8" class="mb-6">
-					<v-container v-if="!bShowRRFAdmin" fluid class="pa-0 ma-0">
-						<DispRN v-if="bGotDuetRN && bShowRN" :rnJSON="duetRNJSON" :rMgrData="relMgrData" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRN>
-						<DispRI v-if="bGotDuetRI && bShowRI" :riJSON="duetRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" srcType="RRFRI"></DispRI>
-						<DispRN v-if="bGotDuetDWCRN && bShowDuetDWCRN" :rnJSON="dwcRNJSON" :rMgrData="relMgrData" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRN>
-						<DispRI v-if="bGotDuetDWCRI && bShowDuetDWCRI" :riJSON="dwcRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" srcType="DWCRI"></DispRI>
-						<DispRI v-if="bGotGloomyRN && bShowGloomyRN" :riJSON="gloomyRNJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" srcType="gloomyRN"></DispRI>
-						<DispRI v-if="bGotGloomyRI && bShowGloomyRI" :riJSON="gloomyRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" srcType="gloomyRI"></DispRI>
-						<DispRI v-if="bGotGloomyESPRI && bShowGloomyESPRI" :riJSON="gloomyESPRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" srcType="gloomyRI"></DispRI>
-						<DispRN v-if="bGotDuetSBCRN && bShowDuetSBCRN" :rMgrData="relMgrData" :rnJSON="sbcRNJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRN>
-						<DispRI v-if="bGotDuetSBCRI && bShowDuetSBCRI" :riJSON="sbcRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" srcType="DSFRI"></DispRI>
+					<v-container v-if="currView != 'duetAdmin'" fluid class="pa-0 ma-0">
+						<DispRN v-if="currView == 'duetRRFRN'" :rnJSON="duetRNJSON" :rMgrData="relMgrData" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRN>
+						<DispRI v-if="currView == 'duetRRFRI'" :riJSON="duetRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" srcType="RRFRI"></DispRI>
+						<DispRN v-if="currView == 'duetDWCRN'" :rnJSON="dwcRNJSON" :rMgrData="relMgrData" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRN>
+						<DispRI v-if="currView == 'duetDWCRI'" :riJSON="dwcRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" srcType="DWCRI"></DispRI>
+						<DispRI v-if="currView == 'gloomyRN'" :riJSON="gloomyRNJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" srcType="gloomyRN"></DispRI>
+						<DispRI v-if="currView == 'gloomyRI'" :riJSON="gloomyRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" srcType="gloomyRI"></DispRI>
+						<DispRI v-if="currView == 'gloomyESPRI'" :riJSON="gloomyESPRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" srcType="gloomyRI"></DispRI>
+						<DispRN v-if="currView == 'duetSBCRN'" :rMgrData="relMgrData" :rnJSON="sbcRNJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispRN>
+						<DispRI v-if="currView == 'duetSBCRI'" :riJSON="sbcRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" srcType="DSFRI"></DispRI>
 					</v-container>
-					<v-container v-if="bShowRRFAdmin" fluid class="pa-0 ma-0">
+					<v-container v-if="currView =='duetAdmin'" fluid class="pa-0 ma-0">
 						<DispAdminRN :rnAdminJSON="duetAdminRNJSON" :rMgrData="relMgrData" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispAdminRN>
 					</v-container>
 				</v-col>
 				<v-col cols="12" lg="4" md="4">
 					<v-row class="pa-0 ma-0 ">
 						<v-container fluid class="pa-0 ma-0" v-if="!bIsSBC">
-							<DispRNFiles v-if="bGotDuetRI && (bShowRN || bShowRI || bShowRRFAdmin)" :riJSON="duetRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" :bShowOverlay="bShowOverlay"></DispRNFiles>
-							<DispRNFiles v-if="bGotDuetRI && (bShowDuetDWCRN || bShowDuetDWCRI)" :riJSON="dwcRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" :bShowOverlay="bShowOverlay"></DispRNFiles>
-							<DispRNFiles v-if="bGotGloomyRI && (bShowGloomyRN || bShowGloomyRI)" :riJSON="gloomyRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" :bShowOverlay="bShowOverlay"></DispRNFiles>
-							<DispRNFiles v-if="bGotGloomyESPRI && (bShowGloomyESPRI)" :riJSON="gloomyESPRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" :bShowOverlay="bShowOverlay"></DispRNFiles>
+							<DispRNFiles v-if="currView == 'duetRRFRN' || currView == 'duetRRFRI' || currView == 'duetAdmin'" :riJSON="duetRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" :bShowOverlay="bShowOverlay"></DispRNFiles>
+							<DispRNFiles v-if="currView == 'duetDWCRN' || currView == 'duetDWCRI'" :riJSON="dwcRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" :bShowOverlay="bShowOverlay"></DispRNFiles>
+							<DispRNFiles v-if="currView == 'gloomyRN' || currView == 'gloomyRI'" :riJSON="gloomyRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" :bShowOverlay="bShowOverlay"></DispRNFiles>
+							<DispRNFiles v-if="currView == 'gloomyESPRI'" :riJSON="gloomyESPRIJSON" :key="selectedGloomyRelTag" :selectedTag="selectedGloomyRelTag" :bShowOverlay="bShowOverlay"></DispRNFiles>
 						</v-container>
 						<v-container fluid class="pa-0 ma-0" v-if="bIsSBC">
 							<v-card outlined elevation="3" class="pa-0 ma-0">
-								<v-card-text>
+								<v-card-text> 
 									<v-row class="pa-2 ma-2 " justify="center" align="center" v-if="fwSrc == gitOwnerNameDuet">
 										<span><a :title="dsfUpdateInsURL" @click="hlpLinkClick(dsfUpdateInsURL)"  style="color: green">{{tmpLang.plugin.ReleaseMgr.dsfUpdateInstructions}}</a></span>
 									</v-row>
@@ -137,143 +137,168 @@
 					<v-row class="pa-2 ma-2 " justify="center" align="center" v-if="!bIsSBC">
 						<v-chip large class="rlMgrVchip" color="info">{{ tmpLang.plugin.ReleaseMgr.fileDLNotice }}</v-chip>
 					</v-row>
-					<v-row class="pa-1 ma-1 " v-if="bGotDuetRI" align="center">
-						<v-col cols="4">
-							<v-chip large class="rlMgrVchip mr-2" color="info">{{ tmpLang.plugin.ReleaseMgr.switchDuetRN }}</v-chip>
-						</v-col>
-						<v-col cols="6" offset="2" offset-sm="0" offset-md="1" offset-xs="0">
+					<v-row class="pa-1 ma-1" v-if="bGotDuetRI" align="center">
+						<v-col cols="1" md="1" lg="1" xl="1" sm="0" xs="0">
 							<v-spacer></v-spacer>
-							<v-btn-toggle v-model="duetBtnGrp" shaped v-on:change="bSwitchDuetDisp()">
-								<v-tooltip top>
-									<template v-slot:activator="{ on, attrs }">
-										<v-btn v-bind="attrs" v-on="on" :value="0" color="info">
-											<v-icon>mdi-notebook</v-icon>
-										</v-btn>
-									</template>
-									<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetRNHover }}</span>
-								</v-tooltip>
-								<v-tooltip top>
-									<template v-slot:activator="{ on, attrs }">
-										<v-btn v-bind="attrs" v-on="on" :value="1" color="info">
-											<v-icon>mdi-information</v-icon>
-										</v-btn>
-									</template>
-									<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetRIHover }}</span>
-								</v-tooltip>
-							</v-btn-toggle>
+						</v-col>
+						<v-col cols="10" md="10" lg="10" xl="10" sm="12" xs="12">
+							<v-row class="pa-0 ma-0" v-if="bGotDuetRI" align="center">
+								<v-chip large class="rlMgrVchip" color="info">{{ tmpLang.plugin.ReleaseMgr.switchDuetRN }}</v-chip>
+								<v-spacer></v-spacer>
+								<v-btn-toggle v-model="duetBtnGrp" shaped v-on:change="bSwitchDuetDisp()">
+									<v-tooltip top>
+										<template v-slot:activator="{ on, attrs }">
+											<v-btn v-bind="attrs" v-on="on" :value="0" color="info">
+												<v-icon>mdi-notebook</v-icon>
+											</v-btn>
+										</template>
+										<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetRNHover }}</span>
+									</v-tooltip>
+									<v-tooltip top>
+										<template v-slot:activator="{ on, attrs }">
+											<v-btn v-bind="attrs" v-on="on" :value="1" color="info">
+												<v-icon>mdi-information</v-icon>
+											</v-btn>
+										</template>
+										<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetRIHover }}</span>
+									</v-tooltip>
+								</v-btn-toggle>
+							</v-row>
+						</v-col>
+						<v-col cols="1" md="1" lg="1" xl="1" sm="0" xs="0">
 							<v-spacer></v-spacer>
 						</v-col>
 					</v-row>
 					<v-row class="pa-1 ma-1 " v-if="bGotDuetDWCRI" align="center">
-						<v-col cols="4">
-							<v-chip large class="rlMgrVchip mr-2" color="info">{{ tmpLang.plugin.ReleaseMgr.switchDuetDWCRN }}</v-chip>
-						</v-col>
-						<v-col cols="6" offset="2" offset-sm="0" offset-md="1" offset-xs="0">
+						<v-col cols="1" md="1" lg="1" xl="1" sm="0" xs="0">
 							<v-spacer></v-spacer>
-							<v-btn-toggle v-model="DWCBtnGrp" shaped v-on:change="bSwitchDWCDisp()">
-								<v-tooltip top>
-									<template v-slot:activator="{ on, attrs }">
-										<v-btn v-bind="attrs" v-on="on" :value="0" color="info">
-											<v-icon>mdi-notebook</v-icon>
-										</v-btn>
-									</template>
-									<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetDWCRNHover }}</span>
-								</v-tooltip>
-								<v-tooltip top>
-									<template v-slot:activator="{ on, attrs }">
-										<v-btn v-bind="attrs" v-on="on" :value="1" color="info">
-											<v-icon>mdi-information</v-icon>
-										</v-btn>
-									</template>
-									<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetDWCRIHover }}</span>
-								</v-tooltip>
-							</v-btn-toggle>
+						</v-col>
+						<v-col cols="10" md="10" lg="10" xl="10" sm="12" xs="12">
+							<v-row class="pa-0 ma-0" v-if="bGotDuetRI" align="center">
+								<v-chip large class="rlMgrVchip" color="info">{{ tmpLang.plugin.ReleaseMgr.switchDuetDWCRN }}</v-chip>
+								<v-spacer></v-spacer>
+								<v-btn-toggle v-model="DWCBtnGrp" shaped v-on:change="bSwitchDWCDisp()">
+									<v-tooltip top>
+										<template v-slot:activator="{ on, attrs }">
+											<v-btn v-bind="attrs" v-on="on" :value="0" color="info">
+												<v-icon>mdi-notebook</v-icon>
+											</v-btn>
+										</template>
+										<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetDWCRNHover }}</span>
+									</v-tooltip>
+									<v-tooltip top>
+										<template v-slot:activator="{ on, attrs }">
+											<v-btn v-bind="attrs" v-on="on" :value="1" color="info">
+												<v-icon>mdi-information</v-icon>
+											</v-btn>
+										</template>
+										<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetDWCRIHover }}</span>
+									</v-tooltip>
+								</v-btn-toggle>
+							</v-row>
+						</v-col>
+						<v-col cols="1" md="1" lg="1" xl="1" sm="0" xs="0">
 							<v-spacer></v-spacer>
 						</v-col>
 					</v-row>
 					<v-row class="pa-1 ma-1 " v-if="bGotGloomyRI" align="center">
-						<v-col cols="4">
-							<v-chip large class="rlMgrVchip mr-2" color="info">{{ tmpLang.plugin.ReleaseMgr.switchGloomyRN }}</v-chip>
-						</v-col>
-						<v-col cols="6" offset="2" offset-sm="0" offset-md="1" offset-xs="0">
+						<v-col cols="1" md="0" lg="1" xl="1" sm="0" xs="0">
 							<v-spacer></v-spacer>
-							<v-btn-toggle v-model="gloomyBtnGrp" shaped v-on:change="bSwitchGloomyDisp()">
-								<v-tooltip top>
-									<template v-slot:activator="{ on, attrs }">
-										<v-btn v-bind="attrs" v-on="on" :value="0" color="info">
-											<v-icon>mdi-notebook</v-icon>
-										</v-btn>
-									</template>
-									<span>{{ tmpLang.plugin.ReleaseMgr.switchGloomyRNHover }}</span>
-								</v-tooltip>
-								<v-tooltip top>
-									<template v-slot:activator="{ on, attrs }">
-										<v-btn v-bind="attrs" v-on="on" :value="1" color="info">
-											<v-icon>mdi-information</v-icon>
-										</v-btn>
-									</template>
-									<span>{{ tmpLang.plugin.ReleaseMgr.switchGloomyRIHover }}</span>
-								</v-tooltip>
-								<v-tooltip top>
-									<template v-slot:activator="{ on, attrs }">
-										<v-btn v-bind="attrs" v-on="on" :value="2" color="info">
-											<v-icon>mdi-wifi</v-icon>
-										</v-btn>
-									</template>
-									<span>{{ tmpLang.plugin.ReleaseMgr.switchGloomyESPRIHover }}</span>
-								</v-tooltip>
-							</v-btn-toggle>
+						</v-col>
+						<v-col cols="10" md="12" lg="10" xl="10" sm="12" xs="12">
+							<v-row class="pa-0 ma-0" v-if="bGotDuetRI" align="center">
+								<v-chip large class="rlMgrVchip" color="info">{{ tmpLang.plugin.ReleaseMgr.switchGloomyRN }}</v-chip>
+								<v-spacer></v-spacer>
+								<v-btn-toggle v-model="gloomyBtnGrp" shaped v-on:change="bSwitchGloomyDisp()">
+									<v-tooltip top>
+										<template v-slot:activator="{ on, attrs }">
+											<v-btn v-bind="attrs" v-on="on" :value="0" color="info">
+												<v-icon>mdi-notebook</v-icon>
+											</v-btn>
+										</template>
+										<span>{{ tmpLang.plugin.ReleaseMgr.switchGloomyRNHover }}</span>
+									</v-tooltip>
+									<v-tooltip top>
+										<template v-slot:activator="{ on, attrs }">
+											<v-btn v-bind="attrs" v-on="on" :value="1" color="info">
+												<v-icon>mdi-information</v-icon>
+											</v-btn>
+										</template>
+										<span>{{ tmpLang.plugin.ReleaseMgr.switchGloomyRIHover }}</span>
+									</v-tooltip>
+									<v-tooltip top>
+										<template v-slot:activator="{ on, attrs }">
+											<v-btn v-bind="attrs" v-on="on" :value="2" color="info">
+												<v-icon>mdi-wifi</v-icon>
+											</v-btn>
+										</template>
+										<span>{{ tmpLang.plugin.ReleaseMgr.switchGloomyESPRIHover }}</span>
+									</v-tooltip>
+								</v-btn-toggle>
+							</v-row>
+						</v-col>
+						<v-col cols="1" md="0" lg="1" xl="1" sm="0" xs="0">
 							<v-spacer></v-spacer>
 						</v-col>
 					</v-row>
 					<v-row class="pa-1 ma-1 " v-if="bGotDuetSBCRI" align="center">
-						<v-col cols="4">
-							<v-chip large class="rlMgrVchip mr-2" color="info">{{ tmpLang.plugin.ReleaseMgr.switchDuetSBCRN }}</v-chip>
-						</v-col>
-						<v-col cols="6" offset="2" offset-sm="0" offset-md="1" offset-xs="0">
+						<v-col cols="1" md="1" lg="1" xl="1" sm="0" xs="0">
 							<v-spacer></v-spacer>
-							<v-btn-toggle v-model="SBCBtnGrp" shaped v-on:change="bSwitchDuetSBCDisp()">
-								<v-tooltip top>
-									<template v-slot:activator="{ on, attrs }">
-										<v-btn v-bind="attrs" v-on="on" :value="0" color="info">
-											<v-icon>mdi-notebook</v-icon>
-										</v-btn>
-									</template>
-									<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetSBCRNHover }}</span>
-								</v-tooltip>
-								<v-tooltip top>
-									<template v-slot:activator="{ on, attrs }">
-										<v-btn v-bind="attrs" v-on="on" :value="1" color="info">
-											<v-icon>mdi-information</v-icon>
-										</v-btn>
-									</template>
-									<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetSBCRIHover }}</span>
-								</v-tooltip>
-							</v-btn-toggle>
+						</v-col>
+						<v-col cols="10" md="10" lg="10" xl="10" sm="12" xs="12">
+							<v-row class="pa-0 ma-0" v-if="bGotDuetRI" align="center">
+								<v-chip large class="rlMgrVchip" color="info">{{ tmpLang.plugin.ReleaseMgr.switchDuetSBCRN }}</v-chip>
+								<v-spacer></v-spacer>
+								<v-btn-toggle v-model="SBCBtnGrp" shaped v-on:change="bSwitchDuetSBCDisp()">
+									<v-tooltip top>
+										<template v-slot:activator="{ on, attrs }">
+											<v-btn v-bind="attrs" v-on="on" :value="0" color="info">
+												<v-icon>mdi-notebook</v-icon>
+											</v-btn>
+										</template>
+										<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetSBCRNHover }}</span>
+									</v-tooltip>
+									<v-tooltip top>
+										<template v-slot:activator="{ on, attrs }">
+											<v-btn v-bind="attrs" v-on="on" :value="1" color="info">
+												<v-icon>mdi-information</v-icon>
+											</v-btn>
+										</template>
+										<span>{{ tmpLang.plugin.ReleaseMgr.switchDuetSBCRIHover }}</span>
+									</v-tooltip>
+								</v-btn-toggle>
+							</v-row>
+						</v-col>
+						<v-col cols="1" md="1" lg="1" xl="1" sm="0" xs="0">
 							<v-spacer></v-spacer>
 						</v-col>
 					</v-row>
 					<v-row class="pa-1 ma-1 " v-if="bHiddenDuetMenu && bGotDuetRI" align="center">
-						<v-col cols="4">
-							<v-chip large class="rlMgrVchip mr-2" color="red">RN Assessment</v-chip>
-						</v-col>
-						<v-col cols="6" offset="2" offset-sm="0" offset-md="1" offset-xs="0">
+						<v-col cols="1" md="1" lg="1" xl="1" sm="0" xs="0">
 							<v-spacer></v-spacer>
-								<v-tooltip top>
-									<template v-slot:activator="{ on, attrs }">
-										<v-btn rounded v-bind="attrs" v-on="on" color="red" @click="bSwitchDuetAdminDisp()">
-											<v-icon class="mr-2">mdi-notebook</v-icon> Assess
-										</v-btn>
-									</template>
-									<span>Release Note Assessment</span>
-								</v-tooltip>
+						</v-col>
+						<v-col cols="10" md="10" lg="10" xl="10" sm="12" xs="12">
+							<v-row class="pa-0 ma-0" v-if="bGotDuetRI" align="center">
+								<v-chip large class="rlMgrVchip mr-2" color="red">RN Assessment</v-chip>
+								<v-spacer></v-spacer>
+									<v-tooltip top>
+										<template v-slot:activator="{ on, attrs }">
+											<v-btn rounded v-bind="attrs" v-on="on" color="red" @click="bSwitchDuetAdminDisp()">
+												<v-icon class="mr-2">mdi-notebook</v-icon> Assess
+											</v-btn>
+										</template>
+										<span>Release Note Assessment</span>
+									</v-tooltip>
+								</v-row>
+						</v-col>
+						<v-col cols="1" md="1" lg="1" xl="1" sm="0" xs="0">
 							<v-spacer></v-spacer>
 						</v-col>
 					</v-row>
 				</v-col>
 			</v-row>
 			<v-row class="pa-0 ma-0 " justify="center" align="center">
-				<v-card class="pa-2 ma-2" align="center" width="75%" v-if="(!bShowRN && !bShowRI && !bShowGloomyRN && !bShowGloomyRI && !bShowDuetSBCRN && !bShowDuetSBCRI && !bShowDuetDWCRN && !bShowDuetDWCRI && !bShowRRFAdmin && !bShowGloomyESPRI)">
+				<v-card class="pa-2 ma-2" align="center" width="75%" v-if="!currView">
 					<div v-html="tmpLang.plugin.ReleaseMgr.notice" class="text-h6" ></div>
 					<v-row class="pa-2 ma-2 " justify="center" align="center">
 						<v-chip class="rlMgrVchip red lighten-3 black--text">{{tmpLang.plugin.ReleaseMgr.redTxt}}</v-chip>
@@ -287,7 +312,7 @@
 					<div v-html="tmpLang.plugin.ReleaseMgr.noticeFooter" class="text-h6" ></div>
 					<v-btn small @click="gotoForum()" class="info">{{tmpLang.plugin.ReleaseMgr.noticeForum}}</v-btn>
 				</v-card>
-				<v-card class="pa-2 ma-2 mt-8" align="center" width="75%" v-if="(!bShowRN && !bShowRI && !bShowGloomyRN && !bShowGloomyRI && !bShowDuetSBCRN && !bShowDuetSBCRI && !bShowDuetDWCRN && !bShowDuetDWCRI && !bShowRRFAdmin && !bShowGloomyESPRI)">
+				<v-card class="pa-2 ma-2 mt-8" align="center" width="75%" v-if="!currView">
 					<div v-html="tmpLang.plugin.ReleaseMgr.guide" class="text-h6" ></div>
 				</v-card>
 				<v-card class="pa-2 ma-2 mt-4" align="center" width="75%" v-if="!bGotRelMgrData" >
@@ -343,7 +368,7 @@ export default {
 			}
 		},
 		bShowOverlay(){
-			if(this.fwSrc == this.gitOwnerNameGloomy && (this.bShowRN || this.bShowRI)){
+			if(this.fwSrc == this.gitOwnerNameGloomy && (this.currView == "duetRRFRN" || this.currView == "duetRRFRI")){
 				return true;
 			}else{
 				return false;
@@ -522,22 +547,13 @@ export default {
 			bGotDuetDWCRI: false,
 			bGotDuetDWCRN: false,
 			bGotRelMgrData: false,
-			bShowRN: false,
-			bShowRI: false,
-			bShowGloomyRN: false,
-			bShowGloomyRI: false,
-			bShowGloomyESPRI: false,
-			bShowDuetSBCRN: false,
-			bShowDuetSBCRI: false,
-			bShowDuetDWCRN: false,
-			bShowDuetDWCRI: false,
-			bShowRRFAdmin: false,
 			bShowGloomyReleases: false,
 			bGotGloomyRN: false,
 			bGotGloomyRI: false,
 			bGotGloomyESPRI: false,			
 			currDSFTag: null,
-			currDWCTag: null
+			currDWCTag: null,
+			currView: null
 		}
 	},
 	
@@ -644,16 +660,10 @@ export default {
 		},
 
 		async selectedGloomyTag(tmpTag){
-			this.bShowGloomyRN = false;
-			this.bShowGloomyRI = false;
 			this.bGotGloomyRN = false;
 			this.bGotGloomyRI = false;
 			this.bGotGloomyESPRI = false;
-			this.bShowRN = false;
-			this.bShowRI = false;
-			this.bShowDuetSBCRN = false;
-			this.bShowDuetSBCRI= false;
-			this.bShowRRFAdmin = false;
+			this.currView = null
 			this.doGloomyRelease(tmpTag);
 		},
 
@@ -662,132 +672,73 @@ export default {
 			this.bGotDuetRI = false;
 			this.bGotDuetSBCRN = false;
 			this.bGotDuetSBCRI = false;
-			this.bShowGloomyRN = false;
-			this.bShowGloomyRI = false;
-			this.bShowGloomyESPRI = false;
 			this.bGotGloomyRN = false;
 			this.bGotGloomyRI = false;
 			this.bGotGloomyESPRI = false;
 			this.selectedDuetRelTag = null;
 			this.selectedGloomyRelTag = null;
-			this.bShowRN = false;
-			this.bShowRI = false;
-			this.bShowGloomyRN = false;
-			this.bShowGloomyRI = false;
-			this.bShowDuetSBCRN = false;
-			this.bShowDuetSBCRI= false;
-			this.bShowDuetDWCRI = false;
-			this.bShowDuetDWCRN = false;
 			this.bGotDuetDWCRI = false;
 			this.bGotDuetDWCRN = false;
-			this.bShowRRFAdmin = false;
+			this.currView = null;
 		},
 
 		bSwitchDuetDisp(){
-			this.bShowGloomyRN =  false;
-			this.bShowGloomyRI = false;
-			this.bShowGloomyESPRI = false;
-			this.bShowDuetSBCRN = false;
-			this.bShowDuetSBCRI = false;
-			this.bShowDuetDWCRI = false;
-			this.bShowDuetDWCRN = false;
-			this.bShowRRFAdmin = false;
+			this.currView = null;
 			this.DWCBtnGrp = null;
 			this.gloomyBtnGrp = null;
 			this.SBCBtnGrp = null;
 			if(this.duetBtnGrp == 1){
-				this.bShowRI = true;
-				this.bShowRN = false;
+				this.currView = "duetRRFRI";
 			}else if(this.duetBtnGrp == 0){
-				this.bShowRN = true;
-				this.bShowRI = false;
+				this.currView = "duetRRFRN";
 			}
 		},
 
 		bSwitchDWCDisp(){
-			this.bShowRN = false;
-			this.bShowRI = false;
-			this.bShowGloomyRN =  false;
-			this.bShowGloomyRI = false;
-			this.bShowGloomyESPRI = false;
-			this.bShowDuetSBCRN = false;
-			this.bShowDuetSBCRI =false;
+			this.currView = null;
 			this.gloomyBtnGrp = null;
 			this.duetBtnGrp = null;
 			this.SBCBtnGrp = null;
-			this.bShowRRFAdmin = false;
 			if(this.DWCBtnGrp == 1){
-				this.bShowDuetDWCRI = true;
-				this.bShowDuetDWCRN = false;
+				this.currView = "duetDWCRI";
 			}else if(this.DWCBtnGrp == 0){
-				this.bShowDuetDWCRN = true;
-				this.bShowDuetDWCRI = false;
+				this.currView = "duetDWCRN";
 			}
 		},
 
 		bSwitchGloomyDisp(){
-			this.bShowRN = false;
-			this.bShowRI = false;
-			this.bShowDuetSBCRN = false;
-			this.bShowDuetSBCRI = false;
-			this.bShowDuetDWCRI = false;
-			this.bShowDuetDWCRN = false;
-			this.bShowRRFAdmin = false;
+			this.currView = null;
 			this.DWCBtnGrp = null;
 			this.duetBtnGrp = null;
 			this.SBCBtnGrp = null;
 			if(this.gloomyBtnGrp == 2){
-				this.bShowGloomyRN = false;
-				this.bShowGloomyESPRI = true;
-				this.bShowGloomyRI = false;
+				this.currView = "gloomyESPRI";
 			}else if(this.gloomyBtnGrp == 1){
-				this.bShowGloomyRN = false;
-				this.bShowGloomyESPRI = false;
-				this.bShowGloomyRI = true;
+				this.currView = "gloomyRI";
 			}else if(this.gloomyBtnGrp == 0){
-				this.bShowGloomyRN = true;
-				this.bShowGloomyRI = false;
-				this.bShowGloomyESPRI = false;
+				this.currView = "gloomyRN";
 			}
 		},
 
 		bSwitchDuetSBCDisp(){
-			this.bShowRN = false;
-			this.bShowRI = false;
-			this.bShowGloomyRN = false;
-			this.bShowGloomyRI = false;
-			this.bShowGloomyESPRI = false;
-			this.bShowDuetSBCRI =false;
-			this.bShowDuetDWCRI = false;
-			this.bShowDuetDWCRN = false;
-			this.bShowRRFAdmin = false;
+			this.currView = null;
 			this.DWCBtnGrp = null;
 			this.gloomyBtnGrp = null;
 			this.duetBtnGrp = null;
 			if(this.SBCBtnGrp == 1){
-				this.bShowDuetSBCRN = false;
-				this.bShowDuetSBCRI = true;
+				this.currView = "duetSBCRI";
 			}else if(this.SBCBtnGrp == 0){
-				this.bShowDuetSBCRN = true;
-				this.bShowDuetSBCRI = false;
+				this.currView = "duetSBCRN";
 			}
 		},
 
 		bSwitchDuetAdminDisp(){
-			this.bShowRN = false;
-			this.bShowRI = false;
-			this.bShowGloomyRN = false;
-			this.bShowGloomyRI = false;
-			this.bShowGloomyESPRI = false;
-			this.bShowDuetSBCRI =false;
-			this.bShowDuetSBCRN = false;
-			this.bShowDuetDWCRI = false;
-			this.bShowDuetDWCRN = false;
+			this.currView = null;
 			this.DWCBtnGrp = null;
 			this.gloomyBtnGrp = null;
 			this.duetBtnGrp = null;
 			this.SBCBtnGrp = null;
-			this.bShowRRFAdmin = true;
+			this.currView = "duetAdmin";
 		},
 
 		checkShowAllRel(){
@@ -936,7 +887,6 @@ export default {
 							let conv = this.convertRNtoJSON(relText, rnType, gitUName, gitTagName, gitRepoName);
 							//always show the duet rn when fetched
 							this.bGotDuetRN = true;
-							this.bShowRN = false;
 							this.duetBtnGrp = 0;
 							this.bSwitchDuetDisp();
 							return conv;
