@@ -1,4 +1,4 @@
-# Want to customise DWC, show 2 or webcams, or an easy way to set global variables?
+# Want to customise DWC, show 2 or more webcams, or an easy way to set global variables?
 
 # Try [BtnCmd](https://github.com/MintyTrebor/BtnCmd), a DWC plugin that lets you design your own DWC interface layouts, with extensive customisation options and features not available in the default DWC UI.
 
