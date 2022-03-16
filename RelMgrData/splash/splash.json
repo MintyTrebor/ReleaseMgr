@@ -1,5 +1,6 @@
-{"splashes": [
-  {"file": "DuetWiki.md"},
-  {"file": "btncmd.md"},
- ] 
-}
+{
+    "splashes": [
+        {"file": "DuetWiki.md"},
+        {"file": "btncmd.md"}
+   ] 
+} 
