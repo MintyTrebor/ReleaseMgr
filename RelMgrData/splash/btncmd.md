@@ -2,6 +2,6 @@
   
 # Try [BtnCmd](https://github.com/MintyTrebor/BtnCmd), a DWC plugin that lets you design your own DWC interface layouts, with extensive customisation options and features not available in the default DWC UI.
   
-<img src="https://raw.githubusercontent.com/MintyTrebor/BtnCmd/main/wikires/v0.8.13_BtnCmd_MainWindow_1.png" alt="btncmd" width="400"/>  
+![BtnCmd](https://raw.githubusercontent.com/MintyTrebor/BtnCmd/main/wikires/v0.8.13_BtnCmd_MainWindow_1.png)
   
 # Check it out [here](https://github.com/MintyTrebor/BtnCmd)
