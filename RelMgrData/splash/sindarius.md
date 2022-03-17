@@ -1,4 +1,4 @@
-## Want to view your Gcode in the browser?<br>   
+## View Gcode in the browser?<br>   
 <br>   
    
 **Try [Sindaruis Gcode Viewer](http://sindarius.com/).**<br>   
