@@ -9,6 +9,6 @@
 
 ![Team Gloomy](https://raw.githubusercontent.com/MintyTrebor/ReleaseMgr/main/RelMgrData/splash/gloomyDocs.png)<br>   
     
-[https://docs.duet3d.com](https://docs.duet3d.com)    
+[https://teamgloomy.github.io/index.html](https://teamgloomy.github.io)    
     
 Also check out [Team Gloomy's discord Channel](https://discord.gg/uS97Qs7) for support.
