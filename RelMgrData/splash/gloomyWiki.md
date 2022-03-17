@@ -2,8 +2,7 @@
 <br>    
     
 **Visit the official Team Gloomy wiki.**  
-<br>   
-
+    
 **Its loaded with helpful information, guides, and reference material.**  
 <br>  
 
