@@ -1,4 +1,4 @@
-# Have you seen the new official Duet3D documentation wiki?  
+# Have you seen the official Duet3D documentation wiki?  
 <br>  
 
 **It is packed with helpful information, guides, and reference material.**  
