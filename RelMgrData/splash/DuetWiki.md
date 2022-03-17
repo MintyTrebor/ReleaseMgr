@@ -13,5 +13,5 @@ Including :
  - [Tuning](https://docs.duet3d.com/en/User_manual/Tuning)  
  - [Troubleshooting](https://docs.duet3d.com/en/User_manual/Troubleshooting)  
 <br>  
-<br>  
+  
 [https://docs.duet3d.com](https://docs.duet3d.com)
