@@ -5,4 +5,4 @@
   
 ![BtnCmd](https://raw.githubusercontent.com/MintyTrebor/ReleaseMgr/main/RelMgrData/splash/v0.8.13_BtnCmd_MainWindow_1.png)
   
-### Check it out [here](https://github.com/MintyTrebor/BtnCmd)
+**Check it out [here](https://github.com/MintyTrebor/BtnCmd)**
