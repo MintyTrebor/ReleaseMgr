@@ -5,6 +5,9 @@
 		text-align: center !important; 
 		min-height: 35px !important;
 	}
+	.rMgrv-mainCardRLM {
+		height: calc(100vh - 340px) !important;
+	}
 </style>
 <template>
 	<v-container fluid class=" pa-0 ma-0" >
@@ -91,7 +94,7 @@
 				</v-row>
 			</div>
 			<!-- <v-row>
-				JSON:{{this.gloomyESPRIJSON}}
+				JSON:{{allDuetReleasesJSON}}
 			</v-row> -->
 			<v-row class="pa-0 ma-0 " v-if="currView">
 				<v-col cols="12" lg="8" md="8" class="mb-6">
@@ -297,27 +300,30 @@
 					</v-row>
 				</v-col>
 			</v-row>
-			<v-row class="pa-0 ma-0 " justify="center" align="center">
-				<v-card class="pa-2 ma-2" align="center" width="75%" v-if="!currView">
-					<div v-html="tmpLang.plugin.ReleaseMgr.notice" class="text-h6" ></div>
-					<v-row class="pa-2 ma-2 " justify="center" align="center">
-						<v-chip class="rlMgrVchip red lighten-3 black--text">{{tmpLang.plugin.ReleaseMgr.redTxt}}</v-chip>
-					</v-row>
-					<v-row class="pa-2 ma-2 " justify="center" align="center">
-						<v-chip class="rlMgrVchip blue lighten-4 black--text">{{tmpLang.plugin.ReleaseMgr.blueTxt}}</v-chip>
-					</v-row>
-					<v-row class="pa-2 ma-2 " justify="center" align="center">
-						<v-chip class="rlMgrVchip purple lighten-4 black--text">{{tmpLang.plugin.ReleaseMgr.purpleTxt}}</v-chip>
-					</v-row>
-					<div v-html="tmpLang.plugin.ReleaseMgr.noticeFooter" class="text-h6" ></div>
-					<v-btn small @click="gotoForum()" class="info">{{tmpLang.plugin.ReleaseMgr.noticeForum}}</v-btn>
-				</v-card>
-				<v-card class="pa-2 ma-2 mt-8" align="center" width="75%" v-if="!currView">
-					<div v-html="tmpLang.plugin.ReleaseMgr.guide" class="text-h6" ></div>
-				</v-card>
-				<v-card class="pa-2 ma-2 mt-4" align="center" width="75%" v-if="!bGotRelMgrData" >
+			<v-row v-if="!bGotRelMgrData" class="pa-0 ma-0 " justify="center" align="center">
+				<v-card class="pa-2 ma-2 mt-4" align="center" width="75%">
 					<div style="color: red" class="text-h4" v-html="tmpLang.plugin.ReleaseMgr.connErr"></div>
 				</v-card>
+			</v-row>
+			<v-row v-if="bGotRelMgrData && !bGotSplashJSON && !currView" class="pa-0 ma-0 " justify="center" align="center">
+				<v-card class="pa-2 ma-2" align="center" width="75%">
+					<div v-html="tmpLang.plugin.ReleaseMgr.notice" class="text-body-1" ></div>
+					<v-row class="pa-2 ma-2 " justify="center" align="center">
+						<v-chip class="rlMgrVchip red lighten-3 black--text">{{tmpLang.plugin.ReleaseMgr.redTxt}}</v-chip>
+						<v-chip class="rlMgrVchip blue lighten-4 black--text">{{tmpLang.plugin.ReleaseMgr.blueTxt}}</v-chip>
+						<v-chip class="rlMgrVchip purple lighten-4 black--text">{{tmpLang.plugin.ReleaseMgr.purpleTxt}}</v-chip>
+					</v-row>
+					<div v-html="tmpLang.plugin.ReleaseMgr.noticeFooter" class="text-body-1" ></div>
+					<v-btn small @click="gotoForum()" class="info">{{tmpLang.plugin.ReleaseMgr.noticeForum}}</v-btn>
+				</v-card>
+				<v-card class="pa-2 ma-2 mt-8" align="center" width="75%">
+					<div v-html="tmpLang.plugin.ReleaseMgr.guide" class="text-body-1" ></div>
+				</v-card>
+			</v-row>
+			<v-row v-if="bGotRelMgrData && bGotSplashJSON && !currView" class="pa-0 ma-0 " justify="center" align="center">
+				<v-container fluid class="pa-0 ma-0">
+					<DispSplash :riJSON="splashJSON" class="fill-height"></DispSplash>
+				</v-container>
 			</v-row>
 		</v-card>
 	</v-container>
@@ -336,6 +342,7 @@ import DispRN from './DispRN.vue';
 import DispAdminRN from './DispAdminRN.vue';
 import DispRI from './DispRI.vue';
 import DispRNFiles from './DispRNFiles.vue';
+import DispSplash from './DispSplash.vue';
 import { marked } from 'marked';
 
 
@@ -344,7 +351,8 @@ export default {
         DispRN,
 		DispRI,
 		DispRNFiles,
-		DispAdminRN
+		DispAdminRN,
+		DispSplash
 	},
 	computed: {
 		...mapState('machine/model', {
@@ -505,6 +513,8 @@ export default {
 			allDWCReleasesJSON: null,
 			bGotAllSBCReleases: false,
 			bGotAllDWCReleases: false,
+			bGotSplashJSON: false,
+			splashJSON: null,
 			gitOwnerNameDuet: 'Duet3D',
 			gitOwnerNameGloomy: 'gloomyandy',
 			gitRepoNameDuet: "RepRapFirmware",
@@ -515,6 +525,7 @@ export default {
 			gitRelMgrRepoName: "ReleaseMgr",
 			gitRelMgrOwnName: "MintyTrebor",
 			gitRelMgrDataURL: "main/RelMgrData/RelMgrData.json",
+			gitRelMgrSplashURL: "main/RelMgrData/splash/",
 			dsfUpdateInsURL: "https://docs.duet3d.com/User_manual/Machine_configuration/DSF_RPi#installing-updates)",
 			gloomyUpdateInsURL1: "https://teamgloomy.github.io/stm32_sbc.html",
 			gloomyUpdateInsURL2: "https://teamgloomy.github.io/lpc_sbc.html",
@@ -550,7 +561,8 @@ export default {
 			bShowGloomyReleases: false,
 			bGotGloomyRN: false,
 			bGotGloomyRI: false,
-			bGotGloomyESPRI: false,			
+			bGotGloomyESPRI: false,
+			bCarouselCycle: true,			
 			currDSFTag: null,
 			currDWCTag: null,
 			currView: null
@@ -597,11 +609,28 @@ export default {
 					const getGloomyESPReleases = await this.getAllReleasesJSON(this.gitOwnerNameGloomy, this.gitRepoNameGloomyESP).then(response => response);
 					this.allGloomyESPReleasesJSON = await getGloomyESPReleases;
 				}
+				if(!this.bGotSplashJSON){
+					const getSplashes = await this.getByGitFileRaw(`${this.gitRelMgrSplashURL}splash.json`, this.gitRelMgrOwnName, this.gitRelMgrRepoName).then(res => res);
+					this.splashJSON = await getSplashes;
+					if(this.splashJSON){
+						this.bGotSplashJSON = await this.configSplash();
+					}
+				}
 			}else{
 				//probably do alert here
 			}
 
 		},
+
+		async configSplash(){
+			let i=0
+			for(i in this.splashJSON.splashes){
+				const getMDTxt = await this.getByGitFileRaw(`${this.gitRelMgrSplashURL}${this.splashJSON.splashes[i].file}`, this.gitRelMgrOwnName, this.gitRelMgrRepoName).then(res => res);
+				this.splashJSON.splashes[i].mdTxt = await getMDTxt;
+			}
+			//console.log(this.splashJSON.splashes)
+			return true;
+		},	
 
 		async getRelMgrData(){
 			//critical function - this is the data used to sort the release notes. If not retreived do not continue to process
@@ -807,8 +836,8 @@ export default {
 						//remove some allways unwanted items for Duet Releases (nothing pre 3.2 and anything beginning with 'v')
 						relJSONFiltered = relJSON.filter(item => (item.tag_name >= "3.3" && !(item.tag_name.charAt(0)=='v')));
 						//pruning based on release date and type of release eg if full release remove all ref's to betas & RC's before it was released etc
-						var allFullReleasesJSON = relJSONFiltered.filter(item => (item.prerelease == false));
-						relJSONFiltered = relJSONFiltered.filter(item => (item.published_at <= allFullReleasesJSON[0].published_at && item.prerelease == false) || (item.published_at >= allFullReleasesJSON[0].published_at));
+						//var allFullReleasesJSON = relJSONFiltered.filter(item => (item.prerelease == false));
+						//relJSONFiltered = relJSONFiltered.filter(item => (item.published_at <= allFullReleasesJSON[0].published_at && item.prerelease == false) || (item.published_at >= allFullReleasesJSON[0].published_at));
 					}
 					if(gitUName == this.gitOwnerNameDuet && gitRepoName == this.gitDWCRepoNameDuet){
 						//no need to do any filtering just return full JSON for DWC

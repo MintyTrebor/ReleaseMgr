@@ -56,7 +56,7 @@ export default {
                             lblSelDuetRel: 'Select Duet Release',
                             lblSWAllRel: 'All Releases',
                             lblSWBetaRel: 'Beta Releases',
-                            notice: '<strong>ReleaseMgr</strong> is your wingman for firmware updating.<br><br><strong>ReleaseMgr</strong> attempts to identify information in the Duet release notes that may impact your current configuration, by matching information in your <strong>config.g</strong> and hardware setup:',
+                            notice: '<strong>ReleaseMgr</strong> is your wingman for firmware updating.<br><strong>ReleaseMgr</strong> attempts to identify information in the Duet release notes that may impact your current configuration by matching information in your <strong>config.g</strong> and hardware setup:',
                             noticeFooter: 'All information is indicative<br>You should not solely rely on ReleaseMgr for evaluating the impact of updating your current firmware/software.',
                             noticeForum: 'Please goto this forum post to provide any feedback.',
                             guide: '<strong>All release notes should be read in full before updating!<br/>You are fully responsible for the consequences of updating your firmware.<br></strong>Superceded Beta and RC firmware versions are not generally supported, and using them is at your own risk.',
