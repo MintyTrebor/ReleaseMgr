@@ -1,6 +1,8 @@
 # Have you seen the new official Duet3D wiki?  
   
-### It is packed with helpful information, guides, and reference material.  
+**It is packed with helpful information, guides, and reference material.**  
+  
+![enter image description here](https://raw.githubusercontent.com/MintyTrebor/ReleaseMgr/main/RelMgrData/splash/docsScreen.png)
   
 Including :  
   
