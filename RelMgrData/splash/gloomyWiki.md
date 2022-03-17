@@ -6,7 +6,7 @@
 **Its loaded with helpful information, guides, and reference material.**  
 <br>  
 
-![enter image description here](https://raw.githubusercontent.com/MintyTrebor/ReleaseMgr/main/RelMgrData/splash/gloomyDocs.png)<br>   
+![Team Gloomy](https://raw.githubusercontent.com/MintyTrebor/ReleaseMgr/main/RelMgrData/splash/gloomyDocs.png)<br>   
     
 [https://docs.duet3d.com](https://docs.duet3d.com)    
     
