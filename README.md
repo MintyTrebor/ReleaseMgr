@@ -3,7 +3,7 @@
 ReleaseMgr is a DWC plugin to help with your RRF firmware updating experience.  
 It scans your current hardware and config.g information, and highlights lines in the release notes that **may** impact your current configuration.  
 Through the use of the GitHub api, it can also display the release information, and provide links for the released files to download to your local machine.  
-The plugin currently supports RRF, DSF (SBC), and Team Gloomy releases.  
+The plugin currently supports RRF, DWC, DSF (SBC), and Team Gloomy releases.  
   
 Please read the Wiki for more information.  
   
