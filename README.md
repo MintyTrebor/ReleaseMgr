@@ -5,7 +5,9 @@ It scans your current hardware and config.g information, and highlights lines in
 Through the use of the GitHub api, it can also display the release information, and provide links for the released files to download to your local machine.  
 The plugin currently supports RRF, DWC, DSF (SBC), and Team Gloomy releases.  
   
-Please read the Wiki for more information.  
+Donload the latest release from [here](https://github.com/MintyTrebor/ReleaseMgr/releases)
+  
+Please read the [Wiki](https://github.com/MintyTrebor/ReleaseMgr/wiki) for more information.  
   
  ## Disclaimer:  
  All information provided in ReleaseMgr is indicative and should not be taken out of context. You should not solely rely on ReleaseMgr for evaluating the impact of updating your current firmware/software.  
