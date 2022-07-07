@@ -948,6 +948,7 @@ export default {
 
 		async getDuetSBCDWCRI(tmpTag, gitRepoName){
 			//first we have to re-configure the tag to match DSF tagging structure
+			//console.log("tmpTag:", tmpTag)
 			let majorVNumStr = tmpTag.substr(0,1);
 			let minorVNumStr = tmpTag.substr(2,1);
 			let subVNumStr = "0";
@@ -957,10 +958,14 @@ export default {
 			let tmpBetaNumber = 0;
 			if(tmpTag.length > 3){
 				subVNumStr = tmpTag.substr(4,1);
-				//console.log(tmpTag.substr(4,1))
+				prefix = `${majorVNumStr}.${minorVNumStr}.${subVNumStr}`;
+			}else{
+				prefix = `${majorVNumStr}.${minorVNumStr}`;
 			}
-			prefix = `${majorVNumStr}.${minorVNumStr}`;
+			//prefix = `${majorVNumStr}.${minorVNumStr}`;
 			prefix2 = `${majorVNumStr}.${minorVNumStr}.${subVNumStr}`;
+			//console.log("prefix:", prefix)
+			//console.log("prefix2:", prefix2)
 			if(tmpTag.toLowerCase().includes('beta')){
 				if(tmpTag.includes('-')){
 					//checking for Addendum
@@ -982,6 +987,7 @@ export default {
 				suffix = "";
 			}
 			let dsfTag = `v${prefix}${suffix}`;
+			//console.log("dsfTag:", dsfTag)
 			if(gitRepoName == this.gitDWCRepoNameDuet){
 				//DWC
 				if(!this.bGotAllDWCReleases){
