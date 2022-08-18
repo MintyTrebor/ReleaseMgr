@@ -1,7 +1,7 @@
 # The Official Duet3D Plugin Repo Is Live!  
 <br>  
 
-**Browse the repo to see the plugins currenlty available**  
+**Browse the repo to see the plugins currently available**  
 <br>  
 
 ![enter image description here](https://raw.githubusercontent.com/MintyTrebor/ReleaseMgr/main/RelMgrData/splash/PluginRepo.png)<br>   
