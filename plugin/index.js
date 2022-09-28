@@ -19,8 +19,6 @@ registerRoute(ReleaseMgrMainPanel, {
 
 //putting a try and catch around this to stop it erroring if no internet or other unexpected problem
 try{
-	//console.log("model ", store._modulesNamespaceMap['machine/model/'].state.boards[0].firmwareName)
-	//console.log("version ", store._modulesNamespaceMap['machine/model/'].state.boards[0].firmwareVersion)
 	var tmpSession = {
 			checkOnLoad: false,
 			lastVersion: null,
@@ -31,6 +29,7 @@ try{
 	getFromCache()
 	//timeout to allow the board details in the OM to be loaded
 	setTimeout(runCheck, 10000)
+	//runCheck();
 }catch(e) {
 	console.warn("ReleaseMgr: Unable to do version check - ", e)
 }
@@ -38,9 +37,11 @@ try{
 
 function runCheck(){
 	if(tmpSession.checkOnLoad){
-		console.warn("ReleaseMgr: Version Checking Enabled")
-		var bfwName = store._modulesNamespaceMap['machine/model/'].state.boards[0].firmwareName;
-		var bfwVersion = store._modulesNamespaceMap['machine/model/'].state.boards[0].firmwareVersion;
+		//console.log("model ", store._modulesNamespaceMap['machine/model/'].state.boards[0].firmwareName)
+		//console.log("version ", store._modulesNamespaceMap['machine/model/'].state.boards[0].firmwareVersion)
+		console.info("ReleaseMgr: Version Checking Enabled")
+		bfwName = store._modulesNamespaceMap['machine/model/'].state.boards[0].firmwareName;
+		bfwVersion = store._modulesNamespaceMap['machine/model/'].state.boards[0].firmwareVersion;
 		//bfwVersion = '3.4.1'
 		if(typeof bfwVersion !== "undefined" && typeof bfwName !== "undefined" && bfwName && bfwVersion){
 			checkVerUpdate();
@@ -48,7 +49,7 @@ function runCheck(){
 			console.warn("ReleaseMgr: No board detected for Version Check")
 		)
 	}else{
-		console.warn("ReleaseMgr: Version Checking Disabled")
+		console.info("ReleaseMgr: Version Checking Disabled")
 	}
 }
 
@@ -62,11 +63,11 @@ async function checkVerUpdate(){
 			relJSONcheckFiltered = relJSONcheckFiltered.filter(item => (item.tag_name >= "v3.3"));
 			if(tmpSession.lastVersion != relJSONcheckFiltered[0].tag_name){
 				tmpSession.lastVersion = relJSONcheckFiltered[0].tag_name;
-				console.warn("ReleaseMgr: New Release Found")
+				console.info("ReleaseMgr: New Release Found")
 				pushToCache();
 			}else{
 				if(tmpSession.alertOnce){
-					console.warn("ReleaseMgr: Duplicate Release")
+					console.info("ReleaseMgr: Duplicate Release")
 					return;
 				}
 			}
@@ -85,11 +86,11 @@ async function checkVerUpdate(){
 			relJSONcheckFiltered2 = relJSONcheckFiltered2.filter(item => (item.tag_name >= "3.3" && !(item.tag_name.charAt(0)=='v')));
 			if(tmpSession.lastVersion != relJSONcheckFiltered2[0].tag_name){
 				tmpSession.lastVersion = relJSONcheckFiltered2[0].tag_name;
-				console.warn("ReleaseMgr: New Release Found")
+				console.info("ReleaseMgr: New Release Found")
 				pushToCache();
 			}else{
 				if(tmpSession.alertOnce){
-					console.warn("ReleaseMgr: Duplicate Release")
+					console.info("ReleaseMgr: Duplicate Release")
 					return;
 				}
 			}
@@ -147,12 +148,15 @@ function pushToCache() {
 function fwSrc(){
 	if(typeof bfwName !== "undefined"){
 		if(bfwName.toLowerCase().includes('duet') || bfwName == ""){
+			console.info("ReleaseMgr: Duet Firmware Identified")
 			return 'Duet3D'; 
 		}else {
+			console.info("ReleaseMgr: Gloomy Firmware Identified")
 			return 'gloomyandy';
 		}
 	}else{
-		return "No Board Connected"
+		console.info("ReleaseMgr: No Firmware Identified")
+		return ""
 	}
 }
 
