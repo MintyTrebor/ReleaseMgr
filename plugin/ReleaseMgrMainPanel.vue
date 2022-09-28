@@ -80,12 +80,20 @@
 											</v-row>
 										</v-col>
 										<v-spacer></v-spacer>
-										<v-tooltip top>
-											<template v-slot:activator="{ on, attrs }">
-											<v-btn small v-bind="attrs" color="info" class="pa-2 ma-6" v-on="on" @click="bPageReload = !bPageReload"><v-icon>mdi-autorenew</v-icon></v-btn>
-											</template>
-											<span>{{tmpLang.plugin.ReleaseMgr.btnRefreshHover}}</span>
-										</v-tooltip>
+										<v-col align="right">
+											<v-tooltip top>
+												<template v-slot:activator="{ on, attrs }">
+												<v-btn small v-bind="attrs" color="info" class="pl-2 pr-1 ml-6" v-on="on" @click="bPageReload = !bPageReload"><v-icon>mdi-autorenew</v-icon></v-btn>
+												</template>
+												<span>{{tmpLang.plugin.ReleaseMgr.btnRefreshHover}}</span>
+											</v-tooltip>
+											<v-tooltip top>
+												<template v-slot:activator="{ on, attrs }">
+												<v-btn small v-bind="attrs" color="info" class="pr-2 ma-1 mr-6" v-on="on" @click="bShowEditGlobalSettingsDialog = true"><v-icon>mdi-cog</v-icon></v-btn>
+												</template>
+												<span>{{tmpLang.plugin.ReleaseMgr.btnSettingsHover}}</span>
+											</v-tooltip>
+										</v-col>
 									</v-row>
 								</v-col>
 							</v-row>
@@ -326,6 +334,7 @@
 				</v-container>
 			</v-row>
 		</v-card>
+		<editGlobalSettingsDialog :shown.sync="bShowEditGlobalSettingsDialog"  @save="saveSettings()" :sysData="relMgrSession"></editGlobalSettingsDialog>
 	</v-container>
 </template>
 
@@ -334,6 +343,7 @@
 
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
 import { DisconnectedError, OperationCancelledError } from '../../utils/errors.js';
+import mainDataFunctions from './data.js'
 import Path from '../../utils/path.js';
 import { isPrinting } from '../../store/machine/modelEnums.js';
 import tempENLang from './en.js';
@@ -344,6 +354,7 @@ import DispRI from './DispRI.vue';
 import DispRNFiles from './DispRNFiles.vue';
 import DispSplash from './DispSplash.vue';
 import { marked } from 'marked';
+import editGlobalSettingsDialog from './editGlobalSettingsDialog.vue';
 
 
 export default {
@@ -352,7 +363,8 @@ export default {
 		DispRI,
 		DispRNFiles,
 		DispAdminRN,
-		DispSplash
+		DispSplash,
+		editGlobalSettingsDialog,
 	},
 	computed: {
 		...mapState('machine/model', {
@@ -500,9 +512,9 @@ export default {
 	//temporary Lang Stuff to make it easier to replace later
 	mixins: [
 		tempENLang,
-		gitFunctions
+		gitFunctions,
+		mainDataFunctions
 	],
-
 	data: function () {
 		return {
 			bPageReload: false,
@@ -565,12 +577,20 @@ export default {
 			bCarouselCycle: true,			
 			currDSFTag: null,
 			currDWCTag: null,
-			currView: null
+			currView: null,
+			bShowEditGlobalSettingsDialog: false,
+			relMgrSession:{
+				checkOnLoad: false,
+				lastVersion: null,
+				alertOnce: true
+			}
+
 		}
 	},
 	
 	mounted(){
 		//do an intial load
+		this.loadSettings()
 		this.startUp();
 	},
 
@@ -662,8 +682,10 @@ export default {
 			this.duetRNJSON = await getRelJSON;
 			this.duetAdminRNJSON = JSON.parse(JSON.stringify(this.duetRNJSON));
 			this.duetRIJSON = this.allDuetReleasesJSON.filter(item => item.tag_name == tmpTag)
-			this.duetRIJSON = this.duetRIJSON[0];//don't need the array 
-			this.bGotDuetRI = true;
+			if(this.duetRIJSON.length > 0){
+				this.duetRIJSON = this.duetRIJSON[0];//don't need the array 
+				this.bGotDuetRI = true;
+			}
 			//get DWC Release Details
 			this.bGotDuetDWCRN = false;
 			this.bGotDuetDWCRI = false;
@@ -671,20 +693,26 @@ export default {
 			this.dwcRIJSON = {body: ""};
 			//MUST GET RI FIRST!!
 			this.dwcRIJSON = await this.getDuetSBCDWCRI(tmpTag, this.gitDWCRepoNameDuet).then(res => res).then(res => res);
-			this.dwcRIJSON = this.dwcRIJSON[0];//don't need the array 
-			const getDWCRelJSON  = await this.getReleaseNotes(this.gitOwnerNameDuet, this.gitDWCRepoNameDuet, tmpTag).then(response => response);
-			this.dwcRNJSON = await getDWCRelJSON;
-			if(this.bIsSBC){
-				//SBC is in use so get the SBC RI & RN info also ---- MUST GET RI FIRST!!
-				this.bGotDuetSBCRN = false;
-				this.bGotDuetSBCRI = false;
-				this.sbcRNJSON = {};
-				this.sbcRIJSON = {body: ""};
-				this.sbcRIJSON = await this.getDuetSBCDWCRI(tmpTag, this.gitSBCRepoNameDuet).then(res => res).then(res => res);
-				this.sbcRIJSON = this.sbcRIJSON[0];//don't need the array 
-				const getSBCRelJSON = await this.getReleaseNotes(this.gitOwnerNameDuet, this.gitSBCRepoNameDuet, tmpTag).then(response => response);
-				this.sbcRNJSON = await getSBCRelJSON;
-				this.dsfUpdateInsHTML = `<span><a :title="${this.dsfUpdateInsURL}" @click="hlpLinkClick(this.dsfUpdateInsURL)"  style="color: green">Click here to view DSF update instructions</a></span>`;
+			//check if RI was found
+			if(this.dwcRIJSON.length > 0){
+				this.dwcRIJSON = this.dwcRIJSON[0];//don't need the array 
+				const getDWCRelJSON  = await this.getReleaseNotes(this.gitOwnerNameDuet, this.gitDWCRepoNameDuet, tmpTag).then(response => response);
+				this.dwcRNJSON = await getDWCRelJSON;
+				if(this.bIsSBC){
+					//SBC is in use so get the SBC RI & RN info also ---- MUST GET RI FIRST!!
+					this.bGotDuetSBCRN = false;
+					this.bGotDuetSBCRI = false;
+					this.sbcRNJSON = {};
+					this.sbcRIJSON = {body: ""};
+					this.sbcRIJSON = await this.getDuetSBCDWCRI(tmpTag, this.gitSBCRepoNameDuet).then(res => res).then(res => res);
+					this.sbcRIJSON = this.sbcRIJSON[0];//don't need the array 
+					const getSBCRelJSON = await this.getReleaseNotes(this.gitOwnerNameDuet, this.gitSBCRepoNameDuet, tmpTag).then(response => response);
+					this.sbcRNJSON = await getSBCRelJSON;
+					this.dsfUpdateInsHTML = `<span><a :title="${this.dsfUpdateInsURL}" @click="hlpLinkClick(this.dsfUpdateInsURL)"  style="color: green">Click here to view DSF update instructions</a></span>`;
+				}
+			}else{
+				//no matching DWC found so there is probably an issue with github or the release has not yet been posted
+
 			}
 		},
 

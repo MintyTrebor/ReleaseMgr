@@ -28,8 +28,11 @@
 			{{riJSON.name}} Files
 		</v-card-title>
 		<v-card-text class="rMgrv-cardRNFiles__text">
-			<v-overlay :absolute="true" :opacity="0.5" :value="bShowOverlay" align="center" justify="center">
+			<v-overlay :absolute="true" :opacity="0.5" :value="bSOvrlay" align="center" justify="center" >
 				<v-chip>{{tmpLang.filesNotAvail}}</v-chip>
+				<v-btn rounded medium class="mr-2" style="cursor: pointer" color="info" @click="bSOvrlay = !bSOvrlay">
+					{{tmpLang.filesNotAvail2}}
+				</v-btn>
 			</v-overlay>
 			<span v-for="(fileLink, i) in riJSON.assets" :key="i">
 				<span><a :title="fileLink.browser_download_url" @click="assetClick(fileLink.browser_download_url)"  style="color: green">{{fileLink.name}}</a></span><br>
@@ -84,7 +87,8 @@ export default {
 			panelJSON: {releases:[]},
 			gitOwnerNameDuet: 'Duet3D',
 			gitOwnerNameGloomy: 'gloomyandy',
-			panelHTML: ""			
+			panelHTML: "",
+			bSOvrlay: false			
 		}
 	},
 
@@ -99,7 +103,7 @@ export default {
 		...mapMutations('machine/settings', ['addCode', 'removeCode']),
 		
 		startUp(){
-			//jjhkjh
+			this.bSOvrlay = this.bShowOverlay;
 		}, 
 
 		assetClick(tmpURL){
