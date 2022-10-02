@@ -2,9 +2,7 @@
     "splashes": [
         {"file": "DuetWiki.md"},
         {"file": "gloomyWiki.md"},
-        {"file": "sindarius.md"},
         {"file": "btncmd.md"},
-        {"file": "InputShaper.md"},
         {"file": "PluginRepo.md"}
    ] 
 } 
