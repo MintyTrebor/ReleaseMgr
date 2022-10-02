@@ -9,4 +9,4 @@
 <br>   
     
 [https://plugins.duet3d.com/](https://plugins.duet3d.com/)  <br>
-[Submission Guide](https://plugins.duet3d.com/guide/)  
+
