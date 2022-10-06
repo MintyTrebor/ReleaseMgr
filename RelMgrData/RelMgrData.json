@@ -1,7 +1,7 @@
 {
     "boards": [
         {"shortName": "2Maestro", "rnNames": ["Duet Maestro"]},
-        {"shortName": "2WiFi", "rnNames": ["Duet 2 Wifi", "Duet 2 and DueX", "Duet 2 WiFi and Duet 3 Mini 5+ WiFi", "Duet 2 WiFi/Ethernet", "Duet 2", "Duet"]},
+        {"shortName": "2WiFi", "rnNames": ["Duet 2 Wifi", "Duet 2 and DueX", "Duet 2 WiFi and Duet 3 Mini 5 WiFi", "Duet 2 WiFi/Ethernet", "Duet 2", "Duet"]},
         {"shortName": "2Ethernet", "rnNames": ["Duet 2 Ethernet", "Duet 2 and DueX", "Duet 2 WiFi/Ethernet", "Duet 2", "Duet"]},
         {"shortName": "2SBC", "rnNames": ["Duet 2 SBC", "Duet 2 and DueX"]},
         {"shortName": "Mini5plus", "rnNames": ["Duet 3 Mini", "Duet 3", "Duet", "Duet 3 Mini Ethernet", "Duet 3 Mini WiFi"]},
