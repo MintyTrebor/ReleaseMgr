@@ -1,4 +1,4 @@
-<style>
+<style scoped>
 	.rMgrv-cardRLM {
 		display: flex !important;
 		flex-direction: column;
@@ -49,7 +49,6 @@
 									<v-expansion-panel-content>
 										<span v-for="(content, k) in sec.lines" :key="k">
 											<span :title="content.line.hover" :key="k"><div v-html="content.line.text" :class="`${content.line.colour} pa-1`"></div></span>
-											<!-- <span v-if="sec.section == 'Object model changes:'">{{content.line.text}}</span> -->
 										</span>
 									</v-expansion-panel-content>
 								</v-expansion-panel>
@@ -62,13 +61,13 @@
 	</v-card>
 </template>
 
-<script>
-'use strict'
+<script lang="ts">
 
-import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
-import tempENLang from './en.js';
+import Vue from "vue";
+import store from "@/store";
+import * as tempENLang from './en';
 
-export default {
+export default Vue.extend({
 	props: {
 		rnAdminJSON: {
 			type: Object
@@ -78,59 +77,55 @@ export default {
 		},
 		selectedTag: String
     },
-	mixins: [
-		tempENLang
-	],
+	
 	computed: {
-		...mapState('machine/model', {
-			status: state => state.state.status,
-			systemDirectory: state => state.directories.system,
-			systemCurrIP: state => state.network.interfaces[0].actualIP,
-			systemDSFVerStr: state => state.state.dsfVersion
-		}),
-		...mapGetters('machine/model', ['jobProgress']),
-		...mapState('machine/settings', ['codes']),
-		...mapState('machine', ['model']),
-		...mapState({
-			darkTheme: state => state.settings.darkTheme
-		}),
-		tmpLang(){
-			return this.tmpLangObj().plugin.ReleaseMgr;
+		systemDirectory(): string {
+			return store.state.machine.model.directories.system;
 		},
-		rnHWLookup(){
+		systemCurrIP(): any {
+			return store.state.machine.model.network.interfaces[0].actualIP;
+		},
+		systemDSFVerStr(): any {
+			return store.state.machine.model.state.dsfVersion;
+		},
+		darkTheme(): any {
+			return store.state.settings.darkTheme;
+		}, 
+		tmpLang(): any {
+			return tempENLang.tmpLangObj().plugin.ReleaseMgr;
+		},
+		rnHWLookup(): any{
 			return this.rMgrData.boards;
 		},
-		bIsSBC(){
+		bIsSBC(): boolean{
 			if(this.systemDSFVerStr !== null && this.systemDSFVerStr !== ''){
 				return true;
 			}else{
 				return false;
 			}
 		},
-		confGLineMatchCol(){
+		confGLineMatchCol(): string{
 			if(!this.darkTheme){
 				return "red lighten-3";
 			}else{
 				return "red lighten-3 black--text"
 			}
-		}
-		
+		}		
 	},
 
 	data () {
 		return {
-			bExpRel: [[0]],
-			bExpSec: [[0]],
-			currBSN: null,
-			panelJSON2: {releases:[]},
+			bExpRel: [[0]] as any,
+			bExpSec: [[0]] as any,
+			currBSN: null as any,
+			panelJSON2: {releases:[]} as any,
 			gitOwnerNameDuet: 'Duet3D',
 			gitOwnerNameGloomy: 'gloomyandy',
 			gitRepoNameDuet: "RepRapFirmware",
 			gitSBCRepoNameDuet: "DuetSoftwareFramework", 
 			gitRepoNameGloomy: "RepRapFirmware",
 			gitDWCRepoNameDuet: "DuetWebControl",
-			confGText: null
-			
+			confGText: null as any			
 		}
 	},
 
@@ -139,11 +134,6 @@ export default {
 	},
 
 	methods: {
-		...mapActions('machine', ['sendCode']),
-		...mapActions('machine', {machineDownload: 'download', getFileList: 'getFileList'}),
-        ...mapActions('machine', ['upload']),
-		...mapMutations('machine/settings', ['addCode', 'removeCode']),
-		
 		async startUp(){
 			if(this.rnAdminJSON){
 				if(this.rnAdminJSON.gUName == this.gitOwnerNameDuet && this.rnAdminJSON.gRName == this.gitRepoNameDuet){
@@ -154,14 +144,14 @@ export default {
 		}, 
 
 		reFormatCodeBlockLine(){
-			let rel =0;
+			let rel: any = 0;
 			for(rel in this.panelJSON2.releases){
 				let currRel = this.panelJSON2.releases[rel];
-				let sec = 0;
+				let sec: any = 0;
 				for(sec in currRel.sections){
 					//sections
 					let currSec = currRel.sections[sec]
-					let lin = 0;
+					let lin: any = 0;
 					for(lin in currSec.lines){
 						//lines
 						let currLine = currSec.lines[lin].line;
@@ -178,14 +168,14 @@ export default {
 		filterDuetRNJSON(){
 			if(this.rnAdminJSON.class == "rn" && this.rnAdminJSON.releases.length > 0){
 				//Filtering for Duet ReleaseNotes
-				let tmpJSON = {releases: [], relType: this.rnAdminJSON.relType, selTag: this.rnAdminJSON.selTag, gUName: this.rnAdminJSON.gUName, class: this.rnAdminJSON.class};
+				let tmpJSON: any = {releases: [], relType: this.rnAdminJSON.relType, selTag: this.rnAdminJSON.selTag, gUName: this.rnAdminJSON.gUName, class: this.rnAdminJSON.class};
 				if(this.rnAdminJSON.relType == "Beta" || this.rnAdminJSON.relType == "RC"){
 					//filter the notes to the relevant sections (cumlative so if beta3 then include beta2 & beta1) based on selected release tag
 					let trmTag = this.rnAdminJSON.selTag.slice(0, this.rnAdminJSON.selTag.toLowerCase().indexOf(this.rnAdminJSON.relType.toLowerCase())+this.rnAdminJSON.relType.length);
 					trmTag = trmTag.toLowerCase().replace('rc', '')
 					trmTag = trmTag.toLowerCase().replace('beta', '')
-					let tP1 = {releases: []};
-					let rnc = 0;
+					let tP1: any = {releases: []};
+					let rnc: any = 0;
 					for(rnc in this.rnAdminJSON.releases){
 						if(this.rnAdminJSON.releases[rnc].release.toLowerCase().includes(`reprapfirmware ${trmTag}`)){				
 								tP1.releases.push(this.rnAdminJSON.releases[rnc]);
@@ -196,7 +186,7 @@ export default {
 				}else{
 					//filter to selected release tag
 					let tStr1 = `RepRapFirmware ${this.rnAdminJSON.selTag}`
-					let tO1 = this.rnAdminJSON.releases.filter(item => (item.release.includes(tStr1)));
+					let tO1 = this.rnAdminJSON.releases.filter((item: { release: string; }) => (item.release.includes(tStr1)));
 					tmpJSON.releases = tO1;
 					return tmpJSON;
 				}
@@ -205,17 +195,17 @@ export default {
 
 		highlightRN2(){
 			//parses the release notes and applies colors/highlights according to the mactching criteria 
-				let rel = 0;
-				let sec = 0;
-				let lin = 0;
+				let rel: any = 0;
+				let sec: any = 0;
+				let lin: any = 0;
 				let statSNArr = this.rnHWLookup;
 				let currRel = null;
 				let currSec = null;
 				let currLine = null;
-				let usn = 0;
-				let rnhw = 0;
-				let rnhws = 0;
-				let hwStr = "";
+				let usn: any = 0;
+				let rnhw: any = 0;
+				let rnhws: any = 0;
+				let hwStr: any = "";
 				let bHWMatch = false;
 				let hwSNMatchArr = null;
 				let bSkipped = false;
@@ -272,10 +262,10 @@ export default {
 										//loop through each board shortName in the OM
 										for(usn in statSNArr){
 											//get the array of shortNames groups from the data maintained on github
-											hwSNMatchArr = this.rnHWLookup.filter(item => item.shortName == statSNArr[usn].shortName);
+											hwSNMatchArr = this.rnHWLookup.filter((item: { shortName: string; }) => item.shortName == statSNArr[usn].shortName);
 											if(hwSNMatchArr.length !== 0){
 												//we have found a match of short name now check each group name against the combination elelement
-												let isMatchArr = hwSNMatchArr[0].rnNames.filter(item => item.toLowerCase() == rnHWArr[rnhws].toLowerCase())
+												let isMatchArr = hwSNMatchArr[0].rnNames.filter((item: any) => item.toLowerCase() == rnHWArr[rnhws].toLowerCase())
 												if(isMatchArr.length !== 0){
 													bHWMatch = true;
 												}												
@@ -317,5 +307,5 @@ export default {
 			this.startUp();
 		}
 	}
-}
+});
 </script>

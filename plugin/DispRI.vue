@@ -34,14 +34,14 @@
 	</v-card>
 </template>
 
-<script>
-'use strict'
+<script lang="ts">
 
-import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
+import Vue from "vue";
+import store from "@/store";
 import { marked } from 'marked';
-import tempENLang from './en.js';
 
-export default {
+
+export default Vue.extend({
 	props: {
 		riJSON: {
 			type: Object
@@ -49,40 +49,31 @@ export default {
 		selectedTag: String,
 		srcType: String
     },
-	mixins: [
-		tempENLang
-	],
+	
 	computed: {
-		...mapState('machine/model', {
-			status: state => state.state.status,
-			systemDirectory: state => state.directories.system,
-			systemCurrIP: state => state.network.interfaces[0].actualIP,
-			systemDSFVerStr: state => state.state.dsfVersion
-		}),
-		...mapGetters('machine/model', ['jobProgress']),
-		...mapState('machine/settings', ['codes']),
-		...mapState('machine', ['model']),
-		...mapState({
-			darkTheme: state => state.settings.darkTheme
-		}),
-		tmpLang(){
-			return this.tmpLangObj().plugin.ReleaseMgr;
+		systemDirectory(): string {
+			return store.state.machine.model.directories.system;
 		},
-		rnHWLookup(){
-			return this.tmpLangObj().boards;
+		systemCurrIP(): any {
+			return store.state.machine.model.network.interfaces[0].actualIP;
 		},
-			
+		systemDSFVerStr(): any {
+			return store.state.machine.model.state.dsfVersion;
+		},
+		darkTheme(): any {
+			return store.state.settings.darkTheme;
+		}
 	},
 
 	data () {
 		return {
-			bExpRel: [[0]],
-			bExpSec: [[0]],
-			currBSN: null,
-			panelJSON: {releases:[]},
+			bExpRel: [[0]] as any,
+			bExpSec: [[0]] as any,
+			currBSN: null as any,
+			panelJSON: {releases:[]} as any,
 			gitOwnerNameDuet: 'Duet3D',
 			gitOwnerNameGloomy: 'gloomyandy',
-			panelHTML: ""			
+			panelHTML: "" as any			
 		}
 	},
 
@@ -91,11 +82,6 @@ export default {
 	},
 
 	methods: {
-		...mapActions('machine', ['sendCode']),
-		...mapActions('machine', {machineDownload: 'download', getFileList: 'getFileList'}),
-        ...mapActions('machine', ['upload']),
-		...mapMutations('machine/settings', ['addCode', 'removeCode']),
-		
 		startUp(){
 			if(this.riJSON){
 				this.processRIJSON();
@@ -106,27 +92,27 @@ export default {
 			if(this.srcType == "gloomyRN"){
 				let markdown = this.riJSON.body.replace(/\n(?=\n)/g, "\n\n<br/>\n")
 				const tmpRelIMup = marked.parse(markdown, {gfm : true, breaks: true});
-				let hrefArr = tmpRelIMup.match(/<\s*a[^>]*/g);
+				let hrefArr: any = tmpRelIMup.match(/<\s*a[^>]*/g);
 				this.panelHTML = tmpRelIMup;
-				let cn=0;
+				let cn: any = 0;
 				for(cn in hrefArr){
 					let tmpTxt = hrefArr[cn].replace("href", "title");
 					this.panelHTML = this.panelHTML.replace(hrefArr[cn], tmpTxt + ` onclick="window.open(this.title, '_blank')"  style="color: green"`);
 				}
 			}else{
 				const tmpRelIMup = marked.parse(this.riJSON.body, {gfm : true, breaks: true});
-				let hrefArr = tmpRelIMup.match(/<\s*a[^>]*/g);
+				let hrefArr: any = tmpRelIMup.match(/<\s*a[^>]*/g);
 				this.panelHTML = tmpRelIMup;
-				let cn=0;
+				let cn: any = 0;
 				for(cn in hrefArr){
 					let tmpTxt = hrefArr[cn].replace("href", "title");
 					this.panelHTML = this.panelHTML.replace(hrefArr[cn], tmpTxt + ` onclick="window.open(this.title, '_blank')"  style="color: green"`);
 				}
 			}
-			
 		}
 		
 	},
+
 	watch: {
 		selectedTag() {
 			this.startUp();
@@ -138,5 +124,5 @@ export default {
 			this.startUp();
 		}
 	}
-}
+});
 </script>

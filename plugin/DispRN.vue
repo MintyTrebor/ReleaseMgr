@@ -63,18 +63,16 @@
 	</v-card>
 </template>
 
-<script>
-'use strict'
+<script lang="ts">
 
-import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
+import Vue from "vue";
+import store from "@/store";
+import * as tempENLang from './en';
+import { DisconnectedError, OperationCancelledError } from '@/utils/errors';
+import Path from '@/utils/path'
 
-import { DisconnectedError, OperationCancelledError } from '../../utils/errors.js';
-// import Events from '../../utils/events.js'
-// import { isPrinting } from '../../store/machine/modelEnums.js';
-import Path from '../../utils/path.js'
-import tempENLang from './en.js';
 
-export default {
+export default Vue.extend({
 	props: {
 		rnJSON: {
 			type: Object
@@ -84,40 +82,42 @@ export default {
 		},
 		selectedTag: String
     },
-	mixins: [
-		tempENLang
-	],
+	
 	computed: {
-		...mapState('machine/model', {
-			status: state => state.state.status,
-			systemDirectory: state => state.directories.system,
-			systemCurrIP: state => state.network.interfaces[0].actualIP,
-			systemDSFVerStr: state => state.state.dsfVersion
-		}),
-		...mapGetters('machine/model', ['jobProgress']),
-		...mapState('machine/settings', ['codes']),
-		...mapState('machine', ['model']),
-		...mapState({
-			darkTheme: state => state.settings.darkTheme
-		}),
-		tmpLang(){
-			return this.tmpLangObj().plugin.ReleaseMgr;
+		systemDirectory(): string {
+			return store.state.machine.model.directories.system;
 		},
-		rnHWLookup(){
+		systemCurrIP(): any {
+			return store.state.machine.model.network.interfaces[0].actualIP;
+		},
+		systemDSFVerStr(): any {
+			return store.state.machine.model.state.dsfVersion;
+		},
+		darkTheme(): any {
+			return store.state.settings.darkTheme;
+		}, 
+		tmpLang(): any {
+			return tempENLang.tmpLangObj().plugin.ReleaseMgr;
+		},
+		rnHWLookup(): any {
 			return this.rMgrData.boards;
 		},
-		systemBoardSNames(){
+		systemBoardSNames(): any {
 			if(this.bHiddenTestData){
 				return this.rMgrData.testData;
 			}else{
-				return this.model.boards;
+				return store.state.machine.model.boards
 			}		
 		},
-		bHiddenTestData(){
+		bHiddenTestData(): boolean {
 			try{
-				let tmpOMKey = this.model.global.releaseMgrTestData;
-				if(tmpOMKey){
-					return true;
+				let tmpOMKey: any = store.state.machine.model.global
+				if(tmpOMKey.hasOwnProperty("releaseMgrTestData")){
+					if(tmpOMKey.releaseMgrTestData){
+						return true;
+					}else{
+						return false;
+					}
 				}else{
 					return false;
 				}
@@ -125,68 +125,65 @@ export default {
 				return false;
 			}
 		},
-		bIsSBC(){
+		bIsSBC(): boolean {
 			if(this.systemDSFVerStr !== null && this.systemDSFVerStr !== ''){
 				return true;
 			}else{
 				return false;
 			}
 		},
-		confGLineMatchCol(){
+		confGLineMatchCol(): string {
 			if(!this.darkTheme){
 				return "red lighten-3 black--text";
 			}else{
 				return "red lighten-3 black--text"
 			}
 		},
-		confGCodeMatchCol(){
+		confGCodeMatchCol(): string {
 			if(!this.darkTheme){
 				return "pink accent-3 black--text";
 			}else{
 				return "pink accent-3 black--text";
 			}
 		},
-		shortNLineMatchCol(){
+		shortNLineMatchCol(): string {
 			if(!this.darkTheme){
 				return "blue lighten-4";
 			}else{
 				return "blue lighten-4 black--text";
 			}
 		},
-		shortNMatchHWCol(){
+		shortNMatchHWCol(): string {
 			if(!this.darkTheme){
 				return "blue darken-4";
 			}else{
 				return "blue darken-4";
 			}
 		},
-		dualHWGCMatchLineColor(){
+		dualHWGCMatchLineColor(): string {
 			if(!this.darkTheme){
 				return "purple lighten-4";
 			}else{
 				return "purple darken-4";
 			}
-		}
-
-
-		
+		}		
 	},
 
 	data () {
 		return {
-			bExpRel: [[0]],
-			bExpSec: [[0]],
-			currBSN: null,
-			panelJSON: {releases:[]},
+			bExpRel: [[0]] as any,
+			bExpSec: [[0]] as any,
+			currBSN: null as any,
+			panelJSON: {releases:[]} as any,
 			gitOwnerNameDuet: 'Duet3D',
 			gitOwnerNameGloomy: 'gloomyandy',
 			gitRepoNameDuet: "RepRapFirmware",
 			gitSBCRepoNameDuet: "DuetSoftwareFramework", 
 			gitRepoNameGloomy: "RepRapFirmware",
 			gitDWCRepoNameDuet: "DuetWebControl",
-			confGText: null,
+			confGText: null as any,
 			duetDocsURL: 'https://docs.duet3d.com/en/User_manual/Reference/Gcodes/',
-			currReleaseJSON: null
+			currReleaseJSON: null as any
 			
 		}
 	},
@@ -196,11 +193,7 @@ export default {
 	},
 
 	methods: {
-		...mapActions('machine', ['sendCode']),
-		...mapActions('machine', {machineDownload: 'download', getFileList: 'getFileList'}),
-        ...mapActions('machine', ['upload']),
-		...mapMutations('machine/settings', ['addCode', 'removeCode']),
-		
+	
 		async startUp(){
 			if(this.rnJSON){
 				if(this.rnJSON.gUName == this.gitOwnerNameDuet && this.rnJSON.gRName == this.gitRepoNameDuet){
@@ -226,14 +219,14 @@ export default {
 		}, 
 
 		reFormatCodeBlockLine(){
-			let rel =0;
+			let rel: any = 0;
 			for(rel in this.panelJSON.releases){
 				let currRel = this.panelJSON.releases[rel];
-				let sec = 0;
+				let sec: any = 0;
 				for(sec in currRel.sections){
 					//sections
 					let currSec = currRel.sections[sec]
-					let lin = 0;
+					let lin: any = 0;
 					for(lin in currSec.lines){
 						//lines
 						let currLine = currSec.lines[lin].line;
@@ -247,7 +240,7 @@ export default {
 			}
 		},
 
-		getTagSubNumber(type, releaseTag){
+		getTagSubNumber(type: string, releaseTag: string){
 			let tmpType = type.toLowerCase();
 			let tmpRTag = releaseTag.toLowerCase();
 			let tmpBetaNumber = 0;
@@ -260,7 +253,7 @@ export default {
 			return tmpBetaNumber;
 		},
 
-		getSBCTagSubNumber(type, releaseTag){
+		getSBCTagSubNumber(type: string, releaseTag: string){
 			let tmpType = type.toLowerCase();
 			let tmpRTag = releaseTag.toLowerCase();
 			let tmpBetaNumber = 0;
@@ -270,7 +263,7 @@ export default {
 			return tmpBetaNumber;
 		},
 
-		getSBCTag(type, releaseTag){
+		getSBCTag(type: string, releaseTag: string){
 			let tmpType = type.toLowerCase();
 			let tmpRTag = releaseTag.toLowerCase();
 			//let tmpBetaNumber = 0;
@@ -282,13 +275,13 @@ export default {
 		filterDuetSBCRNJSON(){
 			if(this.rnJSON.class == "rn" && this.rnJSON.releases.length > 0){
 				//Filtering for Duet ReleaseNotes
-				let tmpJSON = {releases: [], relType: this.rnJSON.relType, selTag: this.rnJSON.selTag, gUName: this.rnJSON.gUName, class: this.rnJSON.class};
+				let tmpJSON: any = {releases: [], relType: this.rnJSON.relType, selTag: this.rnJSON.selTag, gUName: this.rnJSON.gUName, class: this.rnJSON.class};
 				if(this.rnJSON.relType == "Beta" || this.rnJSON.relType == "RC"){
 					//filter the notes to the relevant sections (cumlative so if beta3 then include beta2 & beta1) based on selected release tag
 					let trmTag = this.rnJSON.selTag.substring(1);
 					let tmpBetaNumber = this.getSBCTagSubNumber(this.rnJSON.relType, trmTag);
-					let tP1 = {releases: []};
-					let rnc = 0;
+					let tP1: any = {releases: []};
+					let rnc: any = 0;
 					let tmpChkVer = 0;
 					for(rnc in this.rnJSON.releases){
 						if(this.rnJSON.releases[rnc].release.toLowerCase().includes(`version ${this.getSBCTag(this.rnJSON.relType, trmTag)}`)){
@@ -303,7 +296,7 @@ export default {
 				}else{
 					//filter to selected release tag
 					let tStr1 = `Version ${this.rnJSON.selTag.substring(1)}`;
-					let tO1 = this.rnJSON.releases.filter(item => (item.release.includes(tStr1)));
+					let tO1 = this.rnJSON.releases.filter((item: { release: string; }) => (item.release.includes(tStr1)));
 					tmpJSON.releases = tO1;
 					return tmpJSON;
 				}
@@ -313,13 +306,13 @@ export default {
 		filterDuetRNJSON(){
 			if(this.rnJSON.class == "rn" && this.rnJSON.releases.length > 0){
 				//Filtering for Duet ReleaseNotes
-				let tmpJSON = {releases: [], relType: this.rnJSON.relType, selTag: this.rnJSON.selTag, gUName: this.rnJSON.gUName, class: this.rnJSON.class};
+				let tmpJSON: any = {releases: [], relType: this.rnJSON.relType, selTag: this.rnJSON.selTag, gUName: this.rnJSON.gUName, class: this.rnJSON.class};
 				if(this.rnJSON.relType == "Beta" || this.rnJSON.relType == "RC"){
 					//filter the notes to the relevant sections (cumlative so if beta3 then include beta2 & beta1) based on selected release tag
 					let trmTag = this.rnJSON.selTag.slice(0, this.rnJSON.selTag.toLowerCase().indexOf(this.rnJSON.relType.toLowerCase())+this.rnJSON.relType.length);
 					let tmpBetaNumber = this.getTagSubNumber(this.rnJSON.relType, this.rnJSON.selTag);
-					let tP1 = {releases: []};
-					let rnc = 0;
+					let tP1: any = {releases: []};
+					let rnc: any = 0;
 					let tmpChkVer = 0;
 					for(rnc in this.rnJSON.releases){
 						if(this.rnJSON.releases[rnc].release.toLowerCase().includes(`reprapfirmware ${trmTag}`)){
@@ -334,14 +327,14 @@ export default {
 				}else{
 					//filter to selected release tag
 					let tStr1 = `RepRapFirmware ${this.rnJSON.selTag}`
-					let tO1 = this.rnJSON.releases.filter(item => (item.release.includes(tStr1)));
+					let tO1 = this.rnJSON.releases.filter((item: { release: string; }) => (item.release.includes(tStr1)));
 					tmpJSON.releases = tO1;
 					return tmpJSON;
 				}
 			}
 		},
 
-		opnDocs(gcode){
+		opnDocs(gcode: string){
 			window.open(this.duetDocsURL+gcode, '_blank');
 		},
 
@@ -355,19 +348,19 @@ export default {
 				arrAllConfGcodes = this.makeArrayUniq(arrAllConfGcodes);
 				let arrAllConfSubGcodes = this.confGText.match( /\b[(g|G|m|M]{1}\d{1,3}\.\d{1,3}\b/g );
 				if(arrAllConfSubGcodes){arrAllConfSubGcodes = this.makeArrayUniq(arrAllConfSubGcodes);}
-				let rel = 0;
-				let sec = 0;
-				let lin = 0;
-				let mgc = 0;
+				let rel:any  = 0;
+				let sec:any  = 0;
+				let lin:any  = 0;
+				let mgc:any  = 0;
 				this.currBSN = JSON.stringify(this.systemBoardSNames);
 				let statSNArr = JSON.parse(this.currBSN);
 				let currRel = null;
 				let currSec = null;
 				let currLine = null;
-				let usn = 0;
-				let rnhw = 0;
-				let rnhws = 0;
-				let hwStr = "";
+				let usn:any  = 0;
+				let rnhw:any  = 0;
+				let rnhws:any  = 0;
+				let hwStr:any = "";
 				let bHWMatch = false;
 				let bHWLine = false;
 				let hwSNMatchArr = null;
@@ -434,10 +427,10 @@ export default {
 										//loop through each board shortName in the OM
 										for(usn in statSNArr){
 											//get the array of shortNames groups from the data maintained on github
-											hwSNMatchArr = this.rnHWLookup.filter(item => item.shortName == statSNArr[usn].shortName);
+											hwSNMatchArr = this.rnHWLookup.filter((item: { shortName: string; }) => item.shortName == statSNArr[usn].shortName);
 											if(hwSNMatchArr.length !== 0){
 												//we have found a match of short name now check each group name against the combination elelement
-												let isMatchArr = hwSNMatchArr[0].rnNames.filter(item => item.toLowerCase() == rnHWArr[rnhws].toLowerCase())
+												let isMatchArr = hwSNMatchArr[0].rnNames.filter((item: string) => item.toLowerCase() == rnHWArr[rnhws].toLowerCase())
 												if(isMatchArr.length !== 0){
 													bHWMatch = true;
 												}												
@@ -474,7 +467,7 @@ export default {
 							//check line for matching gcodes -  only if not a HW line
 							if(!currLine.hwMatch && !bHWLine){
 								//match normal gcodes
-								let ip = 0;
+								let ip: any = 0;
 								let clTxtArr = currLine.text.match( /\b[(g|G|m|M]{1}\d{1,3}\b(?!\.)/g )
 								let clTxtArr2 = currLine.text.match( /\b[(g|G|m|M]{1}\d{1,3}\.\d{1,3}\b/g )
 								if(clTxtArr){
@@ -564,7 +557,7 @@ export default {
 			//load the Config.g file from SD
 			try {
 				const setFileName = Path.combine(this.systemDirectory, `config.g`);
-				const response = await this.machineDownload({ filename: setFileName, type: 'text', showSuccess: false }).then(res => res);
+				const response = await store.dispatch("machine/download", { filename: setFileName, type: 'text', showSuccess: false }).then(res => res);
 				return response;
 			} catch (e) {
 				if (!(e instanceof DisconnectedError) && !(e instanceof OperationCancelledError)) {
@@ -574,9 +567,9 @@ export default {
 			}
 		},
 
-		makeArrayUniq(a) {
+		makeArrayUniq(a: any) {
 			//Remove Duplicates from the array
-			return a.sort().filter(function(item, pos, ary) {
+			return a.sort().filter(function(item: any, pos: any, ary: any) {
 				return !pos || item != ary[pos - 1];
 			});
 		},
@@ -594,5 +587,5 @@ export default {
 			this.startUp();
 		}
 	}
-}
+});
 </script>

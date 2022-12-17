@@ -11,7 +11,7 @@
 </style>
 <template>
 	<v-container fluid class=" pa-0 ma-0" >
-		<v-card flat width="100%" class=" pa-0 ma-0" :key="1+bPageReload">
+		<v-card flat width="100%" class=" pa-0 ma-0">
 			<div width="100%" class="mb-3">
 				<v-row dense width="100%" :class="`${labelClass} ma-0 pa-0 pb-1`">
 					<v-col cols="12" justify="start">
@@ -334,30 +334,29 @@
 				</v-container>
 			</v-row>
 		</v-card>
-		<editGlobalSettingsDialog :shown.sync="bShowEditGlobalSettingsDialog"  @save="saveSettings()" :sysData="relMgrSession"></editGlobalSettingsDialog>
+		<editGlobalSettingsDialog :shown.sync="bShowEditGlobalSettingsDialog"  @save="callSaveSettings(relMgrSession)" :sysData="relMgrSession"></editGlobalSettingsDialog>
 	</v-container>
 </template>
 
-<script>
+<script lang="ts">
 
-
-import { mapGetters, mapState, mapActions, mapMutations } from 'vuex';
-import { DisconnectedError, OperationCancelledError } from '../../utils/errors.js';
-import mainDataFunctions from './data.js'
-import Path from '../../utils/path.js';
-import { isPrinting } from '../../store/machine/modelEnums.js';
-import tempENLang from './en.js';
-import gitFunctions from './gitFunctions.js';
+import Vue from "vue";
+import store from "@/store";
+import { isPrinting } from "@/utils/enums";
+import { marked } from 'marked';
+import * as tempENLang from './en';
+import * as gitFunctions from'./gitFunctions';
+import * as dataFunctions from './data'
 import DispRN from './DispRN.vue';
 import DispAdminRN from './DispAdminRN.vue';
 import DispRI from './DispRI.vue';
 import DispRNFiles from './DispRNFiles.vue';
 import DispSplash from './DispSplash.vue';
-import { marked } from 'marked';
 import editGlobalSettingsDialog from './editGlobalSettingsDialog.vue';
+import ObjectModel from "@duet3d/objectmodel";
 
 
-export default {
+export default Vue.extend({
 	components: {
         DispRN,
 		DispRI,
@@ -366,37 +365,41 @@ export default {
 		DispSplash,
 		editGlobalSettingsDialog,
 	},
+	
 	computed: {
-		...mapState('machine/model', {
-			status: state => state.state.status,
-			systemDirectory: state => state.directories.system,
-			systemCurrIP: state => state.network.interfaces[0].actualIP,
-			systemDSFVerStr: state => state.state.dsfVersion
-		}),
-		...mapGetters('machine/model', ['jobProgress']),
-		...mapState('machine/settings', ['codes']),
-		...mapState('machine', ['model']),
-		...mapState({
-			darkTheme: state => state.settings.darkTheme
-		}),
-		isPrinting() { return isPrinting(this.status); },
-		bIsSBC(){
+		
+		systemDirectory(): string {
+			return store.state.machine.model.directories.system;
+		},
+		systemCurrIP(): any {
+			return store.state.machine.model.network.interfaces[0].actualIP;
+		},
+		systemDSFVerStr(): any {
+			return store.state.machine.model.state.dsfVersion;
+		},
+		darkTheme(): any {
+			return store.state.settings.darkTheme;
+		}, 
+		isPrinting(): boolean {
+			return isPrinting(store.state.machine.model.state.status);
+		},
+		bIsSBC(): boolean {
 			if(this.systemDSFVerStr !== null && this.systemDSFVerStr !== ''){
 				return true;
 			}else{
 				return false;
 			}
 		},
-		bShowOverlay(){
+		bShowOverlay(): boolean {
 			if(this.fwSrc == this.gitOwnerNameGloomy && (this.currView == "duetRRFRN" || this.currView == "duetRRFRI")){
 				return true;
 			}else{
 				return false;
 			}
 		},
-		fwSrc(){
-			if(typeof this.model.boards[0] !== "undefined"){
-				if(this.model.boards[0].firmwareName.toLowerCase().includes('duet') || this.model.boards[0].firmwareName == ""){
+		fwSrc(): string {
+			if(typeof store.state.machine.model.boards[0] !== "undefined"){
+				if(store.state.machine.model.boards[0].firmwareName.toLowerCase().includes('duet') || store.state.machine.model.boards[0].firmwareName == ""){
 					return this.gitOwnerNameDuet; 
 				}else {
 					return this.gitOwnerNameGloomy;
@@ -405,40 +408,44 @@ export default {
 				return "No Board Connected"
 			}
 		},
-		fwSrcFriendlyName(){
+		fwSrcFriendlyName(): string {
 			if(this.fwSrc == this.gitOwnerNameGloomy){
 				return 'Team Gloomy';
 			}else{
 				return 'Official Duet 3D';
 			}
 		},
-		fwVer(){
+		fwVer(): string {
 			let tmpVer = "";
-			try{tmpVer = this.model.boards[0].firmwareVersion;}
+			try{tmpVer = store.state.machine.model.boards[0].firmwareVersion;}
 			catch{tmpVer = "Not Connected"}
 			return tmpVer;
 		},
-		conBoard(){
+		conBoard(): string {
 			let tmpCB = "";
-			try{tmpCB = this.model.boards[0].name;}
+			try{tmpCB = store.state.machine.model.boards[0].name;}
 			catch{tmpCB = "Not Connected"}
 			return tmpCB;
 		},
-		conBoards(){
-			let tmpCB = "";
+		conBoards(): any {
+			let tmpCB: any = null;
 			//tmpCB = [{name: "board1"}, {name: "board2"},{name: "Board etc"}]
-			try{tmpCB = this.model.boards;}
+			try{tmpCB = store.state.machine.model.boards;}
 			catch{tmpCB = "Not Connected"}
 			return tmpCB;
 		},
-		systemBoardSNames(){
+		systemBoardSNames(): any {
 			return this.relMgrData.testData;
 		},
-		bHiddenDuetMenu(){
+		bHiddenDuetMenu(): boolean {
 			try{
-				let tmpOMKey = this.model.global.releaseMgrDuet;
-				if(tmpOMKey){
-					return true;
+				let tmpOMKey: any = store.state.machine.model.global
+				if(tmpOMKey.hasOwnProperty("releaseMgrDuet")){
+					if(tmpOMKey.releaseMgrDuet){
+						return true;
+					}else{
+						return false;
+					}
 				}else{
 					return false;
 				}
@@ -446,11 +453,15 @@ export default {
 				return false;
 			}
 		},
-		bHiddenTestData(){
+		bHiddenTestData() : boolean{
 			try{
-				let tmpOMKey = this.model.global.releaseMgrTestData;
-				if(tmpOMKey){
-					return true;
+				let tmpOMKey: any = store.state.machine.model.global
+				if(tmpOMKey.hasOwnProperty("releaseMgrTestData")){
+					if(tmpOMKey.releaseMgrTestData){
+						return true;
+					}else{
+						return false;
+					}
 				}else{
 					return false;
 				}
@@ -458,25 +469,25 @@ export default {
 				return false;
 			}
 		},
-		backCol(){
+		backCol(): any {
 			if(this.darkTheme){
 					return "background-color: #515151 !important;";
 				}else{
 					return "background-color: #f5f5f5 !important;";
 			}
 		},
-		tmpLang(){
-			return this.tmpLangObj();
+		tmpLang(): any {
+			return tempENLang.tmpLangObj();
 		},
-		labelClass() {
+		labelClass(): string {
 			return this.darkTheme ? 'grey--text darken-3' : 'blue--text lighten-5';
 		},
-		switchClass() {
+		switchClass(): string {
 			return this.darkTheme ? 'grey darken-3' : 'blue lighten-5';
 		},
-		duetFilteredTags(){
-			var j=0;
-			var tmpArr = [];
+		duetFilteredTags():any {
+			var j: any = 0;
+			var tmpArr: any = [];
 			//filters out only the latest beta/rc if user chooses to show beta/rc has to interate cannot be filtered
 			for(j in this.allDuetReleasesJSON){
 				if(this.allDuetReleasesJSON[j].prerelease && this.bShowPreRelease && this.bShowAllReleases){
@@ -494,8 +505,8 @@ export default {
 			}
 			return tmpArr;
 		},
-		gloomyFilteredTags(){
-			var j=0;
+		gloomyFilteredTags(): any{
+			var j: any = 0;
 			var tmpArr = [];
 			for(j in this.allGloomyReleasesJSON){
 				if(this.allGloomyReleasesJSON[j].prerelease && !this.bShowPreRelease){
@@ -509,24 +520,18 @@ export default {
 		}
 
 	},
-	//temporary Lang Stuff to make it easier to replace later
-	mixins: [
-		tempENLang,
-		gitFunctions,
-		mainDataFunctions
-	],
 	data: function () {
 		return {
 			bPageReload: false,
-			allDuetReleasesJSON: null,
-			allSBCReleasesJSON: null,
-			allGloomyReleasesJSON: null,
-			allGloomyESPReleasesJSON: null,
-			allDWCReleasesJSON: null,
+			allDuetReleasesJSON: null as any,
+			allSBCReleasesJSON: null as any,
+			allGloomyReleasesJSON: null as any,
+			allGloomyESPReleasesJSON: null as any,
+			allDWCReleasesJSON: null as any,
 			bGotAllSBCReleases: false,
 			bGotAllDWCReleases: false,
 			bGotSplashJSON: false,
-			splashJSON: null,
+			splashJSON: null as any,
 			gitOwnerNameDuet: 'Duet3D',
 			gitOwnerNameGloomy: 'gloomyandy',
 			gitRepoNameDuet: "RepRapFirmware",
@@ -541,28 +546,29 @@ export default {
 			dsfUpdateInsURL: "https://docs.duet3d.com/User_manual/Machine_configuration/DSF_RPi#installing-updates)",
 			gloomyUpdateInsURL1: "https://teamgloomy.github.io/stm32_sbc.html",
 			gloomyUpdateInsURL2: "https://teamgloomy.github.io/lpc_sbc.html",
-			dsfUpdateInsHTML: null,
-			gloomyUpdateInsHTML: null,
-			relMgrData: {},
-			duetRNJSON: {},
-			duetRIJSON:{},
-			gloomyRIJSON: {},
-			gloomyESPRIJSON: {},
-			gloomyRNJSON: {},
-			sbcRIJSON: {},
-			sbcRNJSON: {},
-			dwcRIJSON: {},
-			dwcRNJSON: {},
-			duetBtnGrp: 0,
-			SBCBtnGrp: 0,
-			DWCBtnGrp: 0,
-			gloomyBtnGrp: 0,
+			dsfUpdateInsHTML: null as any,
+			gloomyUpdateInsHTML: null as any,
+			relMgrData: {} as any,
+			duetRNJSON: {} as any,
+			duetRIJSON:{} as any,
+			gloomyRIJSON: {} as any,
+			gloomyESPRIJSON: {} as any,
+			gloomyRNJSON: {} as any,
+			sbcRIJSON: {} as any,
+			sbcRNJSON: {} as any,
+			dwcRIJSON: {} as any,
+			dwcRNJSON: {} as any,
+			duetAdminRNJSON: {} as any,
+			duetBtnGrp: 0 as any,
+			SBCBtnGrp: 0 as any,
+			DWCBtnGrp: 0 as any,
+			gloomyBtnGrp: 0 as any,
 			bShowPreRelease: false,
 			bShowAllReleases: false,
-			gloomyRNFilters: [],
-			gloomyRNSections: [],
-			selectedDuetRelTag: null,
-			selectedGloomyRelTag: null,
+			gloomyRNFilters: [] as any,
+			gloomyRNSections: []  as any,
+			selectedDuetRelTag: null as any,
+			selectedGloomyRelTag: null as any,
 			bGotDuetRN: false,
 			bGotDuetRI: false,
 			bGotDuetSBCRI: false,
@@ -575,43 +581,43 @@ export default {
 			bGotGloomyRI: false,
 			bGotGloomyESPRI: false,
 			bCarouselCycle: true,			
-			currDSFTag: null,
-			currDWCTag: null,
-			currView: null,
+			currDSFTag: null as any,
+			currDWCTag: null as any,
+			currView: null as any,
 			bShowEditGlobalSettingsDialog: false,
-			relMgrSession:{
-				checkOnLoad: false,
-				lastVersion: null,
-				alertOnce: true
-			}
-
+			relMgrSession: dataFunctions.loadSettings()
 		}
 	},
 	
 	mounted(){
 		//do an intial load
-		this.loadSettings()
+		dataFunctions.loadSettings()
 		this.startUp();
 	},
 
 	activated(){
-		window.document.getElementById("global-container").hidden = true;
+		const globcont = window.document.getElementById("global-container");
+		if(globcont != null){
+			globcont.hidden = true;
+		}
 	},
 
 	deactivated(){
-		window.document.getElementById("global-container").hidden = false;
+		const globcont = window.document.getElementById("global-container");
+		if(globcont != null){
+			globcont.hidden = false;
+		}
 	},
 
 	created() {
-		window.document.getElementById("global-container").hidden = true;
+		const globcont = window.document.getElementById("global-container");
+		if(globcont != null){
+			globcont.hidden = true;
+		}
 	},
 
     methods: {
-		...mapActions('machine', ['sendCode']),
-		...mapActions('machine', {machineDownload: 'download', getFileList: 'getFileList'}),
-        ...mapActions('machine', ['upload']),
-		...mapMutations('machine/settings', ['addCode', 'removeCode']),
-
+		
 		gotoForum(){
 			window.open('https://forum.duet3d.com/topic/27582', '_blank');
 		},
@@ -630,7 +636,7 @@ export default {
 					this.allGloomyESPReleasesJSON = await getGloomyESPReleases;
 				}
 				if(!this.bGotSplashJSON){
-					const getSplashes = await this.getByGitFileRaw(`${this.gitRelMgrSplashURL}splash.json`, this.gitRelMgrOwnName, this.gitRelMgrRepoName).then(res => res);
+					const getSplashes = await gitFunctions.getByGitFileRaw(`${this.gitRelMgrSplashURL}splash.json`, this.gitRelMgrOwnName, this.gitRelMgrRepoName).then(res => res);
 					this.splashJSON = await getSplashes;
 					if(this.splashJSON){
 						this.bGotSplashJSON = await this.configSplash();
@@ -642,10 +648,14 @@ export default {
 
 		},
 
+		callSaveSettings(settingsObject: any){
+			dataFunctions.saveSettings(settingsObject);
+		},
+
 		async configSplash(){
-			let i=0
+			let i: any = 0;
 			for(i in this.splashJSON.splashes){
-				const getMDTxt = await this.getByGitFileRaw(`${this.gitRelMgrSplashURL}${this.splashJSON.splashes[i].file}`, this.gitRelMgrOwnName, this.gitRelMgrRepoName).then(res => res);
+				const getMDTxt = await gitFunctions.getByGitFileRaw(`${this.gitRelMgrSplashURL}${this.splashJSON.splashes[i].file}`, this.gitRelMgrOwnName, this.gitRelMgrRepoName).then(res => res);
 				this.splashJSON.splashes[i].mdTxt = await getMDTxt;
 			}
 			//console.log(this.splashJSON.splashes)
@@ -654,7 +664,7 @@ export default {
 
 		async getRelMgrData(){
 			//critical function - this is the data used to sort the release notes. If not retreived do not continue to process
-			const getRelMgrData = await this.getByGitFileRaw(this.gitRelMgrDataURL, this.gitRelMgrOwnName, this.gitRelMgrRepoName).then(res => res);
+			const getRelMgrData = await gitFunctions.getByGitFileRaw(this.gitRelMgrDataURL, this.gitRelMgrOwnName, this.gitRelMgrRepoName).then(res => res);
 			const tmpRelMgrData = await getRelMgrData;
 			try{
 				if(Array.isArray(tmpRelMgrData.boards)){
@@ -673,7 +683,7 @@ export default {
 			}
 		},
 
-		async selectedDuetTag(tmpTag){
+		async selectedDuetTag(tmpTag: any){
 			this.bGotDuetRN = false;
 			this.bGotDuetRI = false;
 			this.duetRNJSON = {};
@@ -681,7 +691,7 @@ export default {
 			const getRelJSON  = await this.getReleaseNotes(this.gitOwnerNameDuet, this.gitRepoNameDuet, tmpTag).then(response => response);
 			this.duetRNJSON = await getRelJSON;
 			this.duetAdminRNJSON = JSON.parse(JSON.stringify(this.duetRNJSON));
-			this.duetRIJSON = this.allDuetReleasesJSON.filter(item => item.tag_name == tmpTag)
+			this.duetRIJSON = this.allDuetReleasesJSON.filter((item: { tag_name: string; }) => (item.tag_name == tmpTag))
 			if(this.duetRIJSON.length > 0){
 				this.duetRIJSON = this.duetRIJSON[0];//don't need the array 
 				this.bGotDuetRI = true;
@@ -716,7 +726,7 @@ export default {
 			}
 		},
 
-		async selectedGloomyTag(tmpTag){
+		async selectedGloomyTag(tmpTag: string){
 			this.bGotGloomyRN = false;
 			this.bGotGloomyRI = false;
 			this.bGotGloomyESPRI = false;
@@ -802,16 +812,16 @@ export default {
 			if(!this.bShowPreRelease){this.bShowAllReleases = false}
 		},
 
-		async doGloomyRelease(tmpTag){
+		async doGloomyRelease(tmpTag: string){
 			this.gloomyRIJSON = {body: ""};
 			this.gloomyRNJSON = {body: ""};
-			this.gloomyRIJSON = this.allGloomyReleasesJSON.filter(item => (item.tag_name == tmpTag));
+			this.gloomyRIJSON = this.allGloomyReleasesJSON.filter((item: { tag_name: string; }) => (item.tag_name == tmpTag));
 			this.gloomyRIJSON = this.gloomyRIJSON[0];
 			//get the release notes links from the release body
 			let hrefArr = this.gloomyRIJSON.body.match(/https:.*WHATS_NEW_UNIFIED.md/g);
 			let tmpStr = hrefArr[0];
 			tmpStr = tmpStr.replace("https://github.com/gloomyandy/RepRapFirmware/blob/", "");
-			const relJSONGet = await this.getByGitFileRaw(tmpStr, this.gitOwnerNameGloomy, this.gitRepoNameGloomy).then(res => res);
+			const relJSONGet = await gitFunctions.getByGitFileRaw(tmpStr, this.gitOwnerNameGloomy, this.gitRepoNameGloomy).then(res => res);
 			const tmpTxt = await relJSONGet;
 			//get the esp release tag and then get the RI
 			hrefArr = this.gloomyRIJSON.body.match(/\(https:\/\/github.com\/gloomyandy\/DuetWiFiSocketServer\/releases\/tag\/(v|V).*\d\)/g);
@@ -819,7 +829,7 @@ export default {
 				hrefArr = hrefArr[0].match(/(v|V)\d.*\d/g)
 				tmpStr = hrefArr[0];
 				if(tmpStr){
-					this.gloomyESPRIJSON = this.allGloomyESPReleasesJSON.filter(item => (item.tag_name == tmpStr));
+					this.gloomyESPRIJSON = this.allGloomyESPReleasesJSON.filter((item: { tag_name: string; }) => (item.tag_name == tmpStr));
 					this.gloomyESPRIJSON = this.gloomyESPRIJSON[0]
 					this.bGotGloomyESPRI = true;
 				}
@@ -831,38 +841,17 @@ export default {
 			this.bSwitchGloomyDisp();
 		},
 
-		async loadSDFile(fileName, sdDir) {
-			//loads file as text from SD Card 
-			//path should be taken from OM eg : state.directories.system
-			//returns null for anything other than success
-			if(fileName && sdDir){
-				try {
-					const setFileName = Path.combine(sdDir, fileName);
-					const response = await this.machineDownload({ filename: setFileName, type: 'text', showSuccess: false });
-					return await response;
-				} catch (e) {
-					if (!(e instanceof DisconnectedError) && !(e instanceof OperationCancelledError)) {
-						console.warn("Unable to retrieve SD File : " + e);
-					}
-					return null;
-				}
-			}else{
-				console.warn("Required Values not met to retrieve SD File");
-				return null;
-			}
-		},		
-
-		async getAllReleasesJSON(gitUName, gitRepoName){
+		async getAllReleasesJSON(gitUName: string, gitRepoName: string){
 			//Get the all releases in JSON object
 			if(gitUName && gitRepoName){
-				const relJSONGet = await this.getByGitAPI('releases', gitUName, gitRepoName);
+				const relJSONGet = await gitFunctions.getByGitAPI('releases', gitUName, gitRepoName);
 				const relJSON = await relJSONGet;
 				if(relJSON){
 					//re-order by date release published
-					var relJSONFiltered = relJSON.sort((a, b) => (a.published_at < b.published_at) ? 1 : -1)
+					var relJSONFiltered = relJSON.sort((a: any, b: any) => (a.published_at < b.published_at) ? 1 : -1)
 					if(gitUName == this.gitOwnerNameDuet && gitRepoName == this.gitRepoNameDuet){
 						//remove some allways unwanted items for Duet Releases (nothing pre 3.2 and anything beginning with 'v')
-						relJSONFiltered = relJSON.filter(item => (item.tag_name >= "3.3" && !(item.tag_name.charAt(0)=='v')));
+						relJSONFiltered = relJSON.filter((item: { tag_name: string; }) => (item.tag_name >= "3.3" && !(item.tag_name.charAt(0)=='v')));
 						//pruning based on release date and type of release eg if full release remove all ref's to betas & RC's before it was released etc
 						//var allFullReleasesJSON = relJSONFiltered.filter(item => (item.prerelease == false));
 						//relJSONFiltered = relJSONFiltered.filter(item => (item.published_at <= allFullReleasesJSON[0].published_at && item.prerelease == false) || (item.published_at >= allFullReleasesJSON[0].published_at));
@@ -873,7 +862,7 @@ export default {
 					}
 					if(gitUName == this.gitOwnerNameGloomy && gitRepoName == this.gitRepoNameGloomy){
 						//process gloomy releses if required
-						relJSONFiltered = relJSONFiltered.filter(item => (item.tag_name >= "v3.3"));
+						relJSONFiltered = relJSONFiltered.filter((item: { tag_name: string; }) => (item.tag_name >= "v3.3"));
 						this.bShowGloomyReleases = true;
 					}
 					return relJSONFiltered;
@@ -887,7 +876,7 @@ export default {
 			}
 		},
 
-		async getReleaseNotes(gitUName, gitRepoName, gitTagName){
+		async getReleaseNotes(gitUName: string, gitRepoName: string, gitTagName:string){
 			//retrieve the RN based on tag
 			if(gitUName && gitRepoName && gitTagName){
 				//const md = new markdownIt();
@@ -937,7 +926,7 @@ export default {
 							rnType = "Full"
 						}
 					}
-					const relJSONGet = await this.getByGitWikiRaw(tmpFName, gitUName, gitRepoName);
+					const relJSONGet = await gitFunctions.getByGitWikiRaw(tmpFName, gitUName, gitRepoName);
 					const relText = await relJSONGet;
 					if(await relText){
 						if(gitRepoName == this.gitRepoNameDuet){
@@ -970,14 +959,14 @@ export default {
 			}
 		},
 
-		hlpLinkClick(tmpURL){
+		hlpLinkClick(tmpURL: string){
 			window.open(tmpURL, '_blank');
 		},
 
-		async getDuetSBCDWCRI(tmpTag, gitRepoName){
+		async getDuetSBCDWCRI(tmpTag: string, gitRepoName: string){
 			//first we have to re-configure the tag to match DSF tagging structure
 			//console.log("tmpTag:", tmpTag)
-			let majorVNumStr = tmpTag.substr(0,1);
+			let majorVNumStr: string = tmpTag.substr(0,1);
 			let minorVNumStr = tmpTag.substr(2,1);
 			let subVNumStr = "0";
 			let prefix = "";
@@ -1020,16 +1009,16 @@ export default {
 				//DWC
 				if(!this.bGotAllDWCReleases){
 					//only get the sbc release info if we have not already done so
-					const riJSONGet = await this.getByGitAPI('releases', this.gitOwnerNameDuet, this.gitDWCRepoNameDuet);
+					const riJSONGet = await gitFunctions.getByGitAPI('releases', this.gitOwnerNameDuet, this.gitDWCRepoNameDuet);
 					this.allDWCReleasesJSON = await riJSONGet;
 					this.bGotAllDWCReleases = true;
 				}			
 				//check if the tag is there
-				let currRIDWC = this.allDWCReleasesJSON.filter(item => item.tag_name == dsfTag)
+				let currRIDWC = this.allDWCReleasesJSON.filter((item: { tag_name: string; }) => item.tag_name == dsfTag)
 				if(currRIDWC.length == 0){
 					//this tag was not found try a different format because the formatting is variable
 					let dsfTag = `v${prefix2}${suffix}`;
-					currRIDWC = this.allDWCReleasesJSON.filter(item => item.tag_name == dsfTag)
+					currRIDWC = this.allDWCReleasesJSON.filter((item: { tag_name: string; }) => item.tag_name == dsfTag)
 				}
 				if(currRIDWC.length > 0){
 					this.bGotDuetDWCRI = true;
@@ -1043,16 +1032,16 @@ export default {
 				//SBC
 				if(!this.bGotAllSBCReleases){
 					//only get the sbc release info if we have not already done so
-					const riJSONGet = await this.getByGitAPI('releases', this.gitOwnerNameDuet, this.gitSBCRepoNameDuet);
+					const riJSONGet = await gitFunctions.getByGitAPI('releases', this.gitOwnerNameDuet, this.gitSBCRepoNameDuet);
 					this.allSBCReleasesJSON = await riJSONGet;
 					this.bGotAllSBCReleases = true;
 				}			
 				//check if the tag is there
-				let currRISBC = this.allSBCReleasesJSON.filter(item => item.tag_name == dsfTag)
+				let currRISBC = this.allSBCReleasesJSON.filter((item: { tag_name: string; }) => item.tag_name == dsfTag)
 				if(currRISBC.length == 0){
 					//this tag was not found try a different format because the formatting is variable
 					let dsfTag = `v${prefix2}${suffix}`;
-					currRISBC = this.allSBCReleasesJSON.filter(item => item.tag_name == dsfTag)
+					currRISBC = this.allSBCReleasesJSON.filter((item: { tag_name: string; }) => item.tag_name == dsfTag)
 				}
 				if(currRISBC.length > 0){
 					this.bGotDuetSBCRI = true;
@@ -1066,7 +1055,7 @@ export default {
 
 		},
 
-		doFormatBold(str){
+		doFormatBold(str: string){
 			//replace strings matching **some text** with <strong>some text</strong>
 			var newstr = str.replace(/\*{2}(.*?)\*{2}/g, `<strong>$1</strong>`);
 			if(newstr){
@@ -1076,10 +1065,10 @@ export default {
 			}
 		},
 
-		doFormatLink(str){
+		doFormatLink(str: string){
 			//replace all the hyperlinks so they open in a new window
-			var strArr = str.match(/(?<!!)\[{1}(.*?)\]{1}\(http(.*?)\)/g);
-			var i=0;
+			var strArr: any = str.match(/(?<!!)\[{1}(.*?)\]{1}\(http(.*?)\)/g);
+			var i: any = 0;
 			var newStr = "";
 			var tmpRef = "";
 			var tmpTxt = "";
@@ -1098,13 +1087,13 @@ export default {
 			}
 		},
 
-		doReplaceGloomyWNLinks(str){
+		doReplaceGloomyWNLinks(str: string){
 			//replaces a specific link -- might not be needed
 			var newstr = str.replace(/https:\/\/github.com\/gloomyandy\/RepRapFirmware\/blob\/WHATS_NEW_UNIFIED.md/g, `https://raw.githubusercontent.com/gloomyandy/RepRapFirmware/WHATS_NEW_UNIFIED.md`);
 			return newstr;
 		},
 
-		convertRNtoJSON(rnRawMD, strType, gitUName, gitTagName, gitRepoName){
+		convertRNtoJSON(rnRawMD: any, strType: string, gitUName: string, gitTagName: string, gitRepoName: string){
 			//convert the release notes md file to structured json
 			//strType = Beta, RC, Full
 			//console.log(rnRawMD)
@@ -1113,21 +1102,21 @@ export default {
 				rnRawMD = this.doFormatBold(rnRawMD);
 				rnRawMD = this.doFormatLink(rnRawMD);
 				//second breakup md by new line in JSON
-				var rnArray = rnRawMD.split(/\r?\n/);
-				var i=0;
-				var rnJSON = {lines: []};
+				var rnArray: any = rnRawMD.split(/\r?\n/);
+				var i: any = 0;
+				var rnJSON: any = {lines: []};
 				for(i in rnArray){
 					rnJSON.lines.push({line: rnArray[i]});
 				}
-				rnJSON.lines = rnJSON.lines.filter(item => (item.line !== "")); //allways remove empty lines
+				rnJSON.lines = rnJSON.lines.filter((item: { line: string; }) => (item.line !== "")); //allways remove empty lines
 				//filter out unwanted Duet stuff
-				var t=0;
+				var t: any =0;
 				for(t in this.relMgrData.duetRNFilters){
-					rnJSON.lines = rnJSON.lines.filter(item => (!item.line.toLowerCase().includes(this.relMgrData.duetRNFilters[t])));
+					rnJSON.lines = rnJSON.lines.filter((item: { line: string; }) => (!item.line.toLowerCase().includes(this.relMgrData.duetRNFilters[t])));
 				}
 				//filter out any remaining ==== lines
-				rnJSON.lines = rnJSON.lines.filter(item => (!item.line.toLowerCase().includes("====")));
-				const newRNJSON = {releases: [], relType: strType, selTag: gitTagName, gUName: gitUName, class: "rn", gRName: gitRepoName};
+				rnJSON.lines = rnJSON.lines.filter((item: { line: string; }) => (!item.line.toLowerCase().includes("====")));
+				const newRNJSON: any = {releases: [], relType: strType, selTag: gitTagName, gUName: gitUName, class: "rn", gRName: gitRepoName};
 				var currSecStr = "";
 				var currRelStr = "";
 				i=0;
@@ -1147,7 +1136,7 @@ export default {
 						currRelStr = rnJSON.lines[i].line;
 					}else if(rnJSON.lines[i].line.slice(-1) === ":" && rnJSON.lines[i].line.charAt(0) !== "-"){
 						//this is a section
-						var c=0;
+						var c: any = 0;
 						for(c in newRNJSON.releases){
 							if(newRNJSON.releases[c].release == currRelStr){
 								newRNJSON.releases[c].sections.push({section: rnJSON.lines[i].line, lines: [], color: "", hover: "", hwMatch: false, confGMatch: false, fileMatch: false});
@@ -1156,8 +1145,8 @@ export default {
 						}					
 					}else{
 						//this is section content
-						var d=0;
-						var e=0;
+						var d: any = 0;
+						var e: any = 0;
 						for(d in newRNJSON.releases){
 							if(newRNJSON.releases[d].release == currRelStr){
 								e=0;
@@ -1173,7 +1162,7 @@ export default {
 				}
 				//re-order to put the first item in this.relMgrData.duetRNSections as the first section in the rn - remainder will follow the source order
 				i=0;
-				var f=0;
+				var f: any = 0;
 				for(i in newRNJSON.releases){
 					for(f in newRNJSON.releases[i].sections){
 						if(newRNJSON.releases[i].sections[f].section == this.relMgrData.duetRNSection){
@@ -1209,5 +1198,5 @@ export default {
 			this.startUp();
 		}
 	}
-}
+});
 </script>

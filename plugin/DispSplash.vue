@@ -71,33 +71,30 @@
 		</v-card-text>
 	</v-card>
 </template>
-<script>
-'use strict'
 
+<script lang="ts">
+
+import Vue from "vue";
 import { marked } from 'marked';
-import tempENLang from './en.js';
+import * as tempENLang from './en';
 
-export default {
+export default Vue.extend({
 	props: {
 		riJSON: {
 			type: Object
 		}
     },
-	mixins: [
-		tempENLang
-	],
 	computed: {
 		tmpLang(){
-			return this.tmpLangObj().plugin.ReleaseMgr;
+			return tempENLang.tmpLangObj().plugin.ReleaseMgr;
 		}
 	},
-
 	methods: {
-		processRIJSON(mdStr){
+		processRIJSON(mdStr: any){
 				const tmpRelIMup = marked.parse(mdStr, {gfm : true, breaks: true});
 				let RelIMup = tmpRelIMup;
-				let arrMatchStr = RelIMup.match(/<a[^>]*>(.*?)<\/a>/g);
-				let i=0;
+				let arrMatchStr: any  = RelIMup.match(/<a[^>]*>(.*?)<\/a>/g);
+				let i: any = 0;
 				for(i in arrMatchStr){
 					let tmpURLstr = arrMatchStr[i].match(/".*"/g);
 					let URLstr = tmpURLstr[0].substring(1, tmpURLstr[0].length-1);
@@ -105,10 +102,13 @@ export default {
 					let AncStr = tmpAncStr[0].substring(1, tmpAncStr[0].length-1);
 					RelIMup = RelIMup.replace(arrMatchStr[i], `<a title="${URLstr}" onclick="window.open(this.title, '_blank')"  style="color: green">${AncStr}</a>`);
 				}				
-				//console.log(RelIMup)
 				return RelIMup;
-		}
+		},
+
+		gotoForum(){
+			window.open('https://forum.duet3d.com/topic/27582', '_blank');
+		},
 		
 	},
-}
+});
 </script>
