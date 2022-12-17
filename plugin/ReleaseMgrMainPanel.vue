@@ -353,7 +353,7 @@ import DispRI from './DispRI.vue';
 import DispRNFiles from './DispRNFiles.vue';
 import DispSplash from './DispSplash.vue';
 import editGlobalSettingsDialog from './editGlobalSettingsDialog.vue';
-import ObjectModel from "@duet3d/objectmodel";
+
 
 
 export default Vue.extend({
@@ -439,9 +439,8 @@ export default Vue.extend({
 		},
 		bHiddenDuetMenu(): boolean {
 			try{
-				let tmpOMKey: any = store.state.machine.model.global
-				if(tmpOMKey.hasOwnProperty("releaseMgrDuet")){
-					if(tmpOMKey.releaseMgrDuet){
+				if(store.state.machine.model.global.has("releaseMgrDuet")){
+					if(store.state.machine.model.global.get("releaseMgrDuet")){
 						return true;
 					}else{
 						return false;
@@ -449,15 +448,15 @@ export default Vue.extend({
 				}else{
 					return false;
 				}
-			}catch{
+			}catch(e){
+				console.log("err", e)
 				return false;
 			}
 		},
 		bHiddenTestData() : boolean{
 			try{
-				let tmpOMKey: any = store.state.machine.model.global
-				if(tmpOMKey.hasOwnProperty("releaseMgrTestData")){
-					if(tmpOMKey.releaseMgrTestData){
+				if(store.state.machine.model.global.has("releaseMgrTestData")){
+					if(store.state.machine.model.global.get("releaseMgrTestData")){
 						return true;
 					}else{
 						return false;
@@ -465,7 +464,8 @@ export default Vue.extend({
 				}else{
 					return false;
 				}
-			}catch{
+			}catch(e){
+				console.log("err", e)
 				return false;
 			}
 		},

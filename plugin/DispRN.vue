@@ -111,9 +111,8 @@ export default Vue.extend({
 		},
 		bHiddenTestData(): boolean {
 			try{
-				let tmpOMKey: any = store.state.machine.model.global
-				if(tmpOMKey.hasOwnProperty("releaseMgrTestData")){
-					if(tmpOMKey.releaseMgrTestData){
+				if(store.state.machine.model.global.has("releaseMgrTestData")){
+					if(store.state.machine.model.global.get("releaseMgrTestData")){
 						return true;
 					}else{
 						return false;
@@ -121,7 +120,8 @@ export default Vue.extend({
 				}else{
 					return false;
 				}
-			}catch{
+			}catch(e){
+				console.log("err", e)
 				return false;
 			}
 		},
