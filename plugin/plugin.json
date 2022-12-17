@@ -8,7 +8,7 @@
     "homepage": "https://github.com/MintyTrebor",
     "dwcVersion": "auto",
     "dependencies": {
-      "axios": "^0.21.1",
-      "marked": "^4.0.12"
+      "axios": "^1.2.1",
+      "marked": "^4.2.4"
     }
   }
