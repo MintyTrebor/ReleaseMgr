@@ -13,6 +13,7 @@
         {"shortName": "TOOL1LC", "rnNames": ["TOOL1LC", "Duet 3 expansion/tool boards", "Duet 3 with expansion/tool boards", "expansion/tool boards", "expansion boards"]},
         {"shortName": "SAMMYC21", "rnNames": ["SAMMYC21"]},
         {"shortName": "DirectDisplay", "rnNames": ["12864", "Duet with a 12864 display", "12864 display"]},
+        {"shortName": "M23CL", "rnNames": ["Duet 3 M23CL"]},
         {"shortName": "SBC", "rnNames": ["SBC"]}
     ],
     "duetRNSection": "Upgrade notes:",
