@@ -20,7 +20,7 @@ registerRoute(ReleaseMgrMainPanel, {
 //putting a try and catch around this to stop it erroring if no internet or other unexpected problem
 try{
 	var tmpSession: any = {
-			checkOnLoad: false,
+			checkOnLoad: true,
 			lastVersion: null,
 			alertOnce: true
 		};

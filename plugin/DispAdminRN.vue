@@ -259,6 +259,11 @@ export default Vue.extend({
 										//when this look exits if bHWMatch is true then the whole '[xxx]' is a match, partial matches will return false
 										bHWMatch = false;
 										usn=0;
+										//check if string contains ' - ' and remove ' - ' + all strip other right characters
+										if(rnHWArr[rnhws].toLowerCase().includes(" - ")){
+											let tmpInx: number = (rnHWArr[rnhws].indexOf(" - "));
+											rnHWArr[rnhws] = rnHWArr[rnhws].substring(0, tmpInx)
+										}
 										//loop through each board shortName in the OM
 										for(usn in statSNArr){
 											//get the array of shortNames groups from the data maintained on github

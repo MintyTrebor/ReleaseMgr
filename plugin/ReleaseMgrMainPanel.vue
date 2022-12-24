@@ -690,8 +690,11 @@ export default Vue.extend({
 			this.duetRIJSON = {body: ""};
 			const getRelJSON  = await this.getReleaseNotes(this.gitOwnerNameDuet, this.gitRepoNameDuet, tmpTag).then(response => response);
 			this.duetRNJSON = await getRelJSON;
+			//console.log("allDuetReleasesJSON", this.allDuetReleasesJSON)
+			//console.log("duetRNJSON", this.duetRNJSON)
 			this.duetAdminRNJSON = JSON.parse(JSON.stringify(this.duetRNJSON));
 			this.duetRIJSON = this.allDuetReleasesJSON.filter((item: { tag_name: string; }) => (item.tag_name == tmpTag))
+			//console.log("duetRIJSON", this.duetRIJSON)
 			if(this.duetRIJSON.length > 0){
 				this.duetRIJSON = this.duetRIJSON[0];//don't need the array 
 				this.bGotDuetRI = true;
@@ -703,6 +706,7 @@ export default Vue.extend({
 			this.dwcRIJSON = {body: ""};
 			//MUST GET RI FIRST!!
 			this.dwcRIJSON = await this.getDuetSBCDWCRI(tmpTag, this.gitDWCRepoNameDuet).then(res => res).then(res => res);
+			
 			//check if RI was found
 			if(this.dwcRIJSON.length > 0){
 				this.dwcRIJSON = this.dwcRIJSON[0];//don't need the array 
@@ -975,7 +979,12 @@ export default Vue.extend({
 			let tmpBetaNumber = 0;
 			if(tmpTag.length > 3){
 				subVNumStr = tmpTag.substr(4,1);
-				prefix = `${majorVNumStr}.${minorVNumStr}.${subVNumStr}`;
+				//ignore zero subVMNum as not used by DWC
+				if(subVNumStr === "0"){
+					prefix = `${majorVNumStr}.${minorVNumStr}`;
+				}else{
+					prefix = `${majorVNumStr}.${minorVNumStr}.${subVNumStr}`;
+				}
 			}else{
 				prefix = `${majorVNumStr}.${minorVNumStr}`;
 			}
@@ -1010,6 +1019,7 @@ export default Vue.extend({
 				if(!this.bGotAllDWCReleases){
 					//only get the sbc release info if we have not already done so
 					const riJSONGet = await gitFunctions.getByGitAPI('releases', this.gitOwnerNameDuet, this.gitDWCRepoNameDuet);
+					//console.log("riJSONGet:", riJSONGet)
 					this.allDWCReleasesJSON = await riJSONGet;
 					this.bGotAllDWCReleases = true;
 				}			

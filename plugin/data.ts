@@ -1,6 +1,6 @@
 export function newFullData() {
     return {
-        checkOnLoad: false,
+        checkOnLoad: true,
         lastVersion: null,
         alertOnce: true
     }
