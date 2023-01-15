@@ -70,6 +70,7 @@ import store from "@/store";
 import * as tempENLang from './en';
 import { DisconnectedError, OperationCancelledError } from '@/utils/errors';
 import Path from '@/utils/path'
+//import { marked } from 'marked';
 
 
 export default Vue.extend({
@@ -255,30 +256,60 @@ export default Vue.extend({
 
 		getSBCTagSubNumber(type: string, releaseTag: string){
 			let tmpType = type.toLowerCase();
-			let tmpRTag = releaseTag.toLowerCase();
+			let tmpRTag: any  = releaseTag.toLowerCase();
 			let tmpBetaNumber = 0;
-			if(tmpType=="beta"){tmpType = "-b"}
-			if(tmpType=="rc"){tmpType = "-rc"}
+			//reformat if beta/rc version 3.5-b1 or lower by checking for old style release syntax
+			const betaRex: RegExp = new RegExp('beta.[0-9]+');
+			const rcRex: RegExp = new RegExp('rc.[0-9]+');
+			if(!betaRex.test(tmpRTag)){
+				if(tmpType=="beta"){tmpType = "-b"};
+			}else{
+				if(tmpType=="beta"){tmpType = "-beta."};
+			}
+			if(!rcRex.test(tmpRTag)){
+				if(tmpType=="rc"){tmpType = "-rc"};
+			}else{
+				if(tmpType=="rc"){tmpType = "-rc."};
+			}
 			tmpBetaNumber = parseInt(tmpRTag.slice(tmpRTag.toLowerCase().indexOf(tmpType)+tmpType.length));
+			//console.log("getSBCTagSubNumber", tmpBetaNumber)
 			return tmpBetaNumber;
 		},
 
 		getSBCTag(type: string, releaseTag: string){
 			let tmpType = type.toLowerCase();
-			let tmpRTag = releaseTag.toLowerCase();
-			//let tmpBetaNumber = 0;
-			if(tmpType=="beta"){tmpType = "-b"}
-			if(tmpType=="rc"){tmpType = "-rc"}
+			let tmpRTag: any = releaseTag.toLowerCase();
+			//reformat if beta/rc version 3.5-b1 or lower by checking for old style release syntax
+			const betaRex: RegExp = new RegExp('beta.[0-9]+');
+			const rcRex: RegExp = new RegExp('rc.[0-9]+');
+			if(!betaRex.test(tmpRTag)){
+				if(tmpType=="beta"){tmpType = "-b"};
+			}else{
+				if(tmpType=="beta"){tmpType = "-beta."};
+			}
+			if(!rcRex.test(tmpRTag)){
+				if(tmpType=="rc"){tmpType = "-rc"};
+			}else{
+				if(tmpType=="rc"){tmpType = "-rc."};
+			}
+			//console.log("getSBCTag", tmpRTag.substring(0, tmpRTag.toLowerCase().indexOf(tmpType)+tmpType.length))
 			return tmpRTag.substring(0, tmpRTag.toLowerCase().indexOf(tmpType)+tmpType.length);
 		},
 
 		filterDuetSBCRNJSON(){
 			if(this.rnJSON.class == "rn" && this.rnJSON.releases.length > 0){
+				//console.log("rnJSON", this.rnJSON)
 				//Filtering for Duet ReleaseNotes
 				let tmpJSON: any = {releases: [], relType: this.rnJSON.relType, selTag: this.rnJSON.selTag, gUName: this.rnJSON.gUName, class: this.rnJSON.class};
-				if(this.rnJSON.relType == "Beta" || this.rnJSON.relType == "RC"){
+				if(this.rnJSON.relType.toLowerCase() == "beta" || this.rnJSON.relType.toLowerCase() == "rc"){
 					//filter the notes to the relevant sections (cumlative so if beta3 then include beta2 & beta1) based on selected release tag
-					let trmTag = this.rnJSON.selTag.substring(1);
+					//trim the v at the begining if it exits
+					let trmTag: string = '';
+					if(this.rnJSON.selTag.substring(0,1) === 'v'){
+						trmTag = this.rnJSON.selTag.substring(1);
+					}else{
+						trmTag = this.rnJSON.selTag;
+					}
 					let tmpBetaNumber = this.getSBCTagSubNumber(this.rnJSON.relType, trmTag);
 					let tP1: any = {releases: []};
 					let rnc: any = 0;
@@ -294,8 +325,14 @@ export default Vue.extend({
 					tmpJSON.releases = tP1.releases;
 					return tmpJSON
 				}else{
-					//filter to selected release tag
-					let tStr1 = `Version ${this.rnJSON.selTag.substring(1)}`;
+					//filter to selected release tag (trim the beginning 'v' if it exists)
+					let trmTag2: string = '';
+					if(this.rnJSON.selTag.substring(0,1) === 'v'){
+						trmTag2 = this.rnJSON.selTag.substring(1);
+					}else{
+						trmTag2 = this.rnJSON.selTag;
+					}
+					let tStr1 = `Version ${trmTag2}`;
 					let tO1 = this.rnJSON.releases.filter((item: { release: string; }) => (item.release.includes(tStr1)));
 					tmpJSON.releases = tO1;
 					return tmpJSON;

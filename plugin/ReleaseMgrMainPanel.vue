@@ -146,7 +146,12 @@
 						</v-container>	
 					</v-row>
 					<v-row class="pa-2 ma-2 " justify="center" align="center" v-if="!bIsSBC">
-						<v-chip large class="rlMgrVchip" color="info">{{ tmpLang.plugin.ReleaseMgr.fileDLNotice }}</v-chip>
+						<v-tooltip top>
+							<template v-slot:activator="{ on, attrs }">
+								<v-chip @click="hlpLinkClick(rrfUpdateInsURL)" v-bind="attrs" v-on="on" large class="rlMgrVchip" color="info">{{ tmpLang.plugin.ReleaseMgr.fileDLNotice }}</v-chip>
+							</template>
+							<span>{{ tmpLang.plugin.ReleaseMgr.rrfUpdateInstructions }}</span>
+						</v-tooltip>	
 					</v-row>
 					<v-row class="pa-1 ma-1" v-if="bGotDuetRI" align="center">
 						<v-col cols="1" md="1" lg="1" xl="1" sm="0" xs="0">
@@ -543,7 +548,8 @@ export default Vue.extend({
 			gitRelMgrOwnName: "MintyTrebor",
 			gitRelMgrDataURL: "main/RelMgrData/RelMgrData.json",
 			gitRelMgrSplashURL: "main/RelMgrData/splash/",
-			dsfUpdateInsURL: "https://docs.duet3d.com/User_manual/Machine_configuration/DSF_RPi#installing-updates)",
+			dsfUpdateInsURL: "https://docs.duet3d.com/User_manual/Machine_configuration/DSF_RPi#installing-updates",
+			rrfUpdateInsURL: "https://docs.duet3d.com/User_manual/RepRapFirmware/Updating_firmware",
 			gloomyUpdateInsURL1: "https://teamgloomy.github.io/stm32_sbc.html",
 			gloomyUpdateInsURL2: "https://teamgloomy.github.io/lpc_sbc.html",
 			dsfUpdateInsHTML: null as any,
@@ -722,7 +728,7 @@ export default Vue.extend({
 					this.sbcRIJSON = this.sbcRIJSON[0];//don't need the array 
 					const getSBCRelJSON = await this.getReleaseNotes(this.gitOwnerNameDuet, this.gitSBCRepoNameDuet, tmpTag).then(response => response);
 					this.sbcRNJSON = await getSBCRelJSON;
-					this.dsfUpdateInsHTML = `<span><a :title="${this.dsfUpdateInsURL}" @click="hlpLinkClick(this.dsfUpdateInsURL)"  style="color: green">Click here to view DSF update instructions</a></span>`;
+					this.dsfUpdateInsHTML = `<span><a :title="${this.dsfUpdateInsURL}" @click="hlpLinkClick(this.dsfUpdateInsURL)"  style="color: green">${this.tmpLang.plugin.ReleaseMgr.dsfUpdateInstructions}</a></span>`;
 				}
 			}else{
 				//no matching DWC found so there is probably an issue with github or the release has not yet been posted
@@ -884,7 +890,7 @@ export default Vue.extend({
 			//retrieve the RN based on tag
 			if(gitUName && gitRepoName && gitTagName){
 				//const md = new markdownIt();
-				let majorVNumStr = gitTagName.substr(0,1);
+				let majorVNumStr = gitTagName.substring(0,1);
 				var tmpFName = "";
 				var rnType = "";
 				if(gitUName == this.gitOwnerNameDuet){					
@@ -970,28 +976,32 @@ export default Vue.extend({
 		async getDuetSBCDWCRI(tmpTag: string, gitRepoName: string){
 			//first we have to re-configure the tag to match DSF tagging structure
 			//console.log("tmpTag:", tmpTag)
-			let majorVNumStr: string = tmpTag.substr(0,1);
-			let minorVNumStr = tmpTag.substr(2,1);
+			let majorVNumStr: string = tmpTag.substring(0,1);
+			let minorVNumStr: string = tmpTag.substring(2,3);
 			let subVNumStr = "0";
 			let prefix = "";
 			let prefix2 = "";
 			let suffix = "";
 			let tmpBetaNumber = 0;
+			//establish if selected tab is prior to 3.5.0beta1 rrf release as DWC & DSF change to semver2 after this version
+			//console.log("majorVNumStr", majorVNumStr)
+			//console.log("minorVNumStr", minorVNumStr)
 			if(tmpTag.length > 3){
-				subVNumStr = tmpTag.substr(4,1);
-				//ignore zero subVMNum as not used by DWC
-				if(subVNumStr === "0"){
+				subVNumStr = tmpTag.substring(4,5);
+				//ignore zero subVMNum as not used by DWC prior to rrf release 3.5.0beta1
+				if(subVNumStr === "0" && tmpTag <= '3.5.0beta1'){
 					prefix = `${majorVNumStr}.${minorVNumStr}`;
 				}else{
 					prefix = `${majorVNumStr}.${minorVNumStr}.${subVNumStr}`;
 				}
-			}else{
+			}else if(tmpTag <= '3.5.0beta1'){
 				prefix = `${majorVNumStr}.${minorVNumStr}`;
+			}else{
+				prefix = `${majorVNumStr}.${minorVNumStr}.${subVNumStr}`;
 			}
-			//prefix = `${majorVNumStr}.${minorVNumStr}`;
 			prefix2 = `${majorVNumStr}.${minorVNumStr}.${subVNumStr}`;
-			//console.log("prefix:", prefix)
-			//console.log("prefix2:", prefix2)
+			// console.log("prefix:", prefix)
+			// console.log("prefix2:", prefix2)
 			if(tmpTag.toLowerCase().includes('beta')){
 				if(tmpTag.includes('-')){
 					//checking for Addendum
@@ -999,7 +1009,11 @@ export default Vue.extend({
 				}else{
 					tmpBetaNumber = parseInt(tmpTag.slice(tmpTag.toLowerCase().indexOf('beta')+4));
 				}
-				suffix = `-b${tmpBetaNumber}`;				
+				if(tmpTag <= '3.5.0beta1'){
+					suffix = `-b${tmpBetaNumber}`
+				}else {
+					suffix = `-beta.${tmpBetaNumber}`
+				};				
 			}
 			else if(tmpTag.toLowerCase().includes('rc')){
 				if(tmpTag.includes('-')){
@@ -1008,12 +1022,22 @@ export default Vue.extend({
 				}else{
 					tmpBetaNumber = parseInt(tmpTag.slice(tmpTag.toLowerCase().indexOf('rc')+2));
 				}
-				suffix = `-rc${tmpBetaNumber}`;
+				if(tmpTag <= '3.5.0beta1'){
+					suffix = `-rc${tmpBetaNumber}`;
+				}else{
+					suffix = `-rc.${tmpBetaNumber}`;
+				}
 			}else{
 				suffix = "";
 			}
-			let dsfTag = `v${prefix}${suffix}`;
-			//console.log("dsfTag:", dsfTag)
+			
+			let dsfTag: string = ``;
+			if(tmpTag <= '3.5.0beta1'){
+				dsfTag = `v${prefix}${suffix}`;
+			}else{
+				dsfTag = `${prefix}${suffix}`
+			}
+			//console.log("API TAG CALL:", dsfTag)
 			if(gitRepoName == this.gitDWCRepoNameDuet){
 				//DWC
 				if(!this.bGotAllDWCReleases){
