@@ -244,14 +244,23 @@ export default Vue.extend({
 		getTagSubNumber(type: string, releaseTag: string){
 			let tmpType = type.toLowerCase();
 			let tmpRTag = releaseTag.toLowerCase();
-			let tmpBetaNumber = 0;
-			if(tmpRTag.includes('-')){
-				//checking for Addendum
-				tmpBetaNumber = parseInt(tmpRTag.slice(tmpRTag.toLowerCase().indexOf(tmpType)+tmpType.length, tmpRTag.toLowerCase().indexOf('-')));
-			}else{
-				tmpBetaNumber = parseInt(tmpRTag.slice(tmpRTag.toLowerCase().indexOf(tmpType)+tmpType.length));
+			let tmpBetaNumber = "";
+			//console.log("tmpType", tmpType)
+			//console.log("tmpRTag", tmpRTag)
+			if(tmpType == 'beta'){
+				if(tmpRTag < '3.5.0-beta.3'){
+					tmpBetaNumber = tmpRTag.slice(tmpRTag.toLowerCase().indexOf('beta')+4);
+				}else{
+					tmpBetaNumber = tmpRTag.slice(tmpRTag.toLowerCase().indexOf('beta')+5);
+				}
+			}else if(tmpType == 'rc'){
+				tmpBetaNumber = tmpRTag.slice(tmpRTag.toLowerCase().indexOf('rc')+2);
 			}
-			return tmpBetaNumber;
+			if(tmpBetaNumber.includes("+")){
+				tmpBetaNumber = tmpBetaNumber.slice(0, tmpBetaNumber.length-1)
+			}
+			//console.log("tmpBetaNumber", parseInt(tmpBetaNumber))
+			return parseInt(tmpBetaNumber);
 		},
 
 		getSBCTagSubNumber(type: string, releaseTag: string){

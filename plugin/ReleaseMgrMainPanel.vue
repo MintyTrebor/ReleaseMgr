@@ -938,6 +938,8 @@ export default Vue.extend({
 					}
 					const relJSONGet = await gitFunctions.getByGitWikiRaw(tmpFName, gitUName, gitRepoName);
 					const relText = await relJSONGet;
+					//console.log("tmpFName", tmpFName)
+					//console.log("relText", relText)
 					if(await relText){
 						if(gitRepoName == this.gitRepoNameDuet){
 							let conv = this.convertRNtoJSON(relText, rnType, gitUName, gitTagName, gitRepoName);
@@ -989,27 +991,27 @@ export default Vue.extend({
 			if(tmpTag.length > 3){
 				subVNumStr = tmpTag.substring(4,5);
 				//ignore zero subVMNum as not used by DWC prior to rrf release 3.5.0beta1
-				if(subVNumStr === "0" && tmpTag <= '3.5.0beta1'){
+				if(subVNumStr === "0" && tmpTag <= '3.5.0-beta.1'){
 					prefix = `${majorVNumStr}.${minorVNumStr}`;
 				}else{
 					prefix = `${majorVNumStr}.${minorVNumStr}.${subVNumStr}`;
 				}
-			}else if(tmpTag <= '3.5.0beta1'){
+			}else if(tmpTag <= '3.5.0-beta.1'){
 				prefix = `${majorVNumStr}.${minorVNumStr}`;
 			}else{
 				prefix = `${majorVNumStr}.${minorVNumStr}.${subVNumStr}`;
 			}
 			prefix2 = `${majorVNumStr}.${minorVNumStr}.${subVNumStr}`;
-			// console.log("prefix:", prefix)
-			// console.log("prefix2:", prefix2)
+			//console.log("prefix:", prefix)
+			//console.log("prefix2:", prefix2)
 			if(tmpTag.toLowerCase().includes('beta')){
-				if(tmpTag.includes('-')){
+				if(tmpTag < '3.5.0-beta.3'){
 					//checking for Addendum
-					tmpBetaNumber = parseInt(tmpTag.slice(tmpTag.toLowerCase().indexOf('beta')+4, tmpTag.toLowerCase().indexOf('-')));
-				}else{
 					tmpBetaNumber = parseInt(tmpTag.slice(tmpTag.toLowerCase().indexOf('beta')+4));
+				}else{
+					tmpBetaNumber = parseInt(tmpTag.slice(tmpTag.toLowerCase().indexOf('beta')+5));
 				}
-				if(tmpTag <= '3.5.0beta1'){
+				if(tmpTag <= '3.5.0-beta.1'){
 					suffix = `-b${tmpBetaNumber}`
 				}else {
 					suffix = `-beta.${tmpBetaNumber}`
@@ -1018,11 +1020,11 @@ export default Vue.extend({
 			else if(tmpTag.toLowerCase().includes('rc')){
 				if(tmpTag.includes('-')){
 					//checking for Addendum
-					tmpBetaNumber = parseInt(tmpTag.slice(tmpTag.toLowerCase().indexOf('rc')+2, tmpTag.toLowerCase().indexOf('-')));
+					tmpBetaNumber = parseInt(tmpTag.slice(tmpTag.toLowerCase().indexOf('rc')+2));
 				}else{
 					tmpBetaNumber = parseInt(tmpTag.slice(tmpTag.toLowerCase().indexOf('rc')+2));
 				}
-				if(tmpTag <= '3.5.0beta1'){
+				if(tmpTag <= '3.5.0-beta.1'){
 					suffix = `-rc${tmpBetaNumber}`;
 				}else{
 					suffix = `-rc.${tmpBetaNumber}`;
@@ -1032,7 +1034,7 @@ export default Vue.extend({
 			}
 			
 			let dsfTag: string = ``;
-			if(tmpTag <= '3.5.0beta1'){
+			if(tmpTag <= '3.5.0-beta.1'){
 				dsfTag = `v${prefix}${suffix}`;
 			}else{
 				dsfTag = `${prefix}${suffix}`
@@ -1054,9 +1056,10 @@ export default Vue.extend({
 					let dsfTag = `v${prefix2}${suffix}`;
 					currRIDWC = this.allDWCReleasesJSON.filter((item: { tag_name: string; }) => item.tag_name == dsfTag)
 				}
+				//console.log("currRIDWC",currRIDWC)
 				if(currRIDWC.length > 0){
 					this.bGotDuetDWCRI = true;
-					//need this as apparently its not possible to be conistent across the release tags
+					//need this as apparently its not possible to be consistent across the release tags
 					this.currDWCTag = dsfTag;
 					return currRIDWC;
 				}else{
