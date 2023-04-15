@@ -245,44 +245,24 @@ export default Vue.extend({
 			let tmpType = type.toLowerCase();
 			let tmpRTag = releaseTag.toLowerCase();
 			let tmpBetaNumber = "";
-			//console.log("tmpType", tmpType)
-			//console.log("tmpRTag", tmpRTag)
+			const betaRex: RegExp = new RegExp('beta.[0-9]+');
+			const betaRex2: RegExp = new RegExp('beta[0-9]+');
 			if(tmpType == 'beta'){
-				if(tmpRTag < '3.5.0-beta.3'){
+				if(betaRex.test(tmpRTag)){
+					tmpBetaNumber = tmpRTag.slice(tmpRTag.toLowerCase().indexOf('beta')+5);
+				}else if(betaRex2.test(tmpRTag)){
 					tmpBetaNumber = tmpRTag.slice(tmpRTag.toLowerCase().indexOf('beta')+4);
 				}else{
-					tmpBetaNumber = tmpRTag.slice(tmpRTag.toLowerCase().indexOf('beta')+5);
+					tmpBetaNumber = tmpRTag.slice(tmpRTag.toLowerCase().indexOf('b')+1);
 				}
 			}else if(tmpType == 'rc'){
-				tmpBetaNumber = tmpRTag.slice(tmpRTag.toLowerCase().indexOf('rc')+2);
+				tmpBetaNumber = tmpRTag.slice(tmpRTag.toLowerCase().indexOf('rc')+3);
 			}
 			if(tmpBetaNumber.includes("+")){
 				tmpBetaNumber = tmpBetaNumber.slice(0, tmpBetaNumber.length-1)
 			}
 			//console.log("tmpBetaNumber", parseInt(tmpBetaNumber))
 			return parseInt(tmpBetaNumber);
-		},
-
-		getSBCTagSubNumber(type: string, releaseTag: string){
-			let tmpType = type.toLowerCase();
-			let tmpRTag: any  = releaseTag.toLowerCase();
-			let tmpBetaNumber = 0;
-			//reformat if beta/rc version 3.5-b1 or lower by checking for old style release syntax
-			const betaRex: RegExp = new RegExp('beta.[0-9]+');
-			const rcRex: RegExp = new RegExp('rc.[0-9]+');
-			if(!betaRex.test(tmpRTag)){
-				if(tmpType=="beta"){tmpType = "-b"};
-			}else{
-				if(tmpType=="beta"){tmpType = "-beta."};
-			}
-			if(!rcRex.test(tmpRTag)){
-				if(tmpType=="rc"){tmpType = "-rc"};
-			}else{
-				if(tmpType=="rc"){tmpType = "-rc."};
-			}
-			tmpBetaNumber = parseInt(tmpRTag.slice(tmpRTag.toLowerCase().indexOf(tmpType)+tmpType.length));
-			//console.log("getSBCTagSubNumber", tmpBetaNumber)
-			return tmpBetaNumber;
 		},
 
 		getSBCTag(type: string, releaseTag: string){
@@ -319,13 +299,13 @@ export default Vue.extend({
 					}else{
 						trmTag = this.rnJSON.selTag;
 					}
-					let tmpBetaNumber = this.getSBCTagSubNumber(this.rnJSON.relType, trmTag);
+					let tmpBetaNumber = this.getTagSubNumber(this.rnJSON.relType, trmTag);
 					let tP1: any = {releases: []};
 					let rnc: any = 0;
 					let tmpChkVer = 0;
 					for(rnc in this.rnJSON.releases){
 						if(this.rnJSON.releases[rnc].release.toLowerCase().includes(`version ${this.getSBCTag(this.rnJSON.relType, trmTag)}`)){
-							tmpChkVer = this.getSBCTagSubNumber(this.rnJSON.relType, this.rnJSON.releases[rnc].release);
+							tmpChkVer = this.getTagSubNumber(this.rnJSON.relType, this.rnJSON.releases[rnc].release);
 							if(tmpChkVer <= tmpBetaNumber){		
 								tP1.releases.push(this.rnJSON.releases[rnc]);
 							}

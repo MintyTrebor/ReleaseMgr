@@ -388,13 +388,6 @@ export default Vue.extend({
 		isPrinting(): boolean {
 			return isPrinting(store.state.machine.model.state.status);
 		},
-		bIsSBC(): boolean {
-			if(this.systemDSFVerStr !== null && this.systemDSFVerStr !== ''){
-				return true;
-			}else{
-				return false;
-			}
-		},
 		bShowOverlay(): boolean {
 			if(this.fwSrc == this.gitOwnerNameGloomy && (this.currView == "duetRRFRN" || this.currView == "duetRRFRI")){
 				return true;
@@ -472,6 +465,17 @@ export default Vue.extend({
 			}catch(e){
 				console.log("err", e)
 				return false;
+			}
+		},
+		bIsSBC(): boolean {
+			if(this.systemDSFVerStr !== null && this.systemDSFVerStr !== ''){
+				return true;
+			}else{
+				if(this.bHiddenTestData){
+					return true;
+				}else {
+					return false;
+				}
 			}
 		},
 		backCol(): any {
@@ -760,51 +764,56 @@ export default Vue.extend({
 		},
 
 		bSwitchDuetDisp(){
-			this.currView = null;
-			this.DWCBtnGrp = null;
 			this.gloomyBtnGrp = null;
+			this.DWCBtnGrp = null;
 			this.SBCBtnGrp = null;
-			if(this.duetBtnGrp == 1){
+			if(this.duetBtnGrp == 1 && this.currView !="duetRRFRI"){
+				this.currView = null;
 				this.currView = "duetRRFRI";
-			}else if(this.duetBtnGrp == 0){
+			}else if(this.duetBtnGrp == 0 && this.currView !="duetRRFRN"){
+				this.currView = null;
 				this.currView = "duetRRFRN";
 			}
 		},
 
 		bSwitchDWCDisp(){
-			this.currView = null;
 			this.gloomyBtnGrp = null;
 			this.duetBtnGrp = null;
 			this.SBCBtnGrp = null;
-			if(this.DWCBtnGrp == 1){
+			if(this.DWCBtnGrp == 1 && this.currView !="duetDWCRI"){
+				this.currView = null;
 				this.currView = "duetDWCRI";
-			}else if(this.DWCBtnGrp == 0){
+			}else if(this.DWCBtnGrp == 0 && this.currView !="duetDWCRN"){
+				this.currView = null;
 				this.currView = "duetDWCRN";
 			}
 		},
 
 		bSwitchGloomyDisp(){
-			this.currView = null;
 			this.DWCBtnGrp = null;
 			this.duetBtnGrp = null;
 			this.SBCBtnGrp = null;
-			if(this.gloomyBtnGrp == 2){
+			if(this.gloomyBtnGrp == 2 && this.currView !="gloomyESPRI"){
+				this.currView = null;
 				this.currView = "gloomyESPRI";
-			}else if(this.gloomyBtnGrp == 1){
+			}else if(this.gloomyBtnGrp == 1 && this.currView !="gloomyRI"){
+				this.currView = null;
 				this.currView = "gloomyRI";
-			}else if(this.gloomyBtnGrp == 0){
+			}else if(this.gloomyBtnGrp == 0 && this.currView !="gloomyRN"){
+				this.currView = null;
 				this.currView = "gloomyRN";
 			}
 		},
 
 		bSwitchDuetSBCDisp(){
-			this.currView = null;
 			this.DWCBtnGrp = null;
 			this.gloomyBtnGrp = null;
 			this.duetBtnGrp = null;
-			if(this.SBCBtnGrp == 1){
+			if(this.SBCBtnGrp == 1 && this.currView !="duetSBCRI"){
+				this.currView = null;
 				this.currView = "duetSBCRI";
-			}else if(this.SBCBtnGrp == 0){
+			}else if(this.SBCBtnGrp == 0 && this.currView !="duetSBCRN"){
+				this.currView = null;
 				this.currView = "duetSBCRN";
 			}
 		},
@@ -861,10 +870,7 @@ export default Vue.extend({
 					var relJSONFiltered = relJSON.sort((a: any, b: any) => (a.published_at < b.published_at) ? 1 : -1)
 					if(gitUName == this.gitOwnerNameDuet && gitRepoName == this.gitRepoNameDuet){
 						//remove some allways unwanted items for Duet Releases (nothing pre 3.2 and anything beginning with 'v')
-						relJSONFiltered = relJSON.filter((item: { tag_name: string; }) => (item.tag_name >= "3.3" && !(item.tag_name.charAt(0)=='v')));
-						//pruning based on release date and type of release eg if full release remove all ref's to betas & RC's before it was released etc
-						//var allFullReleasesJSON = relJSONFiltered.filter(item => (item.prerelease == false));
-						//relJSONFiltered = relJSONFiltered.filter(item => (item.published_at <= allFullReleasesJSON[0].published_at && item.prerelease == false) || (item.published_at >= allFullReleasesJSON[0].published_at));
+						relJSONFiltered = relJSON.filter((item: { tag_name: string; }) => (item.tag_name >= "3.5" && !(item.tag_name.charAt(0)=='v')));
 					}
 					if(gitUName == this.gitOwnerNameDuet && gitRepoName == this.gitDWCRepoNameDuet){
 						//no need to do any filtering just return full JSON for DWC
@@ -872,7 +878,7 @@ export default Vue.extend({
 					}
 					if(gitUName == this.gitOwnerNameGloomy && gitRepoName == this.gitRepoNameGloomy){
 						//process gloomy releses if required
-						relJSONFiltered = relJSONFiltered.filter((item: { tag_name: string; }) => (item.tag_name >= "v3.3"));
+						relJSONFiltered = relJSONFiltered.filter((item: { tag_name: string; }) => (item.tag_name >= "v3.5"));
 						this.bShowGloomyReleases = true;
 					}
 					return relJSONFiltered;
@@ -985,60 +991,30 @@ export default Vue.extend({
 			let prefix2 = "";
 			let suffix = "";
 			let tmpBetaNumber = 0;
-			//establish if selected tab is prior to 3.5.0beta1 rrf release as DWC & DSF change to semver2 after this version
-			//console.log("majorVNumStr", majorVNumStr)
-			//console.log("minorVNumStr", minorVNumStr)
-			if(tmpTag.length > 3){
-				subVNumStr = tmpTag.substring(4,5);
-				//ignore zero subVMNum as not used by DWC prior to rrf release 3.5.0beta1
-				if(subVNumStr === "0" && tmpTag <= '3.5.0-beta.1'){
-					prefix = `${majorVNumStr}.${minorVNumStr}`;
-				}else{
-					prefix = `${majorVNumStr}.${minorVNumStr}.${subVNumStr}`;
-				}
-			}else if(tmpTag <= '3.5.0-beta.1'){
-				prefix = `${majorVNumStr}.${minorVNumStr}`;
-			}else{
-				prefix = `${majorVNumStr}.${minorVNumStr}.${subVNumStr}`;
-			}
+			prefix = `${majorVNumStr}.${minorVNumStr}.${subVNumStr}`;
 			prefix2 = `${majorVNumStr}.${minorVNumStr}.${subVNumStr}`;
 			//console.log("prefix:", prefix)
 			//console.log("prefix2:", prefix2)
-			if(tmpTag.toLowerCase().includes('beta')){
-				if(tmpTag < '3.5.0-beta.3'){
-					//checking for Addendum
-					tmpBetaNumber = parseInt(tmpTag.slice(tmpTag.toLowerCase().indexOf('beta')+4));
-				}else{
-					tmpBetaNumber = parseInt(tmpTag.slice(tmpTag.toLowerCase().indexOf('beta')+5));
-				}
-				if(tmpTag <= '3.5.0-beta.1'){
-					suffix = `-b${tmpBetaNumber}`
-				}else {
-					suffix = `-beta.${tmpBetaNumber}`
-				};				
+			if(tmpTag.toLowerCase() == "3.5.0beta1"){
+				prefix = "3.5"
+				prefix2 = "3.5"
+				suffix = `-b1`
+			}else if(tmpTag.toLowerCase() == "3.5.0beta2"){
+				prefix = "3.5.0"
+				prefix2 = "3.5.0"
+				suffix = `-beta.2`
+			}else if(tmpTag.toLowerCase().includes('beta')){
+				tmpBetaNumber = parseInt(tmpTag.slice(tmpTag.toLowerCase().indexOf('beta')+5));
+				suffix = `-beta.${tmpBetaNumber}`		
 			}
 			else if(tmpTag.toLowerCase().includes('rc')){
-				if(tmpTag.includes('-')){
-					//checking for Addendum
-					tmpBetaNumber = parseInt(tmpTag.slice(tmpTag.toLowerCase().indexOf('rc')+2));
-				}else{
-					tmpBetaNumber = parseInt(tmpTag.slice(tmpTag.toLowerCase().indexOf('rc')+2));
-				}
-				if(tmpTag <= '3.5.0-beta.1'){
-					suffix = `-rc${tmpBetaNumber}`;
-				}else{
-					suffix = `-rc.${tmpBetaNumber}`;
-				}
+				//expecting #.#.#-rc.#
+				tmpBetaNumber = parseInt(tmpTag.slice(tmpTag.toLowerCase().indexOf('rc')+3));
+				suffix = `-rc.${tmpBetaNumber}`;
 			}else{
 				suffix = "";
 			}
-			
-			let dsfTag: string = ``;
-			if(tmpTag <= '3.5.0-beta.1'){
-				dsfTag = `v${prefix}${suffix}`;
-			}else{
-				dsfTag = `${prefix}${suffix}`
-			}
+			let dsfTag: string = `${prefix}${suffix}`;
 			//console.log("API TAG CALL:", dsfTag)
 			if(gitRepoName == this.gitDWCRepoNameDuet){
 				//DWC
