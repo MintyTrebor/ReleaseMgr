@@ -58,7 +58,8 @@ export default Vue.extend({
 			return store.state.machine.model.network.interfaces[0].actualIP;
 		},
 		systemDSFVerStr(): any {
-			return store.state.machine.model.state.dsfVersion;
+			//return store.state.machine.model.state.dsfVersion;
+			try{return store.state.machine.model.sbc;}catch{return null}
 		},
 		darkTheme(): any {
 			return store.state.settings.darkTheme;
