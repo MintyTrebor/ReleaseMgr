@@ -3,10 +3,10 @@
     "id": "ReleaseMgr",
     "name": "ReleaseMgr",
     "author": "Minty Trebor",
-    "version": "1.1.18",
+    "version": "1.1.20",
     "license": "GPL-3.0-or-later",
     "homepage": "https://github.com/MintyTrebor",
-    "dwcVersion": "3.5",
+    "dwcVersion": "auto",
     "dependencies": {
       "axios": "^1.2.1",
       "marked": "^4.2.4"
