@@ -92,14 +92,14 @@ export default Vue.extend({
 	methods: {
 		processRIJSON(mdStr: any){
 				const tmpRelIMup = marked.parse(mdStr, {gfm : true, breaks: true});
-				let RelIMup = tmpRelIMup;
+				let RelIMup: any = tmpRelIMup;
 				let arrMatchStr: any  = RelIMup.match(/<a[^>]*>(.*?)<\/a>/g);
 				let i: any = 0;
 				for(i in arrMatchStr){
 					let tmpURLstr = arrMatchStr[i].match(/".*"/g);
 					let URLstr = tmpURLstr[0].substring(1, tmpURLstr[0].length-1);
 					let tmpAncStr = arrMatchStr[i].match(/>.*</g);
-					let AncStr = tmpAncStr[0].substring(1, tmpAncStr[0].length-1);
+					let AncStr: any = tmpAncStr[0].substring(1, tmpAncStr[0].length-1);
 					RelIMup = RelIMup.replace(arrMatchStr[i], `<a title="${URLstr}" onclick="window.open(this.title, '_blank')"  style="color: green">${AncStr}</a>`);
 				}				
 				return RelIMup;

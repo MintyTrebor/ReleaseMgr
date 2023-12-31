@@ -92,7 +92,7 @@ export default Vue.extend({
 		processRIJSON(){
 			if(this.srcType == "gloomyRN"){
 				let markdown = this.riJSON.body.replace(/\n(?=\n)/g, "\n\n<br/>\n")
-				const tmpRelIMup = marked.parse(markdown, {gfm : true, breaks: true});
+				const tmpRelIMup: any = marked.parse(markdown, {gfm : true, breaks: true});
 				let hrefArr: any = tmpRelIMup.match(/<\s*a[^>]*/g);
 				this.panelHTML = tmpRelIMup;
 				let cn: any = 0;
@@ -101,7 +101,7 @@ export default Vue.extend({
 					this.panelHTML = this.panelHTML.replace(hrefArr[cn], tmpTxt + ` onclick="window.open(this.title, '_blank')"  style="color: green"`);
 				}
 			}else{
-				const tmpRelIMup = marked.parse(this.riJSON.body, {gfm : true, breaks: true});
+				const tmpRelIMup: any = marked.parse(this.riJSON.body, {gfm : true, breaks: true});
 				let hrefArr: any = tmpRelIMup.match(/<\s*a[^>]*/g);
 				this.panelHTML = tmpRelIMup;
 				let cn: any = 0;
