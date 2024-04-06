@@ -14,7 +14,8 @@
         {"shortName": "SAMMYC21", "rnNames": ["SAMMYC21"]},
         {"shortName": "DirectDisplay", "rnNames": ["12864", "Duet with a 12864 display", "12864 display"]},
         {"shortName": "M23CL", "rnNames": ["Duet 3 M23CL"]},
-        {"shortName": "SBC", "rnNames": ["SBC"]}
+        {"shortName": "SBC", "rnNames": ["SBC"]},
+        {"shortName": "SZP", "rnNames": ["SZP", "Duet 3 expansion/tool boards", "Duet 3 with expansion/tool boards", "expansion/tool boards", "expansion boards", "Duet 3 Expansion SZP"]}
     ],
     "duetRNSection": "Upgrade notes:",
     "duetRNFilters": ["table of contents generated with markdown-toc", "- [reprapfirmware ", "=============="],
