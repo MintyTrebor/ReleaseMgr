@@ -75,7 +75,8 @@ export default Vue.extend({
 		rMgrData:{
 			type: Object
 		},
-		selectedTag: String
+		selectedTag: String,
+		sRNOvrRd: String
     },
 	
 	computed: {
@@ -187,6 +188,9 @@ export default Vue.extend({
 				}else{
 					//filter to selected release tag
 					let tStr1 = `RepRapFirmware ${this.rnAdminJSON.selTag}`
+					if(this.sRNOvrRd) {
+						tStr1 = `RepRapFirmware ${this.sRNOvrRd}`
+					}
 					let tO1 = this.rnAdminJSON.releases.filter((item: { release: string; }) => (item.release.includes(tStr1)));
 					tmpJSON.releases = tO1;
 					return tmpJSON;

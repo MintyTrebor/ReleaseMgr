@@ -80,6 +80,10 @@
 											</v-row>
 										</v-col>
 										<v-spacer></v-spacer>
+										<v-col v-if="bHiddenDuetMenu" cols="2">
+											<v-text-field label="release tag override" v-model="sReleaseTagOverride"></v-text-field>
+										</v-col>
+										<!-- <v-spacer v-if="bHiddenDuetMenu"></v-spacer> -->
 										<v-col align="right">
 											<v-tooltip top>
 												<template v-slot:activator="{ on, attrs }">
@@ -118,7 +122,7 @@
 						<DispRI v-if="currView == 'duetSBCRI'" :riJSON="sbcRIJSON" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" srcType="DSFRI"></DispRI>
 					</v-container>
 					<v-container v-if="currView =='duetAdmin'" fluid class="pa-0 ma-0">
-						<DispAdminRN :rnAdminJSON="duetAdminRNJSON" :rMgrData="relMgrData" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag"></DispAdminRN>
+						<DispAdminRN :rnAdminJSON="duetAdminRNJSON" :rMgrData="relMgrData" :key="selectedDuetRelTag" :selectedTag="selectedDuetRelTag" :sRNOvrRd="sReleaseTagOverride"></DispAdminRN>
 					</v-container>
 				</v-col>
 				<v-col cols="12" lg="4" md="4">
@@ -596,7 +600,8 @@ export default Vue.extend({
 			currDWCTag: null as any,
 			currView: null as any,
 			bShowEditGlobalSettingsDialog: false,
-			relMgrSession: dataFunctions.loadSettings()
+			relMgrSession: dataFunctions.loadSettings(),
+			sReleaseTagOverride: '' as string
 		}
 	},
 	
@@ -871,7 +876,7 @@ export default Vue.extend({
 					var relJSONFiltered = relJSON.sort((a: any, b: any) => (a.published_at < b.published_at) ? 1 : -1)
 					if(gitUName == this.gitOwnerNameDuet && gitRepoName == this.gitRepoNameDuet){
 						//remove some allways unwanted items for Duet Releases (nothing pre 3.2 and anything beginning with 'v')
-						relJSONFiltered = relJSON.filter((item: { tag_name: string; }) => (item.tag_name >= "3.5" && !(item.tag_name.charAt(0)=='v')));
+						relJSONFiltered = relJSON.filter((item: { tag_name: string; }) => (item.tag_name >= "3.4.6" && !(item.tag_name.charAt(0)=='v')));
 					}
 					if(gitUName == this.gitOwnerNameDuet && gitRepoName == this.gitDWCRepoNameDuet){
 						//no need to do any filtering just return full JSON for DWC
@@ -879,7 +884,7 @@ export default Vue.extend({
 					}
 					if(gitUName == this.gitOwnerNameGloomy && gitRepoName == this.gitRepoNameGloomy){
 						//process gloomy releses if required
-						relJSONFiltered = relJSONFiltered.filter((item: { tag_name: string; }) => (item.tag_name >= "v3.5"));
+						relJSONFiltered = relJSONFiltered.filter((item: { tag_name: string; }) => (item.tag_name >= "v3.4.6"));
 						this.bShowGloomyReleases = true;
 					}
 					return relJSONFiltered;
