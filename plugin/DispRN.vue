@@ -2,17 +2,20 @@
 	.rMgrv-cardRLM {
 		display: flex !important;
 		flex-direction: column;
-		height: calc(100vh - 300px);
+		/* height: calc(100vh - 300px); */
+		max-height: 100%;
 	}
 
 	.rMgrv-mainCardRLM {
-		height: calc(100vh - 340px) !important;
+		/* height: calc(100vh - 340px) !important; */
+		max-width: 100%;
 	}
 
 	.rMgrv-cardRLM__text {
-		flex-grow: 1;
+		/* flex-grow: 1; */
 		overflow-y: auto;
 		overflow-x: hidden;
+		max-height: 100%;
 	}
 
 	.probe-span {
@@ -40,7 +43,7 @@
 				</v-row>
 			</v-card-title>
 			<v-card-text outlined class="rMgrv-cardRLM__text" v-if="currReleaseJSON">
-				<v-expansion-panels v-for="(rel, i) in currReleaseJSON.releases" :key="i" accordion multiple focusable v-model="bExpRel[i]">
+				<v-expansion-panels class="mb-5" v-for="(rel, i) in currReleaseJSON.releases" :key="i" accordion multiple focusable v-model="bExpRel[i]">
 					<v-expansion-panel expand  :key="i">
 						<v-expansion-panel-header expand-icon="mdi-sort-ascending" :color="rel.color" :title="rel.hover">{{ rel.release }}</v-expansion-panel-header>
 						<v-expansion-panel-content>

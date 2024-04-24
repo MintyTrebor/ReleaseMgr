@@ -29,6 +29,7 @@ export function tmpLangObj() {
                 rrfUpdateInstructions: 'Click here to view RRF & DWC update instructions',
                 gloomyUpdateIns1: 'Click here to view DSF & SBC update instructions for STM32 Boards',
                 gloomyUpdateIns2: 'Click here to view DSF & SBC update instructions for LPC Boards',
+                gloomyGenUpdateIns1: 'Click here to view Team Gloomy update instructions',
                 releaseAssetsHeader: 'Release Assets available for download',
                 lineMatchedConfG: 'Your Config.g contains the g-code(s) highlighted in this change',
                 shortNMatchedHW: 'Your HW configuration may be impacted by this change',

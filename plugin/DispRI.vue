@@ -2,17 +2,20 @@
 	.rMgrv-cardRLM {
 		display: flex !important;
 		flex-direction: column;
-		height: calc(100vh - 300px);
+		/* height: calc(100vh - 300px); */
+		max-height: 100%;
 	}
 
 	.rMgrv-mainCardRLM {
-		height: calc(100vh - 240px);
+		/* height: calc(100vh - 340px) !important; */
+		max-width: 100%;
 	}
 
 	.rMgrv-cardRLM__text {
-		flex-grow: 1;
+		/* flex-grow: 1; */
 		overflow-y: auto;
 		overflow-x: hidden;
+		max-height: 90%;
 	}
 
 	.probe-span {
@@ -23,7 +26,7 @@
 	}
 </style>
 <template>
-	<v-card outlined elevation="3" class="rMgrv-cardRLM pa-0 ma-0">
+	<v-card outlined elevation="3" class="rMgrv-mainCardRLM pa-0 ma-0">
 		<!-- {{riJSON}} -->
 		<v-card-title>
 			{{riJSON.name}}
