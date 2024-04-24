@@ -791,12 +791,12 @@ export default Vue.extend({
 			if(tabVal == 1 && this.currView !="duetRRFRI"){
 				this.currView = null;
 				this.currView = "duetRRFRI";
-				console.log("TAB3")
+				//console.log("TAB3")
 				this.currTabIndex = "3";
 			}else if(tabVal == 0 && this.currView !="duetRRFRN"){
 				this.currView = null;
 				this.currView = "duetRRFRN";
-				console.log("TAB2")
+				//console.log("TAB2")
 				this.currTabIndex = "2";
 			}
 		},
@@ -1017,7 +1017,7 @@ export default Vue.extend({
 			//console.log("tmpTag:", tmpTag)
 			let majorVNumStr: string = tmpTag.substring(0,1);
 			let minorVNumStr: string = tmpTag.substring(2,3);
-			let subVNumStr = "0";
+			let subVNumStr: string = tmpTag.substring(4,5);
 			let prefix = "";
 			let prefix2 = "";
 			let suffix = "";
